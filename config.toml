@@ -1,0 +1,4 @@
+[paths]
+
+log = "/home/ilya/OSA.Web/log/osa_web.log" 
+tmp = "/home/ilya/OSA.Web/tmp" # "/var/essdata/tmp"
