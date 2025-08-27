@@ -1,8 +1,11 @@
 import logging
 import os
 import tempfile
+from logging.handlers import TimedRotatingFileHandler
+from typing import Any
 
 import streamlit as st
+import toml
 from dotenv import load_dotenv
 
 from configuration_tab import render_configuration_tab
@@ -11,12 +14,6 @@ from main_tab import render_main_tab
 from sidebar_element import render_sidebar_element
 
 load_dotenv()
-
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
-
 
 def setup_page_config() -> None:
     """Configure Streamlit page settings."""
@@ -32,17 +29,22 @@ def setup_page_config() -> None:
     )
 
 
+@st.cache_data
+def get_config() -> dict[str, Any]:
+    return toml.load("config.toml")
+
+
 def main() -> None:
     """Run the Streamlit application."""
 
     setup_page_config()
 
-    if not st.user.is_logged_in:
-        render_login_screen()
-        st.stop()
+    # if not st.user.is_logged_in:
+    #     render_login_screen()
+    #     st.stop()
 
     if "tmpdirname" not in st.session_state:
-        st.session_state.tmpdirname = tempfile.mkdtemp()
+        st.session_state.tmpdirname = tempfile.mkdtemp(dir=get_config()["paths"]["tmp"])
     if "git_token" not in st.session_state:
         st.session_state.git_token = os.getenv("GIT_TOKEN")
 

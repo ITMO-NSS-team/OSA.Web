@@ -5,7 +5,7 @@ import re
 
 import streamlit as st
 
-logger = logging.getLogger(__name__)
+from logger_config import logger
 
 
 async def run_osa_tool(output_container) -> None:
@@ -58,7 +58,8 @@ async def run_osa_tool(output_container) -> None:
             env=env,
         )
 
-        st.session_state.output_logs = f"{cmd}\n"
+        logger.info(f"Running osa-tool with parameters: {cmd}")
+        st.session_state.output_logs = ""
         last_line = None
 
         while True:
@@ -91,6 +92,10 @@ async def run_osa_tool(output_container) -> None:
                     st.session_state.output_logs,
                     height=350,
                 )
+
+        logger.debug(
+            st.session_state.output_logs,
+        )
 
         st.session_state.output_exit_code = await process.wait()
         if st.session_state.output_exit_code == 0:
