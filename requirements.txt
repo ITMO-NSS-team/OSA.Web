@@ -3,3 +3,4 @@ python-dotenv==1.0.1
 streamlit==1.48.1
 osa-tool==0.2.1.1
 Authlib==1.6.0
+toml
