@@ -1,9 +1,11 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
+import streamlit as st
 import toml
 
 
+@st.cache_resource
 def setup_logger(log_file_path):
     logger = logging.getLogger("Streamlit App")
     logger.setLevel(logging.DEBUG)
