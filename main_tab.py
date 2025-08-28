@@ -7,7 +7,11 @@ from logger_config import logger
 from utils import run_osa_tool
 
 
-@st.dialog("Add an Article")
+def reset_article_selection() -> None:
+    st.session_state.article_selection_pills = None
+
+
+@st.dialog("Add an Article", on_dismiss=reset_article_selection)
 def add_article(type) -> None:
     article = None
     if type == "URL":
@@ -48,6 +52,7 @@ def render_article_block() -> None:
         }
         selection = st.pills(
             "Article",
+            key="article_selection_pills",
             options=option_map.keys(),
             format_func=lambda option: option_map[option],
             selection_mode="single",
