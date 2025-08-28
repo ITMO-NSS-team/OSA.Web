@@ -72,6 +72,7 @@ async def run_osa_tool(output_container) -> None:
                 if match := re.search(
                     r"PDF report successfully created in (\/.*.pdf)", line
                 ):
+                    logger.info(f"Created PDF report: {match.group(1)} ")
                     st.session_state.output_report_path = match.group(1)
                     st.session_state.output_report_filename = match.group(1).split("/")[
                         -1
