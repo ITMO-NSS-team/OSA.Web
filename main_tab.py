@@ -3,6 +3,7 @@ import tempfile
 
 import streamlit as st
 
+from logger_config import logger
 from utils import run_osa_tool
 
 
@@ -31,6 +32,7 @@ def add_article(type) -> None:
             tmpfilename.write(article.getvalue())
             article = tmpfilename.name
         st.session_state.article = {"data": article, "type": type}
+        logger.info(f"Added article: {article}")
         st.rerun()
 
 

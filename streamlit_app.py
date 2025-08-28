@@ -1,22 +1,18 @@
-import logging
 import os
 import tempfile
+from typing import Any
 
 import streamlit as st
+import toml
 from dotenv import load_dotenv
 
 from configuration_tab import render_configuration_tab
+from logger_config import logger
 from login_screen import render_login_screen
 from main_tab import render_main_tab
 from sidebar_element import render_sidebar_element
 
 load_dotenv()
-
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
-
 
 def setup_page_config() -> None:
     """Configure Streamlit page settings."""
@@ -32,6 +28,11 @@ def setup_page_config() -> None:
     )
 
 
+@st.cache_data
+def get_config() -> dict[str, Any]:
+    return toml.load("config.toml")
+
+
 def main() -> None:
     """Run the Streamlit application."""
 
@@ -41,8 +42,11 @@ def main() -> None:
         render_login_screen()
         st.stop()
 
+    logger.info(f"User {st.user.get("name", "Username")} logged in!")
+
     if "tmpdirname" not in st.session_state:
-        st.session_state.tmpdirname = tempfile.mkdtemp()
+        st.session_state.tmpdirname = tempfile.mkdtemp(dir=get_config()["paths"]["tmp"])
+        logger.debug(f"Created tmp directory: {st.session_state.tmpdirname}")
     if "git_token" not in st.session_state:
         st.session_state.git_token = os.getenv("GIT_TOKEN")
 
