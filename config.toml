@@ -1,4 +1,7 @@
 [paths]
 
-log = "/home/ilya/OSA.Web/log/osa_web.log" 
-tmp = "/home/ilya/OSA.Web/tmp" # "/var/essdata/tmp"
+log = "/var/essdata/logs" 
+tmp = "/var/essdata/tmp" 
+
+log_dev = "/home/ilya/OSA.Web/log/osa_web.logs" 
+tmp_dev = "/home/ilya/OSA.Web/tmp"
