@@ -89,6 +89,7 @@ async def run_osa_tool(output_container) -> None:
                     r".*pull request created successfully: (\S*)", line
                 ):
                     logger.info(f"Created Pull Request: {match.group(1)}")
+                    pr_link = match.group(1)
 
                 logger.debug(line)
 
