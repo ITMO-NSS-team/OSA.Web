@@ -14,11 +14,12 @@ from sidebar_element import render_sidebar_element
 
 load_dotenv()
 
+
 def setup_page_config() -> None:
     """Configure Streamlit page settings."""
     st.set_page_config(
-        page_icon=":bee:",
-        page_title="OSA Tool",
+        page_icon=":honeybee:",
+        page_title="OSA.Web",
         layout="wide",
         initial_sidebar_state="expanded",
         menu_items={

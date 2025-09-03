@@ -61,6 +61,7 @@ async def run_osa_tool(output_container) -> None:
         logger.info(f"Running osa-tool with parameters: {cmd}")
         st.session_state.output_logs = ""
         last_line = None
+        pr_link = None
 
         while True:
             stdout_line = await process.stdout.readline()
@@ -84,6 +85,13 @@ async def run_osa_tool(output_container) -> None:
                     if "output_about_section" not in st.session_state:
                         st.session_state.output_about_section = ""
                     st.session_state.output_about_section += line + "\n\n"
+                if match := re.search(
+                    r".*pull request created successfully: (\S*)", line
+                ):
+                    logger.info(f"Created Pull Request: {match.group(1)}")
+                    pr_link = match.group(1)
+
+                logger.debug(line)
 
                 st.session_state.output_logs += line + "\n"
                 # TODO: developer only
@@ -94,13 +102,9 @@ async def run_osa_tool(output_container) -> None:
                     height=350,
                 )
 
-        logger.debug(
-            st.session_state.output_logs,
-        )
-
         st.session_state.output_exit_code = await process.wait()
         if st.session_state.output_exit_code == 0:
-            st.session_state.output_message = "Everything is alright"
+            st.session_state.output_message = f'Everything is alright! {f"**Pull Request created**: {pr_link}" if pr_link else ""}'
         else:
             stderr_output = await process.stderr.read()
             error_message = stderr_output.decode().strip()

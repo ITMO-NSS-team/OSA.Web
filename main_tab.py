@@ -7,7 +7,11 @@ from logger_config import logger
 from utils import run_osa_tool
 
 
-@st.dialog("Add an Article")
+def reset_article_selection() -> None:
+    st.session_state.article_selection_pills = None
+
+
+@st.dialog("Add an Article", on_dismiss=reset_article_selection)
 def add_article(type) -> None:
     article = None
     if type == "URL":
@@ -48,6 +52,7 @@ def render_article_block() -> None:
         }
         selection = st.pills(
             "Article",
+            key="article_selection_pills",
             options=option_map.keys(),
             format_func=lambda option: option_map[option],
             selection_mode="single",
@@ -67,43 +72,46 @@ def render_article_block() -> None:
 
 
 def render_input_block() -> None:
+    st.container(height=5, border=False)
     st.markdown(
         f'<h3 style="text-align: center;">To start processing a repository, please enter a GitHub repository URL: </h3>',
         unsafe_allow_html=True,
     )
-    st.text_input(
-        label="Repository URL",
-        key="repo_url",
-        help="""Enter a GitHub repository URL  
-            **Example: https://github.com/aimclub/OSA**""",
-        placeholder="https://github.com/aimclub/OSA",
-    )
     st.container(height=5, border=False)
-
-    left, right = st.columns(2, gap="large")
-    with left:
-        st.selectbox(
-            label="Mode",
-            key="mode_select",
-            options=("basic", "auto", "advanced"),
-            help="""
-                Operation mode for repository processing  
-                `Default: auto`
-                """,
+    with st.container(border=True):
+        st.text_input(
+            label="Repository URL",
+            key="repo_url",
+            help="""Enter a GitHub repository URL  
+                **Example: https://github.com/aimclub/OSA**""",
+            placeholder="https://github.com/aimclub/OSA",
         )
-        multi = """Select the operation mode for repository processing:  
-                    - **Basic:** *run a minimal predefined set of tasks;*  
-                    - **Auto**: *automatically determine necessary actions based on repository analysis;*  
-                    - **Advanced**: *run all enabled features based on a provided configuration.*  
-                """
-        st.markdown(multi)
-    with right:
-        render_article_block()
-    st.container(height=5, border=False)
+        st.container(height=5, border=False)
+
+        left, right = st.columns(2, gap="medium")
+        with left:
+            st.selectbox(
+                label="Mode",
+                key="mode_select",
+                options=("basic", "auto", "advanced"),
+                help="""
+                    Operation mode for repository processing  
+                    `Default: auto`
+                    """,
+            )
+            multi = """Select the operation mode for repository processing:  
+                        - **Basic:** *run a minimal predefined set of tasks;*  
+                        - **Auto**: *automatically determine necessary actions based on repository analysis;*  
+                        - **Advanced**: *run all enabled features based on a provided configuration.*  
+                    """
+            st.markdown(multi)
+        with right:
+            render_article_block()
 
 
 @st.fragment
 def render_run_block(output_container) -> None:
+    st.container(height=5, border=False)
     if "run_osa_button" in st.session_state and st.session_state.run_osa_button == True:
         st.session_state.running = True
     else:

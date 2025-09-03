@@ -257,7 +257,7 @@ def render_llm_settings_block() -> None:
         )
         st.selectbox(
             label="API",
-            options=("itmo", "llama", "openai", "ollama"),
+            options=("itmo (Gemma-3-27b)", "llama", "openai", "ollama"),
             help="""
                 LLM API service provider  
                 `Default: llama`
