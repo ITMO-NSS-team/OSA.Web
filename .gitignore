@@ -1,5 +1,6 @@
 # OSA.Web
 *.log.*
+*.logs
 
 # Streamlit
 secrets.toml
