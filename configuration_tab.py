@@ -317,27 +317,33 @@ def render_workflow_settings_block() -> None:
 def render_llm_settings_block() -> None:
     with st.container(border=True):
         st.markdown(
-            '<h5 style="text-align: center;">LLM settings</h5>',
+            '<h5 style="text-align: center;">LLM Settings</h5>',
             unsafe_allow_html=True,
         )
         st.selectbox(
             label="API",
-            options=("itmo (Gemma-3-27b)", "llama", "openai", "ollama"),
+            key="configuration-llm-api",
+            on_change=configuration_callback,
+            args=["llm", "api", "configuration-llm-api"],
+            options=("itmo", "llama", "openai", "ollama"),
             help="""
                 LLM API service provider  
-                `Default: llama`
+                `Default: itmo (Gemma-3-27b)`
                 """,
         )
         st.text_input(
             label="Base URL",
-            value="https://api.openai.com/v1",
+            key="configuration-base-url",
+            on_change=configuration_callback,
+            args=["llm", "base-url", "configuration-base-url"],
+            value=st.session_state.configuration["llm"]["base-url"],
             help="""
                 URL of the provider compatible with OpenAI API  
                 `Default: https://api.openai.com/v1`""",
         )
         st.text_input(
             label="Model",
-            value="gpt-3.5-turbo",
+            value=st.session_state.configuration["llm"]["model"],
             help="""
                 Specific LLM model to use  
                 `Default: gpt-3.5-turbo`  
@@ -348,7 +354,10 @@ def render_llm_settings_block() -> None:
         )
         st.number_input(
             label="Maximum number of tokens",
-            value=4096,
+            key="configuration-llm-max-tokens",
+            on_change=configuration_callback,
+            args=["llm", "max-tokens", "configuration-llm-max-tokens"],
+            value=st.session_state.configuration["llm"]["max-tokens"],
             help="""
                 Maximum number of tokens the model can generate in a single response  
                 **Example: 1024**  
@@ -356,14 +365,20 @@ def render_llm_settings_block() -> None:
         )
         st.selectbox(
             label="Temperature",
-            options=(None, 0, 1),
+            key="configuration-llm-temperature",
+            on_change=configuration_callback,
+            args=["llm", "temperature", "configuration-llm-temperature"],
+            options=(st.session_state.configuration["llm"]["temperature"], 0, 1),
             help="""
                 Sampling temperature to use for the LLM output (0 = deterministic, 1 = creative)  
                 `Default: None`""",
         )
         st.number_input(
             label="Top-p (Nucleus Sampling)",
-            value=None,
+            key="configuration-llm-top-p",
+            on_change=configuration_callback,
+            args=["llm", "top-p", "configuration-llm-top-p"],
+            value=st.session_state.configuration["llm"]["top-p"],
             help="""
                 Nucleus sampling probability (1.0 = all tokens considered)  
                 *Example: 0.8**  
