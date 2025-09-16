@@ -1,6 +1,10 @@
 import streamlit as st
 
 
+def configuration_callback(table: str, key: str, value: str):
+    st.session_state.configuration[table][key] = st.session_state[value]
+
+
 @st.fragment
 def render_git_settings_block() -> None:
     with st.container(border=True):
