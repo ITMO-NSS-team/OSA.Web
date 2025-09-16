@@ -93,7 +93,7 @@ def render_input_block() -> None:
             st.selectbox(
                 label="Mode",
                 key="mode_select",
-                options=("basic", "auto", "advanced"),
+                options=("basic", "advanced"),  # "auto"
                 help="""
                     Operation mode for repository processing  
                     `Default: auto`
