@@ -57,7 +57,7 @@ def render_git_settings_block() -> None:
 def render_osa_settings_block() -> None:
     with st.container(border=True):
         st.markdown(
-            '<h5 style="text-align: center;">OSA settings</h5>',
+            '<h5 style="text-align: center;">General OSA Settings</h5>',
             unsafe_allow_html=True,
         )
         st.text_input(
@@ -90,62 +90,105 @@ def render_osa_settings_block() -> None:
         with left:
             st.checkbox(
                 label="Generate README",
-                value=True,
+                key="configuration-general-readme",
+                on_change=configuration_callback,
+                args=["general", "readme", "configuration-general-readme"],
+                value=st.session_state.configuration["general"]["readme"],
                 help="""Generate a `README.md` file based on repository content and metadata  
                         `Default: False`""",
             )
             st.checkbox(
                 label="Organize Repository",
-                value=True,
+                key="configuration-general-organize",
+                on_change=configuration_callback,
+                args=["general", "organize", "configuration-general-organize"],
+                value=st.session_state.configuration["general"]["organize"],
                 help="""Organize the repository by adding standard `tests` and `examples` directories if missing  
                         `Default: False`""",
             )
             st.checkbox(
                 label="Generate Docstrings",
-                value=True,
+                key="configuration-general-docstring",
+                on_change=configuration_callback,
+                args=["general", "docstring", "configuration-general-docstring"],
+                value=st.session_state.configuration["general"]["docstring"],
                 help="""Automatically generate docstrings for all Python files in the repository  
                     `Default: False`""",
             )
         with right:
             st.checkbox(
                 label="Refine README",
-                value=False,
+                key="configuration-general-refine-readme",
+                on_change=configuration_callback,
+                args=[
+                    "general",
+                    "refine-readme",
+                    "configuration-general-refine-readme",
+                ],
+                value=st.session_state.configuration["general"]["refine-readme"],
                 help="""Enable advanced README refinement. This process requires a powerful LLM model (such as GPT-4 or equivalent) for optimal results  
                         `Default: False`""",
             )
             st.checkbox(
                 label="Translate Directories",
+                key="configuration-general-translate-dirs",
+                on_change=configuration_callback,
+                args=[
+                    "general",
+                    "translate-dirs",
+                    "configuration-general-translate-dirs",
+                ],
+                value=st.session_state.configuration["general"]["translate-dirs"],
                 help="""Enable automatic translation of directory names into English  
                     `Default: False`""",
             )
             st.checkbox(
                 label="Generate Requirements",
-                value=False,
+                key="configuration-general-requirements",
+                on_change=configuration_callback,
+                args=["general", "requirements", "configuration-general-requirements"],
+                value=st.session_state.configuration["general"]["requirements"],
                 help="""Generate a `requirements.txt` file based on repository content  
                     `Default: False`""",
             )
         st.checkbox(
             label="Generate PDF Report",
-            value=True,
+            key="configuration-general-report",
+            on_change=configuration_callback,
+            args=["general", "report", "configuration-general-report"],
+            value=st.session_state.configuration["general"]["report"],
             help="""Analyze the repository and generate a PDF report with project insights  
                     `Default: False`""",
         )
         st.checkbox(
             label="Generate About Section",
-            value=True,
+            key="configuration-general-about",
+            on_change=configuration_callback,
+            args=["general", "about", "configuration-general-about"],
+            value=st.session_state.configuration["general"]["about"],
             help="""Generate GitHub `About` section with tags  
                     `Default: False`""",
         )
         st.checkbox(
             label="Generate Community Documentation Files",
-            value=True,
+            key="configuration-general-community-docs",
+            on_change=configuration_callback,
+            args=["general", "community-docs", "configuration-general-community-docs"],
+            value=st.session_state.configuration["general"]["community-docs"],
             help="""Generate community-related documentation files,  
                     such as `Code of Conduct` and `Contributing guidelines`  
                     `Default: False`""",
         )
         st.multiselect(
-            "Convert Notebooks",
-            [],
+            label="Convert Notebooks",
+            key="configuration-general-convert-notebooks",
+            on_change=configuration_callback,
+            args=[
+                "general",
+                "convert-notebooks",
+                "configuration-general-convert-notebooks",
+            ],
+            options=st.session_state.configuration["general"]["convert-notebooks"],
             accept_new_options=True,
             help="""Convert Jupyter notebooks to `.py` format  
                     Provide paths, or leave empty for repo directory  
@@ -154,7 +197,15 @@ def render_osa_settings_block() -> None:
         )
         st.selectbox(
             label="Ensure License",
-            options=(None, "bsd-3", "mit", "ap2"),
+            key="configuration-general-ensure-license",
+            on_change=configuration_callback,
+            args=["general", "ensure-license", "configuration-general-ensure-license"],
+            options=(
+                None,
+                "bsd-3",
+                "mit",
+                "ap2",
+            ),
             help="""
                 Enable LICENSE file compilation  
                 `Default: None`
