@@ -9,7 +9,7 @@ def configuration_callback(table: str, key: str, value: str):
 def render_git_settings_block() -> None:
     with st.container(border=True):
         st.markdown(
-            '<h5 style="text-align: center;">Git settings</h5>',
+            '<h5 style="text-align: center;">Git Settings</h5>',
             unsafe_allow_html=True,
         )
         if st.session_state.git_token:
@@ -23,6 +23,10 @@ def render_git_settings_block() -> None:
             )
         st.text_input(
             label="Branch",
+            key="configuration-git-branch",
+            on_change=configuration_callback,
+            args=["git", "branch", "configuration-git-branch"],
+            value=st.session_state.configuration["git"]["branch"],
             help="""Branch name of the GitHub repository  
                 `Default: Default branch`""",
         )
@@ -30,14 +34,20 @@ def render_git_settings_block() -> None:
         with left:
             st.checkbox(
                 label="No pull request",
-                key="no_pull_request",
+                key="configuration-git-no-pull-request",
+                on_change=configuration_callback,
+                args=["git", "no-pull-request", "configuration-git-no-pull-request"],
+                value=st.session_state.configuration["git"]["no-pull-request"],
                 help="""Avoid create pull request for target repository  
                 `Default: False`""",
             )
         with right:
             st.checkbox(
                 label="No fork",
-                key="no_fork",
+                key="configuration-git-no-fork",
+                on_change=configuration_callback,
+                args=["git", "no-fork", "configuration-git-no-fork"],
+                value=st.session_state.configuration["git"]["no-fork"],
                 help="""Avoid create fork for target repository  
                         `Default: False`""",
             )
