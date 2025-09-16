@@ -1,11 +1,25 @@
 import asyncio
 import logging
+import numbers
 import os
 import re
 
 import streamlit as st
 
 from logger_config import logger
+
+
+def _transform_configuration_to_cmd(cmd: list, configuration: dict):
+    """ """
+    for k, v in configuration.items():
+        if isinstance(v, bool) and v:
+            cmd.extend((f"--{k}",))
+        elif isinstance(v, str) and v != "":
+            cmd.extend((f"--{k}", v))
+        elif isinstance(v, numbers.Number) and not isinstance(v, bool):
+            cmd.extend((f"--{k}", str(v)))
+        elif isinstance(v, list) and v:
+            cmd.extend((f"--{k}", ", ".join([str(i) for i in v])))
 
 
 async def run_osa_tool(output_container) -> None:
@@ -44,12 +58,18 @@ async def run_osa_tool(output_container) -> None:
 
         if "article" in st.session_state:
             cmd.extend(("--article", st.session_state.article.get("data")))
-        if "branch" in st.session_state:
-            cmd.extend(("--branch", st.session_state.branch))
-        if st.session_state.no_fork:
-            cmd.append("--no-fork")
-        if st.session_state.no_pull_request:
-            cmd.append("--no-pull-request")
+
+        _transform_configuration_to_cmd(cmd, st.session_state.configuration["git"])
+
+        if st.session_state.mode_select == "advanced":
+            _transform_configuration_to_cmd(
+                cmd, st.session_state.configuration["general"]
+            )
+            _transform_configuration_to_cmd(cmd, st.session_state.configuration["llm"])
+            if st.session_state.configuration["workflows"]["generate-workflows"]:
+                _transform_configuration_to_cmd(
+                    cmd, st.session_state.configuration["workflows"]
+                )
 
         process = await asyncio.create_subprocess_exec(
             *cmd,
