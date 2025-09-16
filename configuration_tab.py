@@ -214,102 +214,207 @@ def render_osa_settings_block() -> None:
 
 
 @st.fragment
-def render_workflow_settings_block() -> None:
+def render_workflows_settings_block() -> None:
     with st.container(border=True):
         st.markdown(
-            '<h5 style="text-align: center;">Workflow settings</h5>',
+            '<h5 style="text-align: center;">Workflow Settings</h5>',
             unsafe_allow_html=True,
         )
         workflows = st.checkbox(
             label="Generate Workflows",
+            key="configuration-workflows-generate-workflows",
+            on_change=configuration_callback,
+            args=[
+                "workflows",
+                "generate-workflows",
+                "configuration-workflows-generate-workflows",
+            ],
+            value=st.session_state.configuration["workflows"]["generate-workflows"],
             help="""
                 Generate GitHub Action workflows for the repository  
                 `Default: False`""",
-            value=False,
         )
         if workflows:
             st.multiselect(
                 label="Python Verisons",
-                default=["3.9", "3.10"],
-                options=["3.9", "3.10", "3.11", "3.12"],
+                key="configuration-workflows-python-versions",
+                on_change=configuration_callback,
+                args=[
+                    "workflows",
+                    "python-versions",
+                    "configuration-workflows-python-versions",
+                ],
+                default=st.session_state.configuration["workflows"]["python-versions"],
+                options=["3.8", "3.9", "3.10", "3.11", "3.12"],
                 help="""Python versions to test against
-                        `Default: [3.9, 3.10]`""",
+                        `Default: [3.8, 3.9, 3.10]`""",
             )
             st.multiselect(
                 label="Branches",
-                options=[],
+                options=st.session_state.configuration["workflows"]["branches"],
                 accept_new_options=True,
                 help="""Branches to trigger workflows on
                         `Default: []`""",
             )
             st.text_input(
                 label="Workflow Output Directory",
-                value=".github/workflows",
+                key="configuration-workflows-workflows-output-dir",
+                on_change=configuration_callback,
+                args=[
+                    "workflows",
+                    "workflows-output-dir",
+                    "configuration-workflows-workflows-output-dir",
+                ],
+                value=st.session_state.configuration["workflows"][
+                    "workflows-output-dir"
+                ],
                 help="""Directory where workflow files will be saved  
                     `Default: .github/workflows`""",
             )
             left, right = st.columns([0.4, 0.6])
             st.checkbox(
                 label="Include Unit Tests",
+                key="configuration-workflows-include-tests",
+                on_change=configuration_callback,
+                args=[
+                    "workflows",
+                    "include-tests",
+                    "configuration-workflows-include-tests",
+                ],
+                value=st.session_state.configuration["workflows"]["include-tests"],
                 help="""
                 Include unit tests workflow  
                 `Default: True`""",
-                value=True,
             )
             st.checkbox(
                 label="Include PyPi",
+                key="configuration-workflows-include-pypi",
+                on_change=configuration_callback,
+                args=[
+                    "workflows",
+                    "include-pypi",
+                    "configuration-workflows-include-pypi",
+                ],
+                value=st.session_state.configuration["workflows"]["include-pypi"],
                 help="""Include PyPI publish workflow  
                 `Default: False`""",
-                value=False,
             )
             with left:
                 st.checkbox(
                     label="Include codecov",
+                    key="configuration-workflows-include-codecov",
+                    on_change=configuration_callback,
+                    args=[
+                        "workflows",
+                        "include-codecov",
+                        "configuration-workflows-include-codecov",
+                    ],
+                    value=st.session_state.configuration["workflows"][
+                        "include-codecov"
+                    ],
                     help="""
                     Include Codecov coverage step in unit tests workflow  
                     `Default: True`""",
-                    value=True,
                 )
                 st.checkbox(
                     label="Include Black",
+                    key="configuration-workflows-include-black",
+                    on_change=configuration_callback,
+                    args=[
+                        "workflows",
+                        "include-black",
+                        "configuration-workflows-include-black",
+                    ],
+                    value=st.session_state.configuration["workflows"]["include-black"],
                     help="""
                 Include Black formatter workflow  
                 `Default: True`""",
-                    value=True,
                 )
                 st.checkbox(
                     label="Include PEP 8",
+                    key="configuration-workflows-include-pep8",
+                    on_change=configuration_callback,
+                    args=[
+                        "workflows",
+                        "include-pep8",
+                        "configuration-workflows-include-pep8",
+                    ],
+                    value=st.session_state.configuration["workflows"]["include-pep8"],
                     help="""Include PEP 8 compliance workflow  
                 `Default: True`""",
-                    value=True,
                 )
             with right:
                 st.checkbox(
                     label="Use codecov Token",
+                    key="configuration-workflows-codecov-token",
+                    on_change=configuration_callback,
+                    args=[
+                        "workflows",
+                        "codecov-token",
+                        "configuration-workflows-codecov-token",
+                    ],
+                    value=st.session_state.configuration["workflows"]["codecov-token"],
                     help="""
                     Include Use Codecov token for coverage upload  
                     `Default: False`""",
-                    value=False,
                 )
                 st.checkbox(
                     label="Include autopep8",
+                    key="configuration-workflows-include-autopep8",
+                    on_change=configuration_callback,
+                    args=[
+                        "workflows",
+                        "include-autopep8",
+                        "configuration-workflows-include-autopep8",
+                    ],
+                    value=st.session_state.configuration["workflows"][
+                        "include-autopep8"
+                    ],
                     help="""Include autopep8 formatter workflow  
                 `Default: False`""",
-                    value=False,
                 )
                 st.checkbox(
                     label="Include `/fix-pep8` command",
+                    key="configuration-workflows-include-fix-pep8",
+                    on_change=configuration_callback,
+                    args=[
+                        "workflows",
+                        "include-fix-pep8",
+                        "configuration-workflows-include-fix-pep8",
+                    ],
+                    value=st.session_state.configuration["workflows"][
+                        "include-fix-pep8"
+                    ],
                     help="""Include fix-pep8 command workflow  
                 `Default: False`""",
-                    value=False,
                 )
             st.selectbox(
                 label="PEP8 Tool",
+                key="configuration-workflows-pep8-tool",
+                on_change=configuration_callback,
+                args=[
+                    "workflows",
+                    "pep8-tool",
+                    "configuration-workflows-pep8-tool",
+                ],
                 options=("flake8", "pylint"),
                 help="""
                 Tool to use for PEP 8 checking  
                 `Default: flake8`
                 """,
+            )
+            st.checkbox(
+                label="Poetry",
+                key="configuration-workflows-use-poetry",
+                on_change=configuration_callback,
+                args=[
+                    "workflows",
+                    "use-poetry",
+                    "configuration-workflows-use-poetry",
+                ],
+                value=st.session_state.configuration["workflows"]["use-poetry"],
+                help="""Use Poetry for packaging 
+                `Default: False`""",
             )
 
 
@@ -392,6 +497,6 @@ def render_configuration_tab() -> None:
         render_git_settings_block()
         render_osa_settings_block()
     with center:
-        render_workflow_settings_block()
+        render_workflows_settings_block()
     with right:
         render_llm_settings_block()
