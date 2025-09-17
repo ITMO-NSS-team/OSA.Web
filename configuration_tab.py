@@ -491,12 +491,27 @@ def render_llm_settings_block() -> None:
         )
 
 
+@st.fragment
+def render_only_basic_mode() -> None:
+    with st.container(border=True):
+        st.markdown(
+            f'<h5 style="text-align: center;">Extra Settings</h5>',
+            unsafe_allow_html=True,
+        )
+        st.write("The rest of the settings are only available in `Advanced` mode.")
+
+
 def render_configuration_tab() -> None:
     left, center, right = st.columns([1, 1, 1])
-    with left:
-        render_git_settings_block()
-        render_osa_settings_block()
-    with center:
-        render_workflows_settings_block()
-    with right:
-        render_llm_settings_block()
+    if st.session_state.mode_select not in ["basic", "auto"]:
+        with left:
+            render_git_settings_block()
+            render_osa_settings_block()
+        with center:
+            render_workflows_settings_block()
+        with right:
+            render_llm_settings_block()
+    else:
+        with center:
+            render_git_settings_block()
+            render_only_basic_mode()
