@@ -3,5 +3,63 @@
 log = "/var/essdata/logs/osa_web.logs" 
 tmp = "/var/essdata/tmp" 
 
-log_dev = "/home/ilya/OSA.Web/log/osa_web.logs" 
-tmp_dev = "/home/ilya/OSA.Web/tmp"
+# log = "/home/ilya/OSA.Web/logs/osa_web.logs" 
+# tmp = "/home/ilya/OSA.Web/tmp"
+
+# General CLI-related defaults
+[general]
+# mode = "basic"
+# web_mode = true
+# output = ""
+# article = ""
+translate-dirs = false
+convert-notebooks = []
+# delete_dir = true
+ensure-license = ""
+community-docs = false
+docstring = false
+report = false
+readme = false
+refine-readme = false
+requirements = false
+organize = false
+about = false
+
+# Git Repository Settings
+[git]
+# repository = "https://github.com/aimclub/OSA"
+branch = ""
+no-fork = false
+no-pull-request = false
+
+# Language Model API Settings
+[llm]
+api = "itmo"
+#rate_limit = 10
+base-url = "https://api.openai.com/v1"
+# context-window = 4096
+# encoder = "cl100k_base"
+# host_name = "https://api.openai.com/v1"
+# localhost = "http://localhost:11434/"
+model = "gpt-3.5-turbo"
+# path = "generate"
+temperature = 0.05
+max-tokens = 4096
+top-p = 0.95
+
+# GitHub Actions Workflow Settings
+[workflows]
+generate-workflows = false
+workflows-output-dir = ".github/workflows"
+include-tests = true
+include-black = true
+include-pep8 = true
+include-autopep8 = false
+include-fix-pep8 = false
+include-pypi = false
+python-versions = ["3.8", "3.9", "3.10"]
+pep8-tool = "flake8" # "flake8" or "pylint"
+use-poetry = false
+branches = []
+codecov-token = false
+include-codecov = true
