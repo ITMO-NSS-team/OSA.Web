@@ -40,7 +40,6 @@ def add_article(type) -> None:
         st.rerun()
 
 
-@st.fragment
 def render_article_block() -> None:
     help_text = """Select a README template for a repository with an article  
                     or provide a link to the PDF file  
@@ -56,6 +55,7 @@ def render_article_block() -> None:
             options=option_map.keys(),
             format_func=lambda option: option_map[option],
             selection_mode="single",
+            disabled=st.session_state.running,
             help=help_text,
             width="stretch",
         )
@@ -82,6 +82,7 @@ def render_input_block() -> None:
         st.text_input(
             label="Repository URL",
             key="repo_url",
+            disabled=st.session_state.running,
             help="""Enter a GitHub repository URL  
                 **Example: https://github.com/aimclub/OSA**""",
             placeholder="https://github.com/aimclub/OSA",
@@ -94,6 +95,7 @@ def render_input_block() -> None:
                 label="Mode",
                 key="mode_select",
                 options=("basic", "advanced"),  # "auto"
+                disabled=st.session_state.running,
                 help="""
                     Operation mode for repository processing  
                     `Default: auto`
@@ -109,30 +111,26 @@ def render_input_block() -> None:
             render_article_block()
 
 
-@st.fragment
-def render_run_block(output_container) -> None:
+def _set_osa_running():
+    st.session_state.running = True
+
+
+def render_button_block() -> None:
     st.container(height=5, border=False)
-    if "run_osa_button" in st.session_state and st.session_state.run_osa_button == True:
-        st.session_state.running = True
-    else:
-        st.session_state.running = False
-    if st.button(
+    if not st.session_state.git_token:
+        st.warning(
+            "GIT_TOKEN not found in .env file. The tool may not work correctly with private repositories.",
+            icon=":material/warning:",
+        )
+        st.container(height=5, border=False)
+    st.button(
         "Run OSA",
         icon=":material/emoji_nature:",
         use_container_width=True,
-        disabled=len(st.session_state.repo_url) == 0 or st.session_state.running,
+        disabled=st.session_state.running or len(st.session_state.repo_url) == 0,
         type="secondary" if len(st.session_state.repo_url) == 0 else "primary",
-        key="run_osa_button",
-    ):
-        if not st.session_state.git_token:
-            st.warning(
-                "GIT_TOKEN not found in .env file. The tool may not work correctly with private repositories."
-            )
-        _, right = st.columns([0.35, 0.5])
-        with right:
-            with st.spinner(text="In progress...", show_time=True, width="stretch"):
-                asyncio.run(run_osa_tool(output_container))
-            st.rerun()
+        on_click=_set_osa_running,
+    )
 
 
 def render_output_block(output_container) -> None:
@@ -191,7 +189,13 @@ def render_main_tab() -> None:
     _, center, _ = st.columns([0.1, 0.8, 0.1])
     with center:
         render_input_block()
+        render_button_block()
+    _, right = st.columns([0.35, 0.5])
     output_container = st.empty()
-    with center:
-        render_run_block(output_container)
+
+    if st.session_state.running:
+        with right:
+            with st.spinner(text="In progress...", show_time=True, width="stretch"):
+                asyncio.run(run_osa_tool(output_container))
+
     render_output_block(output_container)
