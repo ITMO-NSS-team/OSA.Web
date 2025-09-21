@@ -45,6 +45,8 @@ def main() -> None:
 
     logger.info(f"User {st.user.get("name", "Username")} logged in!")
 
+    if "running" not in st.session_state:
+        st.session_state.running = False
     if "configuration" not in st.session_state:
         st.session_state.configuration = {**get_config()}
     if "tmpdirname" not in st.session_state:

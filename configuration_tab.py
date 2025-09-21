@@ -15,12 +15,11 @@ def render_git_settings_block() -> None:
         if st.session_state.git_token:
             st.info("**GIT_TOKEN Status**: Found", icon=":material/check_circle:")
         else:
-            st.info("**GIT_TOKEN Status**: Found", icon=":material/error:")
-
-        if not st.session_state.git_token:
             st.warning(
-                "GIT_TOKEN not found in .env file. Some features may not work correctly."
+                "**GIT_TOKEN** not found in .env file. Some features may not work correctly.",
+                icon=":material/warning:",
             )
+
         st.text_input(
             label="Branch",
             key="configuration-git-branch",

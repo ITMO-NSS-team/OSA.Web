@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import numbers
 import os
 import re
@@ -134,7 +133,9 @@ async def run_osa_tool(output_container) -> None:
             logger.error(
                 f"OSA tool execution failed with code {st.session_state.output_exit_code}: {last_line}"
             )
-
     except Exception as e:
         st.error(f"Error executing OSA tool: {e!s}")
         logger.error(f"OSA tool execution failed: {e!s}", exc_info=True)
+    finally:
+        st.session_state.running = False
+        st.rerun()
