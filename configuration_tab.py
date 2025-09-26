@@ -436,6 +436,16 @@ def render_llm_settings_block() -> None:
                 """,
         )
         st.text_input(
+            label="LLM API Key",
+            key="configuration-api-key",
+            on_change=configuration_callback,
+            args=["llm", "api-key", "configuration-api-key"],
+            # value=st.session_state.configuration["llm"]["api-key"],
+            help="""
+                OpenAI API Key  
+                `Default: None`""",
+        )
+        st.text_input(
             label="Base URL",
             key="configuration-base-url",
             on_change=configuration_callback,
