@@ -38,6 +38,8 @@ async def run_osa_tool(output_container) -> None:
         env.update(
             {"COLUMNS": "200", "TERM": "xterm-256color", "PYTHONUNBUFFERED": "1"}
         )
+        if "configuration-api-key" in st.session_state:
+            env.update({"OPENAI_API_KEY": st.session_state["configuration-api-key"]})
 
         # Убедимся, что GIT_TOKEN передается в процесс
         if st.session_state.git_token:

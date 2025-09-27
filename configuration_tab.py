@@ -424,38 +424,54 @@ def render_llm_settings_block() -> None:
             '<h5 style="text-align: center;">LLM Settings</h5>',
             unsafe_allow_html=True,
         )
+        llm_api_options = ("itmo", "llama", "openai", "ollama")
         st.selectbox(
             label="API",
             key="configuration-llm-api",
             on_change=configuration_callback,
             args=["llm", "api", "configuration-llm-api"],
-            options=("itmo", "llama", "openai", "ollama"),
+            index=(
+                llm_api_options.index(st.session_state.configuration["llm"]["api"])
+                if "api" in st.session_state.configuration["llm"]
+                else 0
+            ),
+            options=llm_api_options,
             help="""
                 LLM API service provider  
                 `Default: itmo (Gemma-3-27b)`
                 """,
         )
-        st.text_input(
-            label="Base URL",
-            key="configuration-base-url",
-            on_change=configuration_callback,
-            args=["llm", "base-url", "configuration-base-url"],
-            value=st.session_state.configuration["llm"]["base-url"],
-            help="""
-                URL of the provider compatible with OpenAI API  
-                `Default: https://api.openai.com/v1`""",
-        )
-        st.text_input(
-            label="Model",
-            value=st.session_state.configuration["llm"]["model"],
-            help="""
-                Specific LLM model to use  
-                `Default: gpt-3.5-turbo`  
-                See:
-                1. https://vsegpt.ru/Docs/Models  
-                2. https://platform.openai.com/docs/models  
-                3. https://ollama.com/library  """,
-        )
+        if st.session_state.configuration["llm"]["api"] != "itmo":
+            st.text_input(
+                label="API Key :red-background[**WARNING**: PLEASE USE THROWAWAY KEYS]",
+                key="configuration-api-key",
+                type="password",
+                help="""
+                    Your OpenAI API Key  
+                    **Please, refer to [Security Tips.](https://blog.streamlit.io/8-tips-for-securely-using-api-keys/)**
+                    """,
+            )
+            st.text_input(
+                label="Base URL",
+                key="configuration-base-url",
+                on_change=configuration_callback,
+                args=["llm", "base-url", "configuration-base-url"],
+                value=st.session_state.configuration["llm"]["base-url"],
+                help="""
+                    URL of the provider compatible with OpenAI API  
+                    `Default: https://api.openai.com/v1`""",
+            )
+            st.text_input(
+                label="Model",
+                value=st.session_state.configuration["llm"]["model"],
+                help="""
+                    Specific LLM model to use  
+                    `Default: gpt-3.5-turbo`  
+                    See:
+                    1. https://vsegpt.ru/Docs/Models  
+                    2. https://platform.openai.com/docs/models  
+                    3. https://ollama.com/library  """,
+            )
         st.number_input(
             label="Maximum number of tokens",
             key="configuration-llm-max-tokens",
