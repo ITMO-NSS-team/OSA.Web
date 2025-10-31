@@ -178,7 +178,7 @@ def render_osa_settings_block() -> None:
                     such as `Code of Conduct` and `Contributing guidelines`  
                     `Default: False`""",
         )
-        st.multiselect(
+        st.text_input(
             label="Convert Notebooks",
             key="configuration-general-convert-notebooks",
             on_change=configuration_callback,
@@ -187,8 +187,7 @@ def render_osa_settings_block() -> None:
                 "convert-notebooks",
                 "configuration-general-convert-notebooks",
             ],
-            options=st.session_state.configuration["general"]["convert-notebooks"],
-            accept_new_options=True,
+            value=st.session_state.configuration["general"]["convert-notebooks"],
             help="""Convert Jupyter notebooks to `.py` format  
                     Provide paths, or leave empty for repo directory  
                     **Example: path/to/file1, path/to/file2**  
