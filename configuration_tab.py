@@ -278,6 +278,23 @@ def render_workflows_settings_block() -> None:
                         **Example: main develop**  
                         `Default: —`""",
             )
+            st.text_input(
+                disabled=True,
+                label="Workflow Output Directory",
+                # key="configuration-workflows-workflows-output-dir",
+                # on_change=configuration_callback,
+                # args=[
+                #     "workflows",
+                #     "workflows-output-dir",
+                #     "configuration-workflows-workflows-output-dir",
+                # ],
+                # value=st.session_state.configuration["workflows"][
+                #     "workflows-output-dir"
+                # ],
+                help="""Directory where workflow files will be saved  
+                    **Temporary disabled**  
+                    `Default: .github/workflows`""",
+            )
             left, right = st.columns([0.4, 0.6])
             st.checkbox(
                 label="Include Unit Tests",
