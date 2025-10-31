@@ -27,7 +27,7 @@ def render_git_settings_block() -> None:
             args=["git", "branch", "configuration-git-branch"],
             value=st.session_state.configuration["git"]["branch"],
             help="""Branch name of the GitHub repository  
-                `Default: Default branch`""",
+                `Default: Default repository branch`""",
         )
         left, right = st.columns(2)
         with left:
