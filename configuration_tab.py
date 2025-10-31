@@ -251,7 +251,7 @@ def render_workflows_settings_block() -> None:
         )
         if workflows:
             st.multiselect(
-                label="Python Verisons",
+                label="Python Versions",
                 key="configuration-workflows-python-versions",
                 on_change=configuration_callback,
                 args=[
