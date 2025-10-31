@@ -264,27 +264,19 @@ def render_workflows_settings_block() -> None:
                 help="""Python versions to test against
                         `Default: [3.8, 3.9, 3.10]`""",
             )
-            st.multiselect(
-                label="Branches",
-                options=st.session_state.configuration["workflows"]["branches"],
-                accept_new_options=True,
-                help="""Branches to trigger workflows on
-                        `Default: []`""",
-            )
             st.text_input(
-                label="Workflow Output Directory",
-                key="configuration-workflows-workflows-output-dir",
+                label="Branches",
+                key="configuration-workflows-branches",
                 on_change=configuration_callback,
                 args=[
                     "workflows",
-                    "workflows-output-dir",
-                    "configuration-workflows-workflows-output-dir",
+                    "branches",
+                    "configuration-workflows-branches",
                 ],
-                value=st.session_state.configuration["workflows"][
-                    "workflows-output-dir"
-                ],
-                help="""Directory where workflow files will be saved  
-                    `Default: .github/workflows`""",
+                value=st.session_state.configuration["workflows"]["branches"],
+                help="""Branches to trigger workflows on  
+                        **Example: main develop**  
+                        `Default: —`""",
             )
             left, right = st.columns([0.4, 0.6])
             st.checkbox(
