@@ -27,7 +27,7 @@ def render_git_settings_block() -> None:
             args=["git", "branch", "configuration-git-branch"],
             value=st.session_state.configuration["git"]["branch"],
             help="""Branch name of the GitHub repository  
-                `Default: Default branch`""",
+                `Default: Default repository branch`""",
         )
         left, right = st.columns(2)
         with left:
@@ -178,7 +178,7 @@ def render_osa_settings_block() -> None:
                     such as `Code of Conduct` and `Contributing guidelines`  
                     `Default: False`""",
         )
-        st.multiselect(
+        st.text_input(
             label="Convert Notebooks",
             key="configuration-general-convert-notebooks",
             on_change=configuration_callback,
@@ -187,11 +187,27 @@ def render_osa_settings_block() -> None:
                 "convert-notebooks",
                 "configuration-general-convert-notebooks",
             ],
-            options=st.session_state.configuration["general"]["convert-notebooks"],
-            accept_new_options=True,
+            value=st.session_state.configuration["general"]["convert-notebooks"],
             help="""Convert Jupyter notebooks to `.py` format  
                     Provide paths, or leave empty for repo directory  
                     **Example: path/to/file1, path/to/file2**  
+                    `Default: —`""",
+        )
+        st.text_input(
+            label="Translate README",
+            key="configuration-general-translate-readme",
+            on_change=configuration_callback,
+            args=[
+                "general",
+                "translate-readme",
+                "configuration-general-translate-readme",
+            ],
+            value=st.session_state.configuration["general"]["translate-readme"],
+            help="""List of target languages to translate the project's main README into.  
+                    Each language should be specified by its name (e.g., "Russian", "Chinese").  
+                    The translated README files will be saved separately in the repository folder  
+                    with language-specific suffixes (e.g., README_ru.md, README_zh.md).  
+                    **Example: Russian Chinese**  
                     `Default: —`""",
         )
         st.selectbox(
@@ -235,7 +251,7 @@ def render_workflows_settings_block() -> None:
         )
         if workflows:
             st.multiselect(
-                label="Python Verisons",
+                label="Python Versions",
                 key="configuration-workflows-python-versions",
                 on_change=configuration_callback,
                 args=[
@@ -248,26 +264,35 @@ def render_workflows_settings_block() -> None:
                 help="""Python versions to test against
                         `Default: [3.8, 3.9, 3.10]`""",
             )
-            st.multiselect(
-                label="Branches",
-                options=st.session_state.configuration["workflows"]["branches"],
-                accept_new_options=True,
-                help="""Branches to trigger workflows on
-                        `Default: []`""",
-            )
             st.text_input(
-                label="Workflow Output Directory",
-                key="configuration-workflows-workflows-output-dir",
+                label="Branches",
+                key="configuration-workflows-branches",
                 on_change=configuration_callback,
                 args=[
                     "workflows",
-                    "workflows-output-dir",
-                    "configuration-workflows-workflows-output-dir",
+                    "branches",
+                    "configuration-workflows-branches",
                 ],
-                value=st.session_state.configuration["workflows"][
-                    "workflows-output-dir"
-                ],
+                value=st.session_state.configuration["workflows"]["branches"],
+                help="""Branches to trigger workflows on  
+                        **Example: main develop**  
+                        `Default: —`""",
+            )
+            st.text_input(
+                disabled=True,
+                label="Workflow Output Directory",
+                # key="configuration-workflows-workflows-output-dir",
+                # on_change=configuration_callback,
+                # args=[
+                #     "workflows",
+                #     "workflows-output-dir",
+                #     "configuration-workflows-workflows-output-dir",
+                # ],
+                # value=st.session_state.configuration["workflows"][
+                #     "workflows-output-dir"
+                # ],
                 help="""Directory where workflow files will be saved  
+                    **Temporary disabled**  
                     `Default: .github/workflows`""",
             )
             left, right = st.columns([0.4, 0.6])

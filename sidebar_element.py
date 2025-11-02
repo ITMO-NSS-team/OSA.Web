@@ -37,6 +37,17 @@ def render_sidebar_element() -> None:
                 type="primary",
                 icon=":material/logout:",
             )
+
+            st.container(height=15, border=False)
+
+            with st.container(border=True):
+                st.markdown(
+                    f"""
+                    :grey[OSA Version: v{st.session_state.configuration["versions"]["osa_tool"]}]  
+                    :grey[Web Version: v{st.session_state.configuration["versions"]["osa_web"]}]
+                    """
+                )
+
         style = """
             <style>
             button[data-baseweb="tab"] {
