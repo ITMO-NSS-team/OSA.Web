@@ -57,8 +57,8 @@ async def run_osa_tool(output_container) -> None:
             "--delete-dir",
         ]
 
-        if "article" in st.session_state:
-            cmd.extend(("--article", st.session_state.article.get("data")))
+        if "attachment" in st.session_state:
+            cmd.extend(("--attachment", st.session_state.attachment.get("data")))
 
         _transform_configuration_to_cmd(cmd, st.session_state.configuration["git"])
 
