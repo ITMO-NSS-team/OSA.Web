@@ -239,6 +239,23 @@ def render_osa_settings_block() -> None:
                     **Example: Russian Chinese**  
                     `Default: —`""",
         )
+        st.text_input(
+            label="Translate README",
+            key="configuration-general-translate-readme",
+            on_change=configuration_callback,
+            args=[
+                "general",
+                "translate-readme",
+                "configuration-general-translate-readme",
+            ],
+            value=st.session_state.configuration["general"]["translate-readme"],
+            help="""List of target languages to translate the project's main README into.  
+                    Each language should be specified by its name (e.g., "Russian", "Chinese").  
+                    The translated README files will be saved separately in the repository folder  
+                    with language-specific suffixes (e.g., README_ru.md, README_zh.md).  
+                    **Example: Russian Chinese**  
+                    `Default: —`""",
+        )
         st.selectbox(
             label="Ensure License",
             key="configuration-general-ensure-license",
