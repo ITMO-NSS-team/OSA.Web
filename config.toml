@@ -30,6 +30,8 @@ refine-readme = false
 requirements = false
 organize = false
 about = false
+validate-paper = false
+validate-doc = false
 
 # Git Repository Settings
 [git]

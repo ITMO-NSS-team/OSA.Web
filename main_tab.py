@@ -154,16 +154,21 @@ def render_output_block(output_container) -> None:
                             st.session_state.output_message, icon=":material/error:"
                         )
                 with right:
-                    if "output_report_path" in st.session_state:
-                        with open(st.session_state.output_report_path, "rb") as file:
-                            st.download_button(
-                                label="Download Report",
-                                data=file,
-                                file_name=st.session_state.output_report_filename,
-                                mime="application/pdf",
-                                icon=":material/download:",
-                                use_container_width=True,
-                            )
+                    if len(st.session_state.output_report_paths) > 0:
+                        for i in range(len(st.session_state.output_report_paths)):
+                            with open(
+                                st.session_state.output_report_paths[i], "rb"
+                            ) as file:
+                                st.download_button(
+                                    label="Download Report",
+                                    data=file,
+                                    file_name=st.session_state.output_report_filenames[
+                                        i
+                                    ],
+                                    mime="application/pdf",
+                                    icon=":material/download:",
+                                    use_container_width=True,
+                                )
                     else:
                         with st.container(border=True):
                             st.markdown(

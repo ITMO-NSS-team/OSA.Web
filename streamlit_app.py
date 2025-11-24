@@ -52,6 +52,10 @@ def main() -> None:
     if "tmpdirname" not in st.session_state:
         st.session_state.tmpdirname = tempfile.mkdtemp(dir=get_config()["paths"]["tmp"])
         logger.debug(f"Created tmp directory: {st.session_state.tmpdirname}")
+    if "output_report_paths" not in st.session_state:
+        st.session_state.output_report_paths = []
+    if "output_report_filenames" not in st.session_state:
+        st.session_state.output_report_filenames = []
     if "git_token" not in st.session_state:
         st.session_state.git_token = os.getenv("GIT_TOKEN")
 

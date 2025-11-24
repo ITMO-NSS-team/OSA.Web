@@ -43,8 +43,8 @@ def render_sidebar_element() -> None:
             with st.container(border=True):
                 st.markdown(
                     f"""
-                    :grey[OSA Version: v{st.session_state.configuration["versions"]["osa_tool"]}]  
-                    :grey[Web Version: v{st.session_state.configuration["versions"]["osa_web"]}]
+                    :grey[OSA Version: {st.session_state.configuration["versions"]["osa_tool"]}]  
+                    :grey[Web Version: {st.session_state.configuration["versions"]["osa_web"]}]
                     """
                 )
 
