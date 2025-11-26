@@ -1,7 +1,7 @@
 [versions]
 
-osa_tool = "0.2.3.1"
-osa_web = "0.2.3.1"
+osa_tool = "0.2.4"
+osa_web = "0.2.4"
 
 [paths]
 
@@ -16,7 +16,7 @@ tmp = "/var/essdata/tmp"
 # mode = "basic"
 # web_mode = true
 # output = ""
-# article = ""
+# attachment = ""
 translate-dirs = false
 translate-readme = ""
 convert-notebooks = ""
@@ -30,6 +30,8 @@ refine-readme = false
 requirements = false
 organize = false
 about = false
+validate-paper = false
+validate-doc = false
 
 # Git Repository Settings
 [git]

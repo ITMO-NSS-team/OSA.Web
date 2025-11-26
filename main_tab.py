@@ -7,51 +7,49 @@ from logger_config import logger
 from utils import run_osa_tool
 
 
-def reset_article_selection() -> None:
-    st.session_state.article_selection_pills = None
+def reset_attachment_selection() -> None:
+    st.session_state.attachment_selection_pills = None
 
 
-@st.dialog("Add an Article", on_dismiss=reset_article_selection)
-def add_article(type) -> None:
-    article = None
+@st.dialog("Add an Attachment", on_dismiss=reset_attachment_selection)
+def add_attachment(type) -> None:
+    attachment = None
     if type == "URL":
-        article = st.text_input("Paste URL")
+        attachment = st.text_input("Paste URL")
     elif type == "File":
-        article = st.file_uploader("Upload Article", ["pdf"])
+        attachment = st.file_uploader("Upload Attachment", ["pdf", "docx"])
 
     st.container(height=5, border=False)
 
     if st.button(
         "Submit",
-        disabled=not article,
+        disabled=not attachment,
         use_container_width=True,
         type="primary",
-        help="""Select a README template for a repository with an article.
-    Or provide a link to the pdf file""",
+        help="""Select a PDF or .docx file, or a URL to a PDF resource""",
     ):
         if type == "File":
             tmpfilename = tempfile.NamedTemporaryFile(
                 delete=False, dir=st.session_state.tmpdirname, suffix=".pdf"
             )
-            tmpfilename.write(article.getvalue())
-            article = tmpfilename.name
-        st.session_state.article = {"data": article, "type": type}
-        logger.info(f"Added article: {article}")
+            tmpfilename.write(attachment.getvalue())
+            attachment = tmpfilename.name
+        st.session_state.attachment = {"data": attachment, "type": type}
+        logger.info(f"Added attachment: {attachment}")
         st.rerun()
 
 
-def render_article_block() -> None:
-    help_text = """Select a README template for a repository with an article  
-                    or provide a link to the PDF file  
+def render_attachment_block() -> None:
+    help_text = """Select a PDF or .docx file, or a URL to a PDF resource  
                     `Default: None`"""
-    if "article" not in st.session_state:
+    if "attachment" not in st.session_state:
         option_map = {
             "URL": ":material/globe: Paste URL",
-            "File": ":material/upload_file: Upload Article",
+            "File": ":material/upload_file: Upload Attachment",
         }
         selection = st.pills(
-            "Article",
-            key="article_selection_pills",
+            "Attachment",
+            key="attachment_selection_pills",
             options=option_map.keys(),
             format_func=lambda option: option_map[option],
             selection_mode="single",
@@ -60,14 +58,14 @@ def render_article_block() -> None:
             width="stretch",
         )
         if selection:
-            add_article(selection)
+            add_attachment(selection)
     else:
-        st.caption("Article", help=help_text)
+        st.caption("Attachment", help=help_text)
         st.write(
-            f"Article added via **{st.session_state.article.get('type')}**: `{st.session_state.article.get('data')}`"
+            f"Attachment added via **{st.session_state.attachment.get('type')}**: `{st.session_state.attachment.get('data')}`"
         )
         if st.button(":material/delete: Remove", use_container_width=True):
-            del st.session_state["article"]
+            del st.session_state["attachment"]
             st.rerun()
 
 
@@ -108,7 +106,7 @@ def render_input_block() -> None:
                     """
             st.markdown(multi)
         with right:
-            render_article_block()
+            render_attachment_block()
 
 
 def _set_osa_running():
@@ -156,16 +154,21 @@ def render_output_block(output_container) -> None:
                             st.session_state.output_message, icon=":material/error:"
                         )
                 with right:
-                    if "output_report_path" in st.session_state:
-                        with open(st.session_state.output_report_path, "rb") as file:
-                            st.download_button(
-                                label="Download Report",
-                                data=file,
-                                file_name=st.session_state.output_report_filename,
-                                mime="application/pdf",
-                                icon=":material/download:",
-                                use_container_width=True,
-                            )
+                    if len(st.session_state.output_report_paths) > 0:
+                        for i in range(len(st.session_state.output_report_paths)):
+                            with open(
+                                st.session_state.output_report_paths[i], "rb"
+                            ) as file:
+                                st.download_button(
+                                    label="Download Report",
+                                    data=file,
+                                    file_name=st.session_state.output_report_filenames[
+                                        i
+                                    ],
+                                    mime="application/pdf",
+                                    icon=":material/download:",
+                                    use_container_width=True,
+                                )
                     else:
                         with st.container(border=True):
                             st.markdown(

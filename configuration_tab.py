@@ -106,6 +106,21 @@ def render_osa_settings_block() -> None:
                         `Default: False`""",
             )
             st.checkbox(
+                label="Validate Paper",
+                key="configuration-general-validate-paper",
+                on_change=configuration_callback,
+                args=[
+                    "general",
+                    "validate-paper",
+                    "configuration-general-validate-paper",
+                ],
+                disabled=st.session_state.configuration["general"]["validate-doc"],
+                value=st.session_state.configuration["general"]["validate-paper"],
+                help="""Check whether the experiments proposed in an attached  
+                    research paper can be reproduced using the selected repository  
+                    `Default: False`""",
+            )
+            st.checkbox(
                 label="Generate Docstrings",
                 key="configuration-general-docstring",
                 on_change=configuration_callback,
@@ -139,6 +154,21 @@ def render_osa_settings_block() -> None:
                 ],
                 value=st.session_state.configuration["general"]["translate-dirs"],
                 help="""Enable automatic translation of directory names into English  
+                    `Default: False`""",
+            )
+            st.checkbox(
+                label="Validate Document",
+                key="configuration-general-validate-doc",
+                on_change=configuration_callback,
+                args=[
+                    "general",
+                    "validate-doc",
+                    "configuration-general-validate-doc",
+                ],
+                disabled=st.session_state.configuration["general"]["validate-paper"],
+                value=st.session_state.configuration["general"]["validate-doc"],
+                help="""Check whether the experiments proposed in an attached   
+                    documentation file can be reproduced using the selected repository  
                     `Default: False`""",
             )
             st.checkbox(
@@ -190,7 +220,23 @@ def render_osa_settings_block() -> None:
             value=st.session_state.configuration["general"]["convert-notebooks"],
             help="""Convert Jupyter notebooks to `.py` format  
                     Provide paths, or leave empty for repo directory  
-                    **Example: path/to/file1, path/to/file2**  
+                    **Example: path/to/file1 path/to/file2**  
+                    `Default: —`""",
+        )
+        st.text_input(
+            label="Translate README",
+            key="configuration-general-translate-readme",
+            on_change=configuration_callback,
+            args=[
+                "general",
+                "translate-readme",
+                "configuration-general-translate-readme",
+            ],
+            value=st.session_state.configuration["general"]["translate-readme"],
+            help="""List of target languages to translate the project's main README into.  
+                    The translated README files will be saved separately in the repository folder  
+                    with language-specific suffixes (e.g., README_ru.md, README_zh.md).  
+                    **Example: Russian Chinese**  
                     `Default: —`""",
         )
         st.text_input(

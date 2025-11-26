@@ -24,11 +24,11 @@ def _transform_configuration_to_cmd(cmd: list, configuration: dict):
 async def run_osa_tool(output_container) -> None:
     """Run the osa-tools application."""
     try:
-        # Clear streamlit state
-        if "output_report_path" in st.session_state:
-            del st.session_state["output_report_path"]
-        if "output_report_filename" in st.session_state:
-            del st.session_state["output_report_filename"]
+        # Reset streamlit state
+        if "output_report_paths" in st.session_state:
+            st.session_state["output_report_paths"] = []
+        if "output_report_filenames" in st.session_state:
+            st.session_state["output_report_filenames"] = []
         if "output_about_section" in st.session_state:
             del st.session_state["output_about_section"]
 
@@ -57,8 +57,8 @@ async def run_osa_tool(output_container) -> None:
             "--delete-dir",
         ]
 
-        if "article" in st.session_state:
-            cmd.extend(("--article", st.session_state.article.get("data")))
+        if "attachment" in st.session_state:
+            cmd.extend(("--attachment", st.session_state.attachment.get("data")))
 
         _transform_configuration_to_cmd(cmd, st.session_state.configuration["git"])
 
@@ -95,10 +95,10 @@ async def run_osa_tool(output_container) -> None:
                     r"PDF report successfully created in (\/.*.pdf)", line
                 ):
                     logger.info(f"Created PDF report: {match.group(1)} ")
-                    st.session_state.output_report_path = match.group(1)
-                    st.session_state.output_report_filename = match.group(1).split("/")[
-                        -1
-                    ]
+                    st.session_state.output_report_paths.append(match.group(1))
+                    st.session_state.output_report_filenames.append(
+                        match.group(1).split("/")[-1]
+                    )
                 if match := re.search(
                     r"(.*You can add the following.*|.*- Description:.*|.*- Homepage:.*|.*- Topics:.*|.*Please review and add them to your repository.*)",
                     line,
