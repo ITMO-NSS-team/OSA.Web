@@ -538,6 +538,17 @@ def render_llm_settings_block() -> None:
                 **Example: 1024**  
                 `Default: 4096`""",
         )
+        st.number_input(
+            label="Total number of model context",
+            key="configuration-llm-context-window",
+            on_change=configuration_callback,
+            args=["llm", "context-window", "configuration-llm-context-window"],
+            value=st.session_state.configuration["llm"]["context-window"],
+            help="""
+                Total number of model context in a single response (Input + Output)  
+                **Example: 200000**  
+                `Default: 16385`""",
+        )
         st.selectbox(
             label="Temperature",
             key="configuration-llm-temperature",
