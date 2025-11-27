@@ -45,7 +45,6 @@ no-pull-request = false
 api = "itmo"
 #rate_limit = 10
 base-url = "https://api.openai.com/v1"
-# context-window = 4096
 # encoder = "cl100k_base"
 # host_name = "https://api.openai.com/v1"
 # localhost = "http://localhost:11434/"
@@ -53,6 +52,7 @@ model = "gpt-3.5-turbo"
 # path = "generate"
 temperature = 0.05
 max-tokens = 4096
+context-window = 16385
 top-p = 0.95
 
 # GitHub Actions Workflow Settings
