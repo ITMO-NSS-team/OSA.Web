@@ -1,4 +1,5 @@
 import asyncio
+import pathlib
 import tempfile
 
 import streamlit as st
@@ -30,7 +31,9 @@ def add_attachment(type) -> None:
     ):
         if type == "File":
             tmpfilename = tempfile.NamedTemporaryFile(
-                delete=False, dir=st.session_state.tmpdirname, suffix=".pdf"
+                delete=False,
+                dir=st.session_state.tmpdirname,
+                suffix=pathlib.Path(attachment.name).suffix,
             )
             tmpfilename.write(attachment.getvalue())
             attachment = tmpfilename.name
