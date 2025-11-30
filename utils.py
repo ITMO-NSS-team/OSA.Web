@@ -79,8 +79,10 @@ async def run_osa_tool(output_container) -> None:
             env=env,
         )
 
-        logger.info(f"Running osa-tool with parameters: {cmd}")
-        st.session_state.output_logs = ""
+        cmd_log_msg = f"Running osa-tool with parameters: {cmd}"
+
+        logger.info(cmd_log_msg)
+        st.session_state.output_logs = cmd_log_msg + "\n"
         last_line = None
         pr_link = None
 

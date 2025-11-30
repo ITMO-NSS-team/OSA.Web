@@ -1,7 +1,7 @@
 [versions]
 
-osa_tool = "0.2.4"
-osa_web = "0.2.4"
+osa_tool = "0.2.5.1"
+osa_web = "0.2.5.1"
 
 [paths]
 

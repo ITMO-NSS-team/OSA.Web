@@ -518,6 +518,9 @@ def render_llm_settings_block() -> None:
             )
             st.text_input(
                 label="Model",
+                key="configuration-llm-model",
+                on_change=configuration_callback,
+                args=["llm", "model", "configuration-llm-model"],
                 value=st.session_state.configuration["llm"]["model"],
                 help="""
                     Specific LLM model to use  
