@@ -9,11 +9,11 @@ from logger_config import logger
 
 
 def _transform_configuration_to_cmd(cmd: list, configuration: dict):
-    """ """
     for k, v in configuration.items():
         if isinstance(v, bool) and v:
             cmd.extend((f"--{k}",))
         elif isinstance(v, str) and v != "":
+            v = "openai" if v == "itmo" else v
             cmd.extend((f"--{k}", v))
         elif isinstance(v, numbers.Number) and not isinstance(v, bool):
             cmd.extend((f"--{k}", str(v)))
@@ -50,27 +50,35 @@ async def run_osa_tool(output_container) -> None:
             "-r",
             st.session_state.repo_url,
             "-m",
-            st.session_state.mode_select,
+            "basic" if st.session_state.mode_select == "basic" else "advanced",
             "-o",
             st.session_state.tmpdirname,
             "--web-mode",
-            "--delete-dir",
+            # "--delete-dir",
         ]
 
         if "attachment" in st.session_state:
             cmd.extend(("--attachment", st.session_state.attachment.get("data")))
 
-        _transform_configuration_to_cmd(cmd, st.session_state.configuration["git"])
-
-        if st.session_state.mode_select == "advanced":
+        _transform_configuration_to_cmd(
+            cmd, st.session_state.configuration[st.session_state.mode_select]["git"]
+        )
+        _transform_configuration_to_cmd(
+            cmd,
+            st.session_state.configuration[st.session_state.mode_select]["general"],
+        )
+        _transform_configuration_to_cmd(
+            cmd, st.session_state.configuration[st.session_state.mode_select]["llm"]
+        )
+        if st.session_state.configuration[st.session_state.mode_select]["workflows"][
+            "generate-workflows"
+        ]:
             _transform_configuration_to_cmd(
-                cmd, st.session_state.configuration["general"]
+                cmd,
+                st.session_state.configuration[st.session_state.mode_select][
+                    "workflows"
+                ],
             )
-            _transform_configuration_to_cmd(cmd, st.session_state.configuration["llm"])
-            if st.session_state.configuration["workflows"]["generate-workflows"]:
-                _transform_configuration_to_cmd(
-                    cmd, st.session_state.configuration["workflows"]
-                )
 
         process = await asyncio.create_subprocess_exec(
             *cmd,
