@@ -1,3 +1,5 @@
+from importlib.metadata import version
+
 import streamlit as st
 
 
@@ -43,7 +45,7 @@ def render_sidebar_element() -> None:
             with st.container(border=True):
                 st.markdown(
                     f"""
-                    :grey[OSA Version: {st.session_state.configuration["versions"]["osa_tool"]}]  
+                    :grey[OSA Version: {version("osa_tool")}]  
                     :grey[Web Version: {st.session_state.configuration["versions"]["osa_web"]}]
                     """
                 )

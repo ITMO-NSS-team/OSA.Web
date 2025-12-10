@@ -95,21 +95,23 @@ def render_input_block() -> None:
             st.selectbox(
                 label="Mode",
                 key="mode_select",
-                options=("basic", "advanced"),  # "auto"
+                options=("fast", "quality"),
                 disabled=st.session_state.running,
                 help="""
                     Operation mode for repository processing  
-                    `Default: auto`
+                    `Default: basic`
                     """,
             )
-            multi = """Select the operation mode for repository processing:  
-                        - **Basic:** *run a minimal predefined set of tasks;*  
-                        - **Auto**: *automatically determine necessary actions based on repository analysis;*  
-                        - **Advanced**: *run all enabled features based on a provided configuration.*  
+            multi_left = """Select the operation mode for repository processing:  
+                    - **Fast:** Run a minimal set of essential tasks using efficient model settings.  
+                    - **Quality:** Run a comprehensive set of tasks with higher-quality LLM configurations for deeper improvements.
                     """
-            st.markdown(multi)
+            st.markdown(multi_left)
         with right:
             render_attachment_block()
+            st.markdown(
+                "**NOTE**: Recommendations for the Git `About` section will be included in the Pull Request description."
+            )
 
 
 def _set_osa_running():
