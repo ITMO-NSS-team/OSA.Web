@@ -95,7 +95,7 @@ def render_input_block() -> None:
             st.selectbox(
                 label="Mode",
                 key="mode_select",
-                options=("fast", "quality"),
+                options=("quality", "fast"),
                 disabled=st.session_state.running,
                 help="""
                     Operation mode for repository processing  
