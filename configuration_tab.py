@@ -89,6 +89,25 @@ def render_osa_settings_block() -> None:
         left, right = st.columns(2)
         with left:
             st.checkbox(
+                label="Validate Paper",
+                key="configuration-general-validate-paper",
+                on_change=configuration_callback,
+                args=[
+                    "general",
+                    "validate-paper",
+                    "configuration-general-validate-paper",
+                ],
+                disabled=st.session_state.configuration[st.session_state.mode_select][
+                    "general"
+                ]["validate-doc"],
+                value=st.session_state.configuration[st.session_state.mode_select][
+                    "general"
+                ]["validate-paper"],
+                help="""Check whether the experiments proposed in an attached  
+                    research paper can be reproduced using the selected repository  
+                    `Default: False`""",
+            )
+            st.checkbox(
                 label="Generate README",
                 key="configuration-general-readme",
                 on_change=configuration_callback,
@@ -111,25 +130,6 @@ def render_osa_settings_block() -> None:
                         `Default: False`""",
             )
             st.checkbox(
-                label="Validate Paper",
-                key="configuration-general-validate-paper",
-                on_change=configuration_callback,
-                args=[
-                    "general",
-                    "validate-paper",
-                    "configuration-general-validate-paper",
-                ],
-                disabled=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["validate-doc"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["validate-paper"],
-                help="""Check whether the experiments proposed in an attached  
-                    research paper can be reproduced using the selected repository  
-                    `Default: False`""",
-            )
-            st.checkbox(
                 label="Generate Docstrings",
                 key="configuration-general-docstring",
                 on_change=configuration_callback,
@@ -141,6 +141,25 @@ def render_osa_settings_block() -> None:
                     `Default: False`""",
             )
         with right:
+            st.checkbox(
+                label="Validate Document",
+                key="configuration-general-validate-doc",
+                on_change=configuration_callback,
+                args=[
+                    "general",
+                    "validate-doc",
+                    "configuration-general-validate-doc",
+                ],
+                disabled=st.session_state.configuration[st.session_state.mode_select][
+                    "general"
+                ]["validate-paper"],
+                value=st.session_state.configuration[st.session_state.mode_select][
+                    "general"
+                ]["validate-doc"],
+                help="""Check whether the experiments proposed in an attached   
+                    documentation file can be reproduced using the selected repository  
+                    `Default: False`""",
+            )
             st.checkbox(
                 label="Refine README",
                 key="configuration-general-refine-readme",
@@ -169,25 +188,6 @@ def render_osa_settings_block() -> None:
                     "general"
                 ]["translate-dirs"],
                 help="""Enable automatic translation of directory names into English  
-                    `Default: False`""",
-            )
-            st.checkbox(
-                label="Validate Document",
-                key="configuration-general-validate-doc",
-                on_change=configuration_callback,
-                args=[
-                    "general",
-                    "validate-doc",
-                    "configuration-general-validate-doc",
-                ],
-                disabled=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["validate-paper"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["validate-doc"],
-                help="""Check whether the experiments proposed in an attached   
-                    documentation file can be reproduced using the selected repository  
                     `Default: False`""",
             )
             st.checkbox(

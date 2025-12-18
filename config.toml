@@ -1,6 +1,6 @@
 [versions]
 
-osa_web = "0.2.6"
+osa_web = "0.2.6.1"
 
 [paths]
 
@@ -52,11 +52,11 @@ base-url = "https://openrouter.ai/api/v1"
 # encoder = "cl100k_base"
 # host_name = "https://api.openai.com/v1"
 # localhost = "http://localhost:11434/"
-model = "google/gemma-3-27b-it"
+model = "google/gemini-2.5-flash"
 # path = "generate"
 temperature = 0.05
 max-tokens = 4096
-context-window = 96000
+context-window = 200000
 top-p = 0.95
 
 # GitHub Actions Workflow Settings
@@ -117,7 +117,7 @@ base-url = "https://openrouter.ai/api/v1"
 # encoder = "cl100k_base"
 # host_name = "https://api.openai.com/v1"
 # localhost = "http://localhost:11434/"
-model = "openai/o3"
+model = "anthropic/claude-haiku-4.5"
 # path = "generate"
 temperature = 0.05
 max-tokens = 4096
