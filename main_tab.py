@@ -3,6 +3,7 @@ import pathlib
 import tempfile
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 from logger_config import logger
 from utils import run_osa_tool
@@ -40,6 +41,28 @@ def add_attachment(type) -> None:
         st.session_state.attachment = {"data": attachment, "type": type}
         logger.info(f"Added attachment: {attachment}")
         st.rerun()
+
+
+@st.dialog("Run OSA Tool")
+def confirm_public_run() -> None:
+    st.markdown(
+        "<h3>Are you sure, you want to create public Pull Request? </h3>",
+        unsafe_allow_html=True,
+    )
+    st.container(height=5, border=False)
+
+    st.markdown(
+        "***NOTE:** Select `No pull request` if you do not want to create one.*"
+    )
+
+    left, right = st.columns(2)
+    with left:
+        if st.button("Cancel", use_container_width=True):
+            st.rerun()
+    with right:
+        if st.button("Yes", use_container_width=True, type="primary"):
+            st.session_state.running = True
+            st.rerun()
 
 
 def render_attachment_block() -> None:
@@ -115,7 +138,12 @@ def render_input_block() -> None:
 
 
 def _set_osa_running():
-    st.session_state.running = True
+    if not st.session_state.configuration[st.session_state.mode_select]["git"][
+        "no-pull-request"
+    ]:
+        confirm_public_run()
+    else:
+        st.session_state.running = True
 
 
 def render_button_block() -> None:
@@ -202,6 +230,15 @@ def render_main_tab() -> None:
     output_container = st.empty()
 
     if st.session_state.running:
+        components.html(
+            """\
+        <script>
+        parent.document.querySelector('div[data-baseweb="modal"]').remove();
+        </script>
+        """,
+            height=0,
+            scrolling=False,
+        )
         with right:
             with st.spinner(text="In progress...", show_time=True, width="stretch"):
                 asyncio.run(run_osa_tool(output_container))
