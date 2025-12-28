@@ -53,6 +53,8 @@ async def run_osa_tool(output_container) -> None:
             "basic" if st.session_state.mode_select == "basic" else "advanced",
             "-o",
             st.session_state.tmpdirname,
+            "--author",
+            st.user.get("name", "Username"),
             "--web-mode",
             # "--delete-dir",
         ]
