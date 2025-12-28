@@ -1,6 +1,6 @@
 [versions]
 
-osa_web = "0.2.7"
+osa_web = "0.2.7.1"
 
 [paths]
 
