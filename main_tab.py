@@ -175,7 +175,7 @@ def render_output_block(output_container) -> None:
                         unsafe_allow_html=True,
                     )
                     return
-                left, right = st.columns([0.8, 0.2], vertical_alignment="center")
+                left, right = st.columns([0.6, 0.4], vertical_alignment="center")
                 with left:
                     if st.session_state.output_exit_code == 0:
                         st.success(
@@ -193,7 +193,9 @@ def render_output_block(output_container) -> None:
                                 st.session_state.output_report_paths[i], "rb"
                             ) as file:
                                 st.download_button(
-                                    label="Download Report",
+                                    label=f"Download *`{st.session_state.output_report_filenames[
+                                        i
+                                    ]}`*",
                                     data=file,
                                     file_name=st.session_state.output_report_filenames[
                                         i

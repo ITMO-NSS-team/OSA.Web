@@ -28,9 +28,7 @@ def render_login_screen() -> None:
                     type="primary",
                 ):
                     st.login("aimclub")
-                if st.button(
-                    "Log in with Google", use_container_width=True, disabled=True
-                ):
+                if st.button("Log in with Google", use_container_width=True):
                     st.login("google")
 
         st.markdown(
