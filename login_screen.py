@@ -1,5 +1,7 @@
 import streamlit as st
 
+from auth_state import set_guest_mode
+
 
 def render_login_screen() -> None:
     """Render application login screen."""
@@ -15,21 +17,37 @@ def render_login_screen() -> None:
             )
             st.container(height=20, border=False)
 
-        with st.container(border=True, height=250):
+        with st.container(border=True, horizontal_alignment="center"):
             st.markdown(
                 '<h2 style="text-align: center;">Sign in to OSA</h2>',
                 unsafe_allow_html=True,
             )
 
-            with st.container(border=True):
+            st.container(height=10, border=False)
+
+            with st.container(width=300):
                 if st.button(
                     "Log in with AimClub",
                     use_container_width=True,
                     type="primary",
                 ):
                     st.login("aimclub")
+                st.button(
+                    "Continue as guest",
+                    use_container_width=True,
+                    on_click=set_guest_mode,
+                )
                 # if st.button("Log in with Google", use_container_width=True):
                 #     st.login("google")
+
+            st.container(height=5, border=False)
+
+            st.markdown(
+                '<p style="text-align: center; color: grey;">Choose an account sign-in or continue as a guest.</p>',
+                unsafe_allow_html=True,
+            )
+
+        st.container(height=5, border=False)
 
         st.markdown(
             '<h6 style="text-align: center;">Created by ITMO with ❤️</h6>',

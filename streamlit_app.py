@@ -6,6 +6,7 @@ import streamlit as st
 import toml
 from dotenv import load_dotenv
 
+from auth_state import get_display_name, is_app_access_allowed, set_user_mode
 from configuration_tab import render_configuration_tab
 from logger_config import logger
 from login_screen import render_login_screen
@@ -39,11 +40,14 @@ def main() -> None:
 
     setup_page_config()
 
-    if not st.user.is_logged_in:
+    if getattr(st.user, "is_logged_in", False):
+        set_user_mode()
+
+    if not is_app_access_allowed():
         render_login_screen()
         st.stop()
 
-    logger.info(f"User {st.user.get("name", "Username")} logged in!")
+    logger.info(f"User {get_display_name()} logged in!")
 
     if "running" not in st.session_state:
         st.session_state.running = False

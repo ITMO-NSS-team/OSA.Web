@@ -5,6 +5,7 @@ import re
 
 import streamlit as st
 
+from auth_state import get_display_name
 from logger_config import logger
 
 
@@ -35,9 +36,7 @@ async def run_osa_tool(output_container) -> None:
         # Создаем копию текущих переменных окружения
         env = os.environ.copy()
         # NOTE: Force Unbuffered Output & Adjust Terminal Width
-        env.update(
-            {"COLUMNS": "200", "TERM": "xterm-256color", "PYTHONUNBUFFERED": "1"}
-        )
+        env.update({"COLUMNS": "200", "TERM": "xterm-256color", "PYTHONUNBUFFERED": "1"})
         if "configuration-api-key" in st.session_state:
             env.update({"OPENAI_API_KEY": st.session_state["configuration-api-key"]})
 
@@ -54,7 +53,7 @@ async def run_osa_tool(output_container) -> None:
             "-o",
             st.session_state.tmpdirname,
             "--author",
-            st.user.get("name", "Username"),
+            get_display_name(),
             "--web-mode",
             # "--delete-dir",
         ]
@@ -62,24 +61,16 @@ async def run_osa_tool(output_container) -> None:
         if "attachment" in st.session_state:
             cmd.extend(("--attachment", st.session_state.attachment.get("data")))
 
-        _transform_configuration_to_cmd(
-            cmd, st.session_state.configuration[st.session_state.mode_select]["git"]
-        )
+        _transform_configuration_to_cmd(cmd, st.session_state.configuration[st.session_state.mode_select]["git"])
         _transform_configuration_to_cmd(
             cmd,
             st.session_state.configuration[st.session_state.mode_select]["general"],
         )
-        _transform_configuration_to_cmd(
-            cmd, st.session_state.configuration[st.session_state.mode_select]["llm"]
-        )
-        if st.session_state.configuration[st.session_state.mode_select]["workflows"][
-            "generate-workflows"
-        ]:
+        _transform_configuration_to_cmd(cmd, st.session_state.configuration[st.session_state.mode_select]["llm"])
+        if st.session_state.configuration[st.session_state.mode_select]["workflows"]["generate-workflows"]:
             _transform_configuration_to_cmd(
                 cmd,
-                st.session_state.configuration[st.session_state.mode_select][
-                    "workflows"
-                ],
+                st.session_state.configuration[st.session_state.mode_select]["workflows"],
             )
 
         process = await asyncio.create_subprocess_exec(
@@ -103,14 +94,10 @@ async def run_osa_tool(output_container) -> None:
 
             if line := stdout_line.decode().strip():
                 last_line = line
-                if match := re.search(
-                    r"PDF report successfully created in (\/.*.pdf)", line
-                ):
+                if match := re.search(r"PDF report successfully created in (\/.*.pdf)", line):
                     logger.info(f"Created PDF report: {match.group(1)} ")
                     st.session_state.output_report_paths.append(match.group(1))
-                    st.session_state.output_report_filenames.append(
-                        match.group(1).split("/")[-1]
-                    )
+                    st.session_state.output_report_filenames.append(match.group(1).split("/")[-1])
                 if match := re.search(
                     r"(.*You can add the following.*|.*- Description:.*|.*- Homepage:.*|.*- Topics:.*|.*Please review and add them to your repository.*)",
                     line,
@@ -118,9 +105,7 @@ async def run_osa_tool(output_container) -> None:
                     if "output_about_section" not in st.session_state:
                         st.session_state.output_about_section = ""
                     st.session_state.output_about_section += line + "\n\n"
-                if match := re.search(
-                    r".*pull request created successfully: (\S*)", line
-                ):
+                if match := re.search(r".*pull request created successfully: (\S*)", line):
                     logger.info(f"Created Pull Request: {match.group(1)}")
                     pr_link = match.group(1)
 
@@ -128,25 +113,21 @@ async def run_osa_tool(output_container) -> None:
 
                 st.session_state.output_logs += line + "\n"
                 # TODO: developer only
-                output_container.expander(
-                    "See Console Output", icon=":material/terminal:"
-                ).code(
+                output_container.expander("See Console Output", icon=":material/terminal:").code(
                     st.session_state.output_logs,
                     height=350,
                 )
 
         st.session_state.output_exit_code = await process.wait()
         if st.session_state.output_exit_code == 0:
-            st.session_state.output_message = f'Everything is alright! {f"**Pull Request created**: {pr_link}" if pr_link else ""}'
+            st.session_state.output_message = (
+                f'Everything is alright! {f"**Pull Request created**: {pr_link}" if pr_link else ""}'
+            )
         else:
             stderr_output = await process.stderr.read()
             error_message = stderr_output.decode().strip()
-            st.session_state.output_message = (
-                f"**Error running OSA tool**: `{last_line}`"
-            )
-            logger.error(
-                f"OSA tool execution failed with code {st.session_state.output_exit_code}: {last_line}"
-            )
+            st.session_state.output_message = f"**Error running OSA tool**: `{last_line}`"
+            logger.error(f"OSA tool execution failed with code {st.session_state.output_exit_code}: {last_line}")
     except Exception as e:
         st.error(f"Error executing OSA tool: {e!s}")
         logger.error(f"OSA tool execution failed: {e!s}", exc_info=True)

@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import streamlit as st
+
+from auth_state import is_guest_mode
 
 
 def configuration_callback(table: str, key: str, value: str):
-    st.session_state.configuration[st.session_state.mode_select][table][key] = (
-        st.session_state[value]
-    )
+    st.session_state.configuration[st.session_state.mode_select][table][key] = st.session_state[value]
 
 
 @st.fragment
@@ -22,14 +24,14 @@ def render_git_settings_block() -> None:
         #         icon=":material/warning:",
         #     )
 
+        current_git = st.session_state.configuration[st.session_state.mode_select]["git"]
+
         st.text_input(
             label="Branch",
             key="configuration-git-branch",
             on_change=configuration_callback,
             args=["git", "branch", "configuration-git-branch"],
-            value=st.session_state.configuration[st.session_state.mode_select]["git"][
-                "branch"
-            ],
+            value=current_git["branch"],
             help="""Branch name of the GitHub repository  
                 `Default: Default repository branch`""",
         )
@@ -40,9 +42,7 @@ def render_git_settings_block() -> None:
                 key="configuration-git-no-pull-request",
                 on_change=configuration_callback,
                 args=["git", "no-pull-request", "configuration-git-no-pull-request"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "git"
-                ]["no-pull-request"],
+                value=current_git["no-pull-request"],
                 help="""Avoid create pull request for target repository  
                 `Default: False`""",
             )
@@ -52,9 +52,7 @@ def render_git_settings_block() -> None:
                 key="configuration-git-no-fork",
                 on_change=configuration_callback,
                 args=["git", "no-fork", "configuration-git-no-fork"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "git"
-                ]["no-fork"],
+                value=current_git["no-fork"],
                 help="""Avoid create fork for target repository  
                         `Default: False`""",
             )
@@ -87,6 +85,7 @@ def render_osa_settings_block() -> None:
         #         disabled=True,
         #     )
         left, right = st.columns(2)
+        current_general = st.session_state.configuration[st.session_state.mode_select]["general"]
         with left:
             st.checkbox(
                 label="Validate Paper",
@@ -97,12 +96,8 @@ def render_osa_settings_block() -> None:
                     "validate-paper",
                     "configuration-general-validate-paper",
                 ],
-                disabled=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["validate-doc"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["validate-paper"],
+                disabled=current_general["validate-doc"],
+                value=current_general["validate-paper"],
                 help="""Check whether the experiments proposed in an attached  
                     research paper can be reproduced using the selected repository  
                     `Default: False`""",
@@ -112,9 +107,7 @@ def render_osa_settings_block() -> None:
                 key="configuration-general-readme",
                 on_change=configuration_callback,
                 args=["general", "readme", "configuration-general-readme"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["readme"],
+                value=current_general["readme"],
                 help="""Generate a `README.md` file based on repository content and metadata  
                         `Default: False`""",
             )
@@ -123,9 +116,7 @@ def render_osa_settings_block() -> None:
                 key="configuration-general-organize",
                 on_change=configuration_callback,
                 args=["general", "organize", "configuration-general-organize"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["organize"],
+                value=current_general["organize"],
                 help="""Organize the repository by adding standard `tests` and `examples` directories if missing  
                         `Default: False`""",
             )
@@ -134,9 +125,7 @@ def render_osa_settings_block() -> None:
                 key="configuration-general-docstring",
                 on_change=configuration_callback,
                 args=["general", "docstring", "configuration-general-docstring"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["docstring"],
+                value=current_general["docstring"],
                 help="""Automatically generate docstrings for all Python files in the repository  
                     `Default: False`""",
             )
@@ -150,12 +139,8 @@ def render_osa_settings_block() -> None:
                     "validate-doc",
                     "configuration-general-validate-doc",
                 ],
-                disabled=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["validate-paper"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["validate-doc"],
+                disabled=current_general["validate-paper"],
+                value=current_general["validate-doc"],
                 help="""Check whether the experiments proposed in an attached   
                     documentation file can be reproduced using the selected repository  
                     `Default: False`""",
@@ -169,9 +154,7 @@ def render_osa_settings_block() -> None:
                     "refine-readme",
                     "configuration-general-refine-readme",
                 ],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["refine-readme"],
+                value=current_general["refine-readme"],
                 help="""Enable advanced README refinement. This process requires a powerful LLM model (such as GPT-4 or equivalent) for optimal results  
                         `Default: False`""",
             )
@@ -184,9 +167,7 @@ def render_osa_settings_block() -> None:
                     "translate-dirs",
                     "configuration-general-translate-dirs",
                 ],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["translate-dirs"],
+                value=current_general["translate-dirs"],
                 help="""Enable automatic translation of directory names into English  
                     `Default: False`""",
             )
@@ -195,9 +176,7 @@ def render_osa_settings_block() -> None:
                 key="configuration-general-requirements",
                 on_change=configuration_callback,
                 args=["general", "requirements", "configuration-general-requirements"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "general"
-                ]["requirements"],
+                value=current_general["requirements"],
                 help="""Generate a `requirements.txt` file based on repository content  
                     `Default: True`""",
             )
@@ -206,9 +185,7 @@ def render_osa_settings_block() -> None:
             key="configuration-general-report",
             on_change=configuration_callback,
             args=["general", "report", "configuration-general-report"],
-            value=st.session_state.configuration[st.session_state.mode_select][
-                "general"
-            ]["report"],
+            value=current_general["report"],
             help="""Analyze the repository and generate a PDF report with project insights  
                     `Default: True`""",
         )
@@ -217,9 +194,7 @@ def render_osa_settings_block() -> None:
             key="configuration-general-about",
             on_change=configuration_callback,
             args=["general", "about", "configuration-general-about"],
-            value=st.session_state.configuration[st.session_state.mode_select][
-                "general"
-            ]["about"],
+            value=current_general["about"],
             help="""Generate GitHub `About` section with tags  
                     `Default: True`""",
         )
@@ -228,9 +203,7 @@ def render_osa_settings_block() -> None:
             key="configuration-general-community-docs",
             on_change=configuration_callback,
             args=["general", "community-docs", "configuration-general-community-docs"],
-            value=st.session_state.configuration[st.session_state.mode_select][
-                "general"
-            ]["community-docs"],
+            value=current_general["community-docs"],
             help="""Generate community-related documentation files,  
                     such as `Code of Conduct` and `Contributing guidelines`  
                     `Default: False`""",
@@ -261,9 +234,7 @@ def render_osa_settings_block() -> None:
                 "translate-readme",
                 "configuration-general-translate-readme",
             ],
-            value=st.session_state.configuration[st.session_state.mode_select][
-                "general"
-            ]["translate-readme"],
+            value=current_general["translate-readme"],
             help="""List of target languages to translate the project's main README into.  
                     Each language should be specified by its name (e.g., "Russian", "Chinese").  
                     The translated README files will be saved separately in the repository folder  
@@ -280,9 +251,7 @@ def render_osa_settings_block() -> None:
                 "convert-notebooks",
                 "configuration-general-convert-notebooks",
             ],
-            value=st.session_state.configuration[st.session_state.mode_select][
-                "general"
-            ]["convert-notebooks"],
+            value=current_general["convert-notebooks"],
             help="""Convert Jupyter notebooks to `.py` format  
                     Provide paths, or leave empty for repo directory  
                     **Example: path/to/file1 path/to/file2**  
@@ -304,6 +273,7 @@ def render_workflows_settings_block() -> None:
             '<h5 style="text-align: center;">Workflow Settings</h5>',
             unsafe_allow_html=True,
         )
+        current_workflows = st.session_state.configuration[st.session_state.mode_select]["workflows"]
         workflows = st.checkbox(
             label="Generate Workflows",
             key="configuration-workflows-generate-workflows",
@@ -313,9 +283,7 @@ def render_workflows_settings_block() -> None:
                 "generate-workflows",
                 "configuration-workflows-generate-workflows",
             ],
-            value=st.session_state.configuration[st.session_state.mode_select][
-                "workflows"
-            ]["generate-workflows"],
+            value=current_workflows["generate-workflows"],
             help="""
                 Generate GitHub Action workflows for the repository  
                 `Default: True`""",
@@ -330,9 +298,7 @@ def render_workflows_settings_block() -> None:
                     "python-versions",
                     "configuration-workflows-python-versions",
                 ],
-                default=st.session_state.configuration[st.session_state.mode_select][
-                    "workflows"
-                ]["python-versions"],
+                default=current_workflows["python-versions"],
                 options=["3.8", "3.9", "3.10", "3.11", "3.12"],
                 help="""Python versions to test against
                         `Default: [3.8, 3.9, 3.10]`""",
@@ -346,9 +312,7 @@ def render_workflows_settings_block() -> None:
                     "branches",
                     "configuration-workflows-branches",
                 ],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "workflows"
-                ]["branches"],
+                value=current_workflows["branches"],
                 help="""Branches to trigger workflows on  
                         **Example: main develop**  
                         `Default: —`""",
@@ -363,7 +327,7 @@ def render_workflows_settings_block() -> None:
                 #     "workflows-output-dir",
                 #     "configuration-workflows-workflows-output-dir",
                 # ],
-                # value=st.session_state.configuration[st.session_state.mode_select]["workflows"][
+                # value=current_workflows[
                 #     "workflows-output-dir"
                 # ],
                 help="""Directory where workflow files will be saved  
@@ -380,9 +344,7 @@ def render_workflows_settings_block() -> None:
                     "include-tests",
                     "configuration-workflows-include-tests",
                 ],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "workflows"
-                ]["include-tests"],
+                value=current_workflows["include-tests"],
                 help="""
                 Include unit tests workflow  
                 `Default: True`""",
@@ -396,9 +358,7 @@ def render_workflows_settings_block() -> None:
                     "include-pypi",
                     "configuration-workflows-include-pypi",
                 ],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "workflows"
-                ]["include-pypi"],
+                value=current_workflows["include-pypi"],
                 help="""Include PyPI publish workflow  
                 `Default: False`""",
             )
@@ -412,9 +372,7 @@ def render_workflows_settings_block() -> None:
                         "include-codecov",
                         "configuration-workflows-include-codecov",
                     ],
-                    value=st.session_state.configuration[st.session_state.mode_select][
-                        "workflows"
-                    ]["include-codecov"],
+                    value=current_workflows["include-codecov"],
                     help="""
                     Include Codecov coverage step in unit tests workflow  
                     `Default: True`""",
@@ -428,9 +386,7 @@ def render_workflows_settings_block() -> None:
                         "include-black",
                         "configuration-workflows-include-black",
                     ],
-                    value=st.session_state.configuration[st.session_state.mode_select][
-                        "workflows"
-                    ]["include-black"],
+                    value=current_workflows["include-black"],
                     help="""
                 Include Black formatter workflow  
                 `Default: True`""",
@@ -444,9 +400,7 @@ def render_workflows_settings_block() -> None:
                         "include-pep8",
                         "configuration-workflows-include-pep8",
                     ],
-                    value=st.session_state.configuration[st.session_state.mode_select][
-                        "workflows"
-                    ]["include-pep8"],
+                    value=current_workflows["include-pep8"],
                     help="""Include PEP 8 compliance workflow  
                 `Default: True`""",
                 )
@@ -460,9 +414,7 @@ def render_workflows_settings_block() -> None:
                         "codecov-token",
                         "configuration-workflows-codecov-token",
                     ],
-                    value=st.session_state.configuration[st.session_state.mode_select][
-                        "workflows"
-                    ]["codecov-token"],
+                    value=current_workflows["codecov-token"],
                     help="""
                     Include Use Codecov token for coverage upload  
                     `Default: False`""",
@@ -476,9 +428,7 @@ def render_workflows_settings_block() -> None:
                         "include-autopep8",
                         "configuration-workflows-include-autopep8",
                     ],
-                    value=st.session_state.configuration[st.session_state.mode_select][
-                        "workflows"
-                    ]["include-autopep8"],
+                    value=current_workflows["include-autopep8"],
                     help="""Include autopep8 formatter workflow  
                 `Default: False`""",
                 )
@@ -491,9 +441,7 @@ def render_workflows_settings_block() -> None:
                         "include-fix-pep8",
                         "configuration-workflows-include-fix-pep8",
                     ],
-                    value=st.session_state.configuration[st.session_state.mode_select][
-                        "workflows"
-                    ]["include-fix-pep8"],
+                    value=current_workflows["include-fix-pep8"],
                     help="""Include fix-pep8 command workflow  
                 `Default: False`""",
                 )
@@ -521,9 +469,7 @@ def render_workflows_settings_block() -> None:
                     "use-poetry",
                     "configuration-workflows-use-poetry",
                 ],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "workflows"
-                ]["use-poetry"],
+                value=current_workflows["use-poetry"],
                 help="""Use Poetry for packaging 
                 `Default: False`""",
             )
@@ -536,34 +482,22 @@ def render_llm_settings_block() -> None:
             '<h5 style="text-align: center;">LLM Settings</h5>',
             unsafe_allow_html=True,
         )
-        llm_api_options = ("itmo", "llama", "openai", "ollama")
-        st.selectbox(
-            label="API",
-            key="configuration-llm-api",
-            on_change=configuration_callback,
-            args=["llm", "api", "configuration-llm-api"],
-            index=(
-                llm_api_options.index(
-                    st.session_state.configuration[st.session_state.mode_select]["llm"][
-                        "api"
-                    ]
-                )
-                if "api"
-                in st.session_state.configuration[st.session_state.mode_select]["llm"]
-                else 0
-            ),
-            options=llm_api_options,
-            help="""
-                LLM API service provider  
-                `Default: itmo`
-                """,
-        )
-        if (
-            st.session_state.configuration[st.session_state.mode_select]["llm"]["api"]
-            != "itmo"
-        ):
+        current_llm = st.session_state.configuration[st.session_state.mode_select]["llm"]
+        if is_guest_mode():
+            llm_api_options = ("openai", "llama", "ollama")
+            st.selectbox(
+                label="API",
+                key="configuration-llm-api",
+                on_change=configuration_callback,
+                args=["llm", "api", "configuration-llm-api"],
+                options=llm_api_options,
+                help="""
+                    LLM API service provider  
+                    `Default: openai`
+                    """,
+            )
             st.text_input(
-                label="API Key :red-background[**WARNING**: PLEASE USE THROWAWAY KEYS]",
+                label="API Key :red[*] :red-background[**WARNING**: PLEASE USE THROWAWAY KEYS]",
                 key="configuration-api-key",
                 type="password",
                 help="""
@@ -576,24 +510,58 @@ def render_llm_settings_block() -> None:
                 key="configuration-base-url",
                 on_change=configuration_callback,
                 args=["llm", "base-url", "configuration-base-url"],
-                value=st.session_state.configuration[st.session_state.mode_select][
-                    "llm"
-                ]["base-url"],
+                value=current_llm["base-url"],
                 help="""
                     URL of the provider compatible with OpenAI API  
                     `Default: https://api.openai.com/v1`""",
             )
+        else:
+            llm_api_options = ("itmo", "openai", "llama", "ollama")
+            st.selectbox(
+                label="API",
+                key="configuration-llm-api",
+                on_change=configuration_callback,
+                args=["llm", "api", "configuration-llm-api"],
+                index=(
+                    llm_api_options.index(current_llm["api"])
+                    if "api" in current_llm and current_llm["api"] in llm_api_options
+                    else 0
+                ),
+                options=llm_api_options,
+                help="""
+                    LLM API service provider  
+                    `Default: itmo`
+                    """,
+            )
+            if current_llm["api"] != "itmo":
+                st.text_input(
+                    label="API Key :red-background[**WARNING**: PLEASE USE THROWAWAY KEYS]",
+                    key="configuration-api-key",
+                    type="password",
+                    help="""
+                        Your OpenAI API Key  
+                        **Please, refer to [Security Tips.](https://blog.streamlit.io/8-tips-for-securely-using-api-keys/)**
+                        """,
+                )
+                st.text_input(
+                    label="Base URL",
+                    key="configuration-base-url",
+                    on_change=configuration_callback,
+                    args=["llm", "base-url", "configuration-base-url"],
+                    value=current_llm["base-url"],
+                    help="""
+                        URL of the provider compatible with OpenAI API  
+                        `Default: https://api.openai.com/v1`""",
+                )
         st.text_input(
             label="Model",
             key="configuration-llm-model",
             on_change=configuration_callback,
             args=["llm", "model", "configuration-llm-model"],
-            value=st.session_state.configuration[st.session_state.mode_select]["llm"][
-                "model"
-            ],
+            value=current_llm["model"],
             help="""
                 Specific LLM model to use  
-                `Default: gpt-3.5-turbo`  
+                `Default: gpt-4o-mini`  
                 See:
                 1. https://vsegpt.ru/Docs/Models  
                 2. https://platform.openai.com/docs/models  
@@ -604,9 +572,7 @@ def render_llm_settings_block() -> None:
             key="configuration-llm-max-tokens",
             on_change=configuration_callback,
             args=["llm", "max-tokens", "configuration-llm-max-tokens"],
-            value=st.session_state.configuration[st.session_state.mode_select]["llm"][
-                "max-tokens"
-            ],
+            value=current_llm["max-tokens"],
             help="""
                 Maximum number of tokens the model can generate in a single response  
                 **Example: 1024**  
@@ -617,9 +583,7 @@ def render_llm_settings_block() -> None:
             key="configuration-llm-context-window",
             on_change=configuration_callback,
             args=["llm", "context-window", "configuration-llm-context-window"],
-            value=st.session_state.configuration[st.session_state.mode_select]["llm"][
-                "context-window"
-            ],
+            value=current_llm["context-window"],
             help="""
                 Total number of model context in a single response (Input + Output)  
                 **Example: 200000**  
@@ -630,13 +594,7 @@ def render_llm_settings_block() -> None:
             key="configuration-llm-temperature",
             on_change=configuration_callback,
             args=["llm", "temperature", "configuration-llm-temperature"],
-            options=(
-                st.session_state.configuration[st.session_state.mode_select]["llm"][
-                    "temperature"
-                ],
-                0,
-                1,
-            ),
+            options=(current_llm["temperature"], 0, 1),
             help="""
                 Sampling temperature to use for the LLM output (0 = deterministic, 1 = creative)  
                 `Default: None`""",
@@ -646,9 +604,7 @@ def render_llm_settings_block() -> None:
             key="configuration-llm-top-p",
             on_change=configuration_callback,
             args=["llm", "top-p", "configuration-llm-top-p"],
-            value=st.session_state.configuration[st.session_state.mode_select]["llm"][
-                "top-p"
-            ],
+            value=current_llm["top-p"],
             help="""
                 Nucleus sampling probability (1.0 = all tokens considered)  
                 *Example: 0.8**  
