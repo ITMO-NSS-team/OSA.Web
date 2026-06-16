@@ -46,12 +46,14 @@ def add_attachment(type) -> None:
 @st.dialog("Run OSA Tool")
 def confirm_public_run() -> None:
     st.markdown(
-        "<h3>Are you sure, you want to create public Pull Request? </h3>",
+        "<h2>Are you sure, you want to create public Pull Request? </h2>",
         unsafe_allow_html=True,
     )
     st.container(height=5, border=False)
 
-    st.markdown("***NOTE:** Select `No pull request` if you do not want to create one.*")
+    st.markdown(
+        "**NOTE:** :grey[*Select :green-background[No pull request] option in :blue[:material/settings: Configuration] tab if you **do not want** to create one.*]"
+    )
 
     left, right = st.columns(2)
     with left:
