@@ -46,13 +46,13 @@ def add_attachment(type) -> None:
 @st.dialog("Run OSA Tool")
 def confirm_public_run() -> None:
     st.markdown(
-        "<h3>Are you sure, you want to create public Pull Request? </h3>",
+        "<h2>Are you sure, you want to create public Pull Request? </h2>",
         unsafe_allow_html=True,
     )
     st.container(height=5, border=False)
 
     st.markdown(
-        "***NOTE:** Select `No pull request` if you do not want to create one.*"
+        "**NOTE:** :grey[*Select :green-background[No pull request] option in :blue[:material/settings: Configuration] tab if you **do not want** to create one.*]"
     )
 
     left, right = st.columns(2)
@@ -104,7 +104,7 @@ def render_input_block() -> None:
     st.container(height=5, border=False)
     with st.container(border=True):
         st.text_input(
-            label="Repository URL",
+            label="Repository URL :red[*]",
             key="repo_url",
             disabled=st.session_state.running,
             help="""Enter a GitHub repository URL  
@@ -138,9 +138,7 @@ def render_input_block() -> None:
 
 
 def _set_osa_running():
-    if not st.session_state.configuration[st.session_state.mode_select]["git"][
-        "no-pull-request"
-    ]:
+    if not st.session_state.configuration[st.session_state.mode_select]["git"]["no-pull-request"]:
         confirm_public_run()
     else:
         st.session_state.running = True
@@ -183,23 +181,17 @@ def render_output_block(output_container) -> None:
                             icon=":material/check_circle:",
                         )
                     else:
-                        st.error(
-                            st.session_state.output_message, icon=":material/error:"
-                        )
+                        st.error(st.session_state.output_message, icon=":material/error:")
                 with right:
                     if len(st.session_state.output_report_paths) > 0:
                         for i in range(len(st.session_state.output_report_paths)):
-                            with open(
-                                st.session_state.output_report_paths[i], "rb"
-                            ) as file:
+                            with open(st.session_state.output_report_paths[i], "rb") as file:
                                 st.download_button(
                                     label=f"Download *`{st.session_state.output_report_filenames[
                                         i
                                     ]}`*",
                                     data=file,
-                                    file_name=st.session_state.output_report_filenames[
-                                        i
-                                    ],
+                                    file_name=st.session_state.output_report_filenames[i],
                                     mime="application/pdf",
                                     icon=":material/download:",
                                     use_container_width=True,
@@ -211,9 +203,7 @@ def render_output_block(output_container) -> None:
                                 unsafe_allow_html=True,
                             )
                 if "output_about_section" in st.session_state:
-                    with st.expander(
-                        "About section", expanded=True, icon=":material/article:"
-                    ):
+                    with st.expander("About section", expanded=True, icon=":material/article:"):
                         st.write(st.session_state.output_about_section)
                 # TODO: developer only
                 with st.expander("See Console Output", icon=":material/terminal:"):
