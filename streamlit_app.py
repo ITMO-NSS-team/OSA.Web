@@ -24,8 +24,10 @@ def setup_page_config() -> None:
         layout="wide",
         initial_sidebar_state="expanded",
         menu_items={
-            "About": "https://github.com/ITMO-NSS-team/Open-Source-Advisor",
-            "Get Help": "https://t.me/osa_helpdesk",
+            "About": """OSA Main Repository: https://github.com/aimclub/OSA  
+            OSA Web Repository: https://github.com/ITMO-NSS-team/OSA.Web  
+            ---  
+            Get Help: https://t.me/osa_helpdesk""",
         },
     )
 
