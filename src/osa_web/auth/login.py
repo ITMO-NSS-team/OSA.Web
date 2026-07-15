@@ -1,6 +1,7 @@
 import streamlit as st
 
-from auth_state import set_guest_mode
+from osa_web.auth.state import set_guest_mode
+from osa_web.settings import asset_path
 
 
 def render_login_screen() -> None:
@@ -12,14 +13,14 @@ def render_login_screen() -> None:
 
         with center:
             st.image(
-                "assets/osa_logo.png",
+                str(asset_path("osa_web_logo.png")),
                 use_container_width=True,
             )
             st.container(height=20, border=False)
 
         with st.container(border=True, horizontal_alignment="center"):
             st.markdown(
-                '<h2 style="text-align: center;">Sign in to OSA</h2>',
+                '<h2 style="text-align: center;">Sign in to OSA.Web</h2>',
                 unsafe_allow_html=True,
             )
 

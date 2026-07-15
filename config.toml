@@ -1,14 +1,14 @@
 [versions]
 
-osa_web = "0.2.8"
+osa_web = "0.3.0"
 
 [paths]
 
-log = "/var/essdata/logs/osa_web.logs"
-tmp = "/var/essdata/tmp"
+# log = "/var/essdata/logs/osa_web.logs"
+# tmp = "/var/essdata/tmp"
 
-# log = "/home/ilya/OSA.Web/logs/osa_web.logs"
-# tmp = "/home/ilya/OSA.Web/tmp"
+log = "/home/ilya/OSA.Web/logs/osa_web.logs"
+tmp = "/home/ilya/OSA.Web/tmp"
 
 ################################################################
 ############################# FAST #############################

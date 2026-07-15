@@ -5,8 +5,8 @@ import tempfile
 import streamlit as st
 import streamlit.components.v1 as components
 
-from logger_config import logger
-from utils import run_osa_tool
+from osa_web.logging_config import logger
+from osa_web.osa_tool.runner import run_osa_tool
 
 
 def reset_attachment_selection() -> None:
@@ -57,10 +57,10 @@ def confirm_public_run() -> None:
 
     left, right = st.columns(2)
     with left:
-        if st.button("Cancel", use_container_width=True):
+        if st.button("Cancel", use_container_width=True, type="primary"):
             st.rerun()
     with right:
-        if st.button("Yes", use_container_width=True, type="primary"):
+        if st.button("Yes", use_container_width=True):
             st.session_state.running = True
             st.rerun()
 
