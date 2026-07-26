@@ -25,6 +25,7 @@ runtime/
 *_report.pdf
 *_what_has_been_done_report.pdf
 
+# Exclude machine-specific overrides; keep config/default.toml in the image.
 config.toml
 config/local.toml
 

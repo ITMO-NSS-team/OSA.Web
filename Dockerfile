@@ -17,7 +17,8 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 COPY . .
 
-RUN adduser --disabled-password --gecos "" appuser \
+RUN test -f config/default.toml \
+    && adduser --disabled-password --gecos "" appuser \
     && mkdir -p runtime/logs runtime/tmp \
     && chown -R appuser:appuser /app
 

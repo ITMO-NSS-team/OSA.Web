@@ -13,6 +13,8 @@ DEFAULT_CONFIG_PATH = CONFIG_DIR / "default.toml"
 LOCAL_CONFIG_PATH = CONFIG_DIR / "local.toml"
 LEGACY_CONFIG_PATH = PROJECT_ROOT / "config.toml"
 ASSETS_DIR = Path(__file__).resolve().parent / "assets"
+REQUIRED_CONFIG_SECTIONS = ("versions", "paths", "fast", "quality")
+REQUIRED_PATH_KEYS = ("log", "tmp")
 
 
 def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
@@ -31,6 +33,27 @@ def _load_toml(path: Path) -> dict[str, Any]:
     return toml.load(path)
 
 
+def validate_config(config: dict[str, Any]) -> None:
+    missing_sections = [
+        section for section in REQUIRED_CONFIG_SECTIONS if section not in config
+    ]
+    if missing_sections:
+        raise RuntimeError(
+            "OSA.Web configuration is missing required sections: "
+            f"{', '.join(missing_sections)}. Ensure config/default.toml is present "
+            "or provide OSA_WEB_CONFIG."
+        )
+
+    missing_paths = [
+        path_key for path_key in REQUIRED_PATH_KEYS if path_key not in config["paths"]
+    ]
+    if missing_paths:
+        raise RuntimeError(
+            "OSA.Web configuration is missing required path keys: "
+            f"{', '.join(missing_paths)}."
+        )
+
+
 def load_config(config_path: str | Path | None = None) -> dict[str, Any]:
     """Load default settings plus optional local overrides.
 
@@ -45,6 +68,8 @@ def load_config(config_path: str | Path | None = None) -> dict[str, Any]:
     explicit_path = config_path or os.getenv("OSA_WEB_CONFIG")
     if explicit_path:
         config = _deep_merge(config, _load_toml(resolve_project_path(explicit_path)))
+
+    validate_config(config)
 
     return config
 

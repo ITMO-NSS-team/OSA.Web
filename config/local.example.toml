@@ -1,0 +1,16 @@
+# Copy this file to config/local.toml for machine-specific overrides.
+# config/local.toml is ignored by git.
+
+[paths]
+log = "runtime/logs/osa_web.logs"
+tmp = "runtime/tmp"
+
+[fast.llm]
+api = "openai"
+base-url = "https://api.openai.com/v1"
+model = "gpt-4o-mini"
+
+[quality.llm]
+api = "openai"
+base-url = "https://api.openai.com/v1"
+model = "gpt-4o"

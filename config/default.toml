@@ -4,27 +4,17 @@ osa_web = "0.3.0"
 
 [paths]
 
-log = "/var/essdata/logs/osa_web.logs"
-tmp = "/var/essdata/tmp"
-
-# log = "/home/ilya/OSA.Web/logs/osa_web.logs"
-# tmp = "/home/ilya/OSA.Web/tmp"
+log = "runtime/logs/osa_web.logs"
+tmp = "runtime/tmp"
 
 ################################################################
 ############################# FAST #############################
 ################################################################
 
-
-# General CLI-related defaults
 [fast.general]
-# mode = "basic"
-# web_mode = true
-# output = ""
-# attachment = ""
 translate-dirs = false
 translate-readme = ""
 convert-notebooks = ""
-# delete_dir = true
 ensure-license = ""
 community-docs = false
 docstring = false
@@ -37,32 +27,22 @@ about = true
 validate-paper = false
 validate-doc = false
 
-# Git Repository Settings
 [fast.git]
-# repository = "https://github.com/aimclub/OSA"
 branch = ""
 no-fork = false
 no-pull-request = false
 
-# Language Model API Settings
 [fast.llm]
 api = "itmo"
-#rate_limit = 10
 base-url = "https://openrouter.ai/api/v1"
-# encoder = "cl100k_base"
-# host_name = "https://api.openai.com/v1"
-# localhost = "http://localhost:11434/"
 model = "google/gemini-2.5-flash"
-# path = "generate"
 temperature = 0.05
 max-tokens = 4096
 context-window = 200000
 top-p = 0.95
 
-# GitHub Actions Workflow Settings
 [fast.workflows]
 generate-workflows = false
-# workflows-output-dir = ".github/workflows"
 include-tests = true
 include-black = true
 include-pep8 = true
@@ -70,7 +50,7 @@ include-autopep8 = false
 include-fix-pep8 = false
 include-pypi = false
 python-versions = ["3.8", "3.9", "3.10"]
-pep8-tool = "flake8"                     # "flake8" or "pylint"
+pep8-tool = "flake8"
 use-poetry = false
 branches = ""
 codecov-token = false
@@ -80,16 +60,10 @@ include-codecov = false
 ########################### QUALITY ############################
 ################################################################
 
-# General CLI-related defaults
 [quality.general]
-# mode = "basic"
-# web_mode = true
-# output = ""
-# attachment = ""
 translate-dirs = false
 translate-readme = "Russian"
 convert-notebooks = ""
-# delete_dir = true
 ensure-license = ""
 community-docs = true
 docstring = true
@@ -102,32 +76,22 @@ about = true
 validate-paper = false
 validate-doc = false
 
-# Git Repository Settings
 [quality.git]
-# repository = "https://github.com/aimclub/OSA"
 branch = ""
 no-fork = false
 no-pull-request = false
 
-# Language Model API Settings
 [quality.llm]
 api = "itmo"
-#rate_limit = 10
 base-url = "https://openrouter.ai/api/v1"
-# encoder = "cl100k_base"
-# host_name = "https://api.openai.com/v1"
-# localhost = "http://localhost:11434/"
 model = "anthropic/claude-haiku-4.5"
-# path = "generate"
 temperature = 0.05
 max-tokens = 4096
 context-window = 200000
 top-p = 0.95
 
-# GitHub Actions Workflow Settings
 [quality.workflows]
 generate-workflows = true
-# workflows-output-dir = ".github/workflows"
 include-tests = true
 include-black = true
 include-pep8 = true
@@ -135,7 +99,7 @@ include-autopep8 = false
 include-fix-pep8 = false
 include-pypi = false
 python-versions = ["3.8", "3.9", "3.10"]
-pep8-tool = "flake8"                     # "flake8" or "pylint"
+pep8-tool = "flake8"
 use-poetry = false
 branches = ""
 codecov-token = false
