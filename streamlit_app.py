@@ -1,83 +1,13 @@
-import os
-import tempfile
-from typing import Any
+from pathlib import Path
+import sys
 
-import streamlit as st
-import toml
-from dotenv import load_dotenv
+PROJECT_ROOT = Path(__file__).resolve().parent
+SRC_DIR = PROJECT_ROOT / "src"
 
-from auth_state import get_display_name, is_app_access_allowed, set_user_mode
-from configuration_tab import render_configuration_tab
-from logger_config import logger
-from login_screen import render_login_screen
-from main_tab import render_main_tab
-from sidebar_element import render_sidebar_element
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
-load_dotenv()
-
-
-def setup_page_config() -> None:
-    """Configure Streamlit page settings."""
-    st.set_page_config(
-        page_icon=":honeybee:",
-        page_title="OSA.Web",
-        layout="wide",
-        initial_sidebar_state="expanded",
-        menu_items={
-            "About": """OSA Main Repository: https://github.com/aimclub/OSA  
-            OSA Web Repository: https://github.com/ITMO-NSS-team/OSA.Web  
-            ---  
-            Get Help: https://t.me/osa_helpdesk""",
-        },
-    )
-
-
-@st.cache_data
-def get_config() -> dict[str, Any]:
-    return toml.load("config.toml")
-
-
-def main() -> None:
-    """Run the Streamlit application."""
-
-    setup_page_config()
-
-    if getattr(st.user, "is_logged_in", False):
-        set_user_mode()
-
-    if not is_app_access_allowed():
-        render_login_screen()
-        st.stop()
-
-    logger.info(f"User {get_display_name()} logged in!")
-
-    if "running" not in st.session_state:
-        st.session_state.running = False
-    if "configuration" not in st.session_state:
-        st.session_state.configuration = {**get_config()}
-    if "tmpdirname" not in st.session_state:
-        st.session_state.tmpdirname = tempfile.mkdtemp(dir=get_config()["paths"]["tmp"])
-        logger.debug(f"Created tmp directory: {st.session_state.tmpdirname}")
-    if "output_report_paths" not in st.session_state:
-        st.session_state.output_report_paths = []
-    if "output_report_filenames" not in st.session_state:
-        st.session_state.output_report_filenames = []
-    if "git_token" not in st.session_state:
-        st.session_state.git_token = os.getenv("GIT_TOKEN")
-
-    render_sidebar_element()
-
-    tab1, tab2 = st.tabs(
-        [
-            ":material/home: Home",
-            ":material/settings: Configuration",
-        ]
-    )
-    with tab1:
-        render_main_tab()
-
-    with tab2:
-        render_configuration_tab()
+from osa_web.app import main
 
 
 if __name__ == "__main__":

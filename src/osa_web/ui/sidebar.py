@@ -2,7 +2,7 @@ from importlib.metadata import version
 
 import streamlit as st
 
-from auth_state import get_display_name, is_guest_mode
+from osa_web.auth.state import get_display_name, is_guest_mode
 
 
 def render_sidebar_element() -> None:

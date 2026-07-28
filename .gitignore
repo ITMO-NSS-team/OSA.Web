@@ -2,6 +2,12 @@
 *.log.*
 *.logs
 *.logs.*
+logs/
+tmp/
+runtime/
+config/local.toml
+*_report.pdf
+*_what_has_been_done_report.pdf
 
 # Streamlit
 secrets.toml
