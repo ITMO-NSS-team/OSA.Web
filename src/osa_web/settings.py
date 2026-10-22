@@ -4,6 +4,7 @@ import copy
 import os
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import toml
 
@@ -13,7 +14,7 @@ DEFAULT_CONFIG_PATH = CONFIG_DIR / "default.toml"
 LOCAL_CONFIG_PATH = CONFIG_DIR / "local.toml"
 LEGACY_CONFIG_PATH = PROJECT_ROOT / "config.toml"
 ASSETS_DIR = Path(__file__).resolve().parent / "assets"
-REQUIRED_CONFIG_SECTIONS = ("versions", "paths", "fast", "quality")
+REQUIRED_CONFIG_SECTIONS = ("versions", "paths", "fast", "quality", "agentic")
 REQUIRED_PATH_KEYS = ("log", "tmp")
 
 
@@ -68,6 +69,15 @@ def load_config(config_path: str | Path | None = None) -> dict[str, Any]:
     explicit_path = config_path or os.getenv("OSA_WEB_CONFIG")
     if explicit_path:
         config = _deep_merge(config, _load_toml(resolve_project_path(explicit_path)))
+
+    # Older web configs called the OpenRouter-compatible API "itmo" and the
+    # command builder silently rewrote it to "openai". Preserve that behavior
+    # only for that endpoint; a real ITMO endpoint now uses OSA's itmo provider.
+    for mode in ("fast", "quality", "agentic"):
+        llm = config.get(mode, {}).get("llm", {})
+        host = urlsplit(llm.get("base-url", "")).hostname or ""
+        if llm.get("api") == "itmo" and (host == "openrouter.ai" or host.endswith(".openrouter.ai")):
+            llm["api"] = "openai"
 
     validate_config(config)
 

@@ -28,6 +28,12 @@ def initialize_session(config: dict[str, Any]) -> None:
         st.session_state[keys.OUTPUT_REPORT_FILENAMES] = []
     if keys.GIT_TOKEN not in st.session_state:
         st.session_state[keys.GIT_TOKEN] = os.getenv("GIT_TOKEN")
+    st.session_state.setdefault(keys.CHAT_PROCESS, None)
+    st.session_state.setdefault(keys.CHAT_MESSAGES, [])
+    st.session_state.setdefault(keys.CHAT_PROGRESS, [])
+    st.session_state.setdefault(keys.CHAT_QUESTION, None)
+    st.session_state.setdefault(keys.CHAT_PENDING, None)
+    st.session_state.setdefault(keys.CHAT_TERMINAL, False)
 
 
 def current_mode_config() -> dict[str, Any]:

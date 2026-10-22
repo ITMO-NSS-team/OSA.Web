@@ -8,9 +8,9 @@ tmp = "runtime/tmp"
 [fast.llm]
 api = "openai"
 base-url = "https://api.openai.com/v1"
-model = "gpt-4o-mini"
+model = "gpt-6-luna"
 
 [quality.llm]
 api = "openai"
 base-url = "https://api.openai.com/v1"
-model = "gpt-4o"
+model = "gpt-6-sol"

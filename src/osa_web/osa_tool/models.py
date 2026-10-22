@@ -14,6 +14,14 @@ class OsaRunRequest:
     attachment: str | None = None
 
 
+@dataclass(frozen=True)
+class OsaChatRequest:
+    output_dir: str
+    log_dir: str
+    author: str
+    configuration: dict[str, Any]
+
+
 @dataclass
 class ParsedOsaOutput:
     report_paths: list[str] = field(default_factory=list)

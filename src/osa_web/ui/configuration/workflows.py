@@ -28,6 +28,22 @@ def render_workflows_settings_block() -> None:
                 `Default: True`""",
         )
         if workflows:
+            st.checkbox(
+                "Include Ruff",
+                key="configuration-workflows-include-ruff",
+                on_change=configuration_callback,
+                args=["workflows", "include-ruff", "configuration-workflows-include-ruff"],
+                value=current_workflows["include-ruff"],
+                help="Add Ruff checks to generated workflows. `Default: off`",
+            )
+            st.checkbox(
+                "Use uv",
+                key="configuration-workflows-use-uv",
+                on_change=configuration_callback,
+                args=["workflows", "use-uv", "configuration-workflows-use-uv"],
+                value=current_workflows["use-uv"],
+                help="Use uv in generated workflows. `Default: off`",
+            )
             st.multiselect(
                 label="Python Versions",
                 key="configuration-workflows-python-versions",

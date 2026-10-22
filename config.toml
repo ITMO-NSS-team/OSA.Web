@@ -1,6 +1,6 @@
 [versions]
 
-osa_web = "0.3.0"
+osa_web = "0.4.0"
 
 [paths]
 
@@ -21,6 +21,11 @@ tmp = "/var/essdata/tmp"
 # web_mode = true
 # output = ""
 # attachment = ""
+scorecard = false
+incremental = false
+target-files = ""
+notebook-report = false
+notebook-report-paths = ""
 translate-dirs = false
 translate-readme = ""
 convert-notebooks = ""
@@ -46,13 +51,13 @@ no-pull-request = false
 
 # Language Model API Settings
 [fast.llm]
-api = "itmo"
+api = "openai"
 #rate_limit = 10
-base-url = "https://openrouter.ai/api/v1"
+base-url = "https://api.openai.com/v1"
 # encoder = "cl100k_base"
 # host_name = "https://api.openai.com/v1"
 # localhost = "http://localhost:11434/"
-model = "google/gemini-2.5-flash"
+model = "gpt-6-luna"
 # path = "generate"
 temperature = 0.05
 max-tokens = 4096
@@ -63,6 +68,8 @@ top-p = 0.95
 [fast.workflows]
 generate-workflows = false
 # workflows-output-dir = ".github/workflows"
+include-ruff = false
+use-uv = false
 include-tests = true
 include-black = true
 include-pep8 = true
@@ -86,6 +93,11 @@ include-codecov = false
 # web_mode = true
 # output = ""
 # attachment = ""
+scorecard = false
+incremental = false
+target-files = ""
+notebook-report = false
+notebook-report-paths = ""
 translate-dirs = false
 translate-readme = "Russian"
 convert-notebooks = ""
@@ -111,13 +123,13 @@ no-pull-request = false
 
 # Language Model API Settings
 [quality.llm]
-api = "itmo"
+api = "openai"
 #rate_limit = 10
-base-url = "https://openrouter.ai/api/v1"
+base-url = "https://api.openai.com/v1"
 # encoder = "cl100k_base"
 # host_name = "https://api.openai.com/v1"
 # localhost = "http://localhost:11434/"
-model = "anthropic/claude-haiku-4.5"
+model = "gpt-6-sol"
 # path = "generate"
 temperature = 0.05
 max-tokens = 4096
@@ -128,6 +140,8 @@ top-p = 0.95
 [quality.workflows]
 generate-workflows = true
 # workflows-output-dir = ".github/workflows"
+include-ruff = false
+use-uv = false
 include-tests = true
 include-black = true
 include-pep8 = true
@@ -140,3 +154,21 @@ use-poetry = false
 branches = ""
 codecov-token = false
 include-codecov = false
+
+################################################################
+########################### AGENTIC ############################
+################################################################
+
+[agentic.git]
+branch = ""
+no-fork = false
+no-pull-request = false
+
+[agentic.llm]
+api = "openai"
+base-url = "https://api.openai.com/v1"
+model = "gpt-6-luna"
+temperature = 0.05
+max-tokens = 4096
+context-window = 200000
+top-p = 0.95

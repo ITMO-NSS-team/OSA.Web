@@ -185,3 +185,53 @@ def render_osa_settings_block() -> None:
                     **Example: path/to/file1 path/to/file2**
                     `Default: -`""",
         )
+
+        st.divider()
+        st.checkbox(
+            "OpenSSF Scorecard",
+            key="configuration-general-scorecard",
+            on_change=configuration_callback,
+            args=["general", "scorecard", "configuration-general-scorecard"],
+            value=current_general["scorecard"],
+            help="Include OpenSSF Scorecard analysis in generated reports. `Default: off`",
+        )
+        st.checkbox(
+            "Incremental processing",
+            key="configuration-general-incremental",
+            on_change=configuration_callback,
+            args=["general", "incremental", "configuration-general-incremental"],
+            value=current_general["incremental"],
+            help="Process only work OSA considers missing or changed. `Default: off`",
+        )
+        st.text_input(
+            "Target files",
+            key="configuration-general-target-files",
+            on_change=configuration_callback,
+            args=["general", "target-files", "configuration-general-target-files"],
+            value=current_general["target-files"],
+            help=(
+                "Optional repository-relative file paths separated by spaces. "
+                "Quote paths containing spaces. `Default: all eligible files`"
+            ),
+        )
+        st.checkbox(
+            "Notebook report",
+            key="configuration-general-notebook-report",
+            on_change=configuration_callback,
+            args=["general", "notebook-report", "configuration-general-notebook-report"],
+            value=current_general["notebook-report"],
+            help="Generate a notebook PDF report. With no paths, scan all notebooks. `Default: off`",
+        )
+        if current_general["notebook-report"]:
+            st.text_input(
+                "Notebook paths (optional)",
+                key="configuration-general-notebook-report-paths",
+                on_change=configuration_callback,
+                args=[
+                    "general",
+                    "notebook-report-paths",
+                    "configuration-general-notebook-report-paths",
+                ],
+                value=current_general["notebook-report-paths"],
+                help="Repository-relative paths separated by spaces. `Default: all notebooks`",
+            )

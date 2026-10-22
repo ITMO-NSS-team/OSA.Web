@@ -4,17 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "osa-web"
-version = "0.3.0"
+version = "0.4.0"
 description = "Streamlit web interface for the OSA tool."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { file = "LICENSE" }
 dependencies = [
     "Authlib==1.6.0",
-    "osa-tool==0.2.6",
+    "osa-tool==0.3.3",
     "paramiko==3.5.1",
     "python-dotenv==1.0.1",
-    "streamlit==1.48.1",
+    "streamlit==1.66.1",
     "toml",
 ]
 
@@ -29,7 +29,7 @@ osa_web = ["assets/*"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 src = ["src", "tests"]
 
 [tool.pytest.ini_options]

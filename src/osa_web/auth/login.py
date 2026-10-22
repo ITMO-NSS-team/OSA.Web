@@ -14,7 +14,7 @@ def render_login_screen() -> None:
         with center:
             st.image(
                 str(asset_path("osa_web_logo.png")),
-                use_container_width=True,
+                width="stretch",
             )
             st.container(height=20, border=False)
 
@@ -29,22 +29,22 @@ def render_login_screen() -> None:
             with st.container(width=300):
                 if st.button(
                     "Log in with AimClub",
-                    use_container_width=True,
+                    width="stretch",
                     type="primary",
                 ):
                     st.login("aimclub")
                 st.button(
                     "Continue as guest",
-                    use_container_width=True,
+                    width="stretch",
                     on_click=set_guest_mode,
                 )
-                # if st.button("Log in with Google", use_container_width=True):
+                # if st.button("Log in with Google", width="stretch"):
                 #     st.login("google")
 
             st.container(height=5, border=False)
 
             st.markdown(
-                '<p style="text-align: center; color: grey;">Choose an account sign-in or continue as a guest.</p>',
+                '<p style="text-align: center;">Choose an account sign-in or continue as a guest.</p>',
                 unsafe_allow_html=True,
             )
 

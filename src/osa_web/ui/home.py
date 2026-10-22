@@ -1,46 +1,11 @@
 import asyncio
-import pathlib
-import tempfile
 
 import streamlit as st
-import streamlit.components.v1 as components
 
-from osa_web.logging_config import logger
+from osa_web.auth.state import is_guest_mode
 from osa_web.osa_tool.runner import run_osa_tool
-
-
-def reset_attachment_selection() -> None:
-    st.session_state.attachment_selection_pills = None
-
-
-@st.dialog("Add an Attachment", on_dismiss=reset_attachment_selection)
-def add_attachment(type) -> None:
-    attachment = None
-    if type == "URL":
-        attachment = st.text_input("Paste URL")
-    elif type == "File":
-        attachment = st.file_uploader("Upload Attachment", ["pdf", "docx"])
-
-    st.container(height=5, border=False)
-
-    if st.button(
-        "Submit",
-        disabled=not attachment,
-        use_container_width=True,
-        type="primary",
-        help="""Select a PDF or .docx file, or a URL to a PDF resource""",
-    ):
-        if type == "File":
-            tmpfilename = tempfile.NamedTemporaryFile(
-                delete=False,
-                dir=st.session_state.tmpdirname,
-                suffix=pathlib.Path(attachment.name).suffix,
-            )
-            tmpfilename.write(attachment.getvalue())
-            attachment = tmpfilename.name
-        st.session_state.attachment = {"data": attachment, "type": type}
-        logger.info(f"Added attachment: {attachment}")
-        st.rerun()
+from osa_web.ui.attachment import render_attachment_block
+from osa_web.ui.configuration.schema import reset_configuration_widgets
 
 
 @st.dialog("Run OSA Tool")
@@ -52,53 +17,23 @@ def confirm_public_run() -> None:
     st.container(height=5, border=False)
 
     st.markdown(
-        "**NOTE:** :grey[*Select :green-background[No pull request] option in :blue[:material/settings: Configuration] tab if you **do not want** to create one.*]"
+        "To avoid creating a pull request, select **No pull request** in Configuration."
     )
 
     left, right = st.columns(2)
     with left:
-        if st.button("Cancel", use_container_width=True, type="primary"):
+        if st.button("Cancel", width="stretch", type="primary"):
             st.rerun()
     with right:
-        if st.button("Yes", use_container_width=True):
+        if st.button("Yes", width="stretch"):
             st.session_state.running = True
-            st.rerun()
-
-
-def render_attachment_block() -> None:
-    help_text = """Select a PDF or .docx file, or a URL to a PDF resource  
-                    `Default: None`"""
-    if "attachment" not in st.session_state:
-        option_map = {
-            "URL": ":material/globe: Paste URL",
-            "File": ":material/upload_file: Upload Attachment",
-        }
-        selection = st.pills(
-            "Attachment",
-            key="attachment_selection_pills",
-            options=option_map.keys(),
-            format_func=lambda option: option_map[option],
-            selection_mode="single",
-            disabled=st.session_state.running,
-            help=help_text,
-            width="stretch",
-        )
-        if selection:
-            add_attachment(selection)
-    else:
-        st.caption("Attachment", help=help_text)
-        st.write(
-            f"Attachment added via **{st.session_state.attachment.get('type')}**: `{st.session_state.attachment.get('data')}`"
-        )
-        if st.button(":material/delete: Remove", use_container_width=True):
-            del st.session_state["attachment"]
             st.rerun()
 
 
 def render_input_block() -> None:
     st.container(height=5, border=False)
     st.markdown(
-        f'<h3 style="text-align: center;">To start processing a repository, please enter a GitHub repository URL: </h3>',
+        '<h3 style="text-align: center;">To start processing a repository, please enter a GitHub repository URL: </h3>',
         unsafe_allow_html=True,
     )
     st.container(height=5, border=False)
@@ -119,11 +54,10 @@ def render_input_block() -> None:
                 label="Mode",
                 key="mode_select",
                 options=("quality", "fast"),
+                on_change=reset_configuration_widgets,
+                persist_state="session",
                 disabled=st.session_state.running,
-                help="""
-                    Operation mode for repository processing  
-                    `Default: basic`
-                    """,
+                help="Choose a preset for the automated pipeline. Default: quality.",
             )
             multi_left = """Select the operation mode for repository processing:  
                     - **Fast:** Run a minimal set of essential tasks using efficient model settings.  
@@ -131,7 +65,7 @@ def render_input_block() -> None:
                     """
             st.markdown(multi_left)
         with right:
-            render_attachment_block()
+            render_attachment_block(disabled=st.session_state.running)
             st.markdown(
                 "**NOTE**: Recommendations for the Git `About` section will be included in the Pull Request description."
             )
@@ -146,6 +80,11 @@ def _set_osa_running():
 
 def render_button_block() -> None:
     st.container(height=5, border=False)
+    guest_provider_blocked = is_guest_mode() and st.session_state.configuration[
+        st.session_state.mode_select
+    ]["llm"]["api"] in {"itmo", "host"}
+    if guest_provider_blocked:
+        st.warning("Select OpenAI or Ollama in Configuration before running as a guest.")
     if not st.session_state.git_token:
         st.warning(
             "GIT_TOKEN not found in .env file. The tool may not work correctly with private repositories.",
@@ -155,62 +94,62 @@ def render_button_block() -> None:
     st.button(
         "Run OSA",
         icon=":material/emoji_nature:",
-        use_container_width=True,
-        disabled=st.session_state.running or len(st.session_state.repo_url) == 0,
+        width="stretch",
+        disabled=st.session_state.running
+        or len(st.session_state.repo_url) == 0
+        or guest_provider_blocked,
         type="secondary" if len(st.session_state.repo_url) == 0 else "primary",
         on_click=_set_osa_running,
     )
 
 
 def render_output_block(output_container) -> None:
-    with output_container:
-        with st.container():
-            if "output_logs" in st.session_state:
-                st.divider()
-                if "output_exit_code" not in st.session_state:
-                    st.markdown(
-                        f'<p style="text-align: center;">No output.</p>',
-                        unsafe_allow_html=True,
+    with output_container, st.container():
+        if "output_logs" in st.session_state:
+            st.divider()
+            if "output_exit_code" not in st.session_state:
+                st.markdown(
+                    '<p style="text-align: center;">No output.</p>',
+                    unsafe_allow_html=True,
+                )
+                return
+            left, right = st.columns([0.6, 0.4], vertical_alignment="center")
+            with left:
+                if st.session_state.output_exit_code == 0:
+                    st.success(
+                        st.session_state.output_message,
+                        icon=":material/check_circle:",
                     )
-                    return
-                left, right = st.columns([0.6, 0.4], vertical_alignment="center")
-                with left:
-                    if st.session_state.output_exit_code == 0:
-                        st.success(
-                            st.session_state.output_message,
-                            icon=":material/check_circle:",
-                        )
-                    else:
-                        st.error(st.session_state.output_message, icon=":material/error:")
-                with right:
-                    if len(st.session_state.output_report_paths) > 0:
-                        for i in range(len(st.session_state.output_report_paths)):
-                            with open(st.session_state.output_report_paths[i], "rb") as file:
-                                st.download_button(
-                                    label=f"Download *`{st.session_state.output_report_filenames[
-                                        i
-                                    ]}`*",
-                                    data=file,
-                                    file_name=st.session_state.output_report_filenames[i],
-                                    mime="application/pdf",
-                                    icon=":material/download:",
-                                    use_container_width=True,
-                                )
-                    else:
-                        with st.container(border=True):
-                            st.markdown(
-                                f'<p style="text-align: center;">PDF Report was not created.</p>',
-                                unsafe_allow_html=True,
+                else:
+                    st.error(st.session_state.output_message, icon=":material/error:")
+            with right:
+                if len(st.session_state.output_report_paths) > 0:
+                    for i in range(len(st.session_state.output_report_paths)):
+                        report_name = st.session_state.output_report_filenames[i]
+                        with open(st.session_state.output_report_paths[i], "rb") as file:
+                            st.download_button(
+                                label=f"Download *`{report_name}`*",
+                                data=file,
+                                file_name=st.session_state.output_report_filenames[i],
+                                mime="application/pdf",
+                                icon=":material/download:",
+                                width="stretch",
                             )
-                if "output_about_section" in st.session_state:
-                    with st.expander("About section", expanded=True, icon=":material/article:"):
-                        st.write(st.session_state.output_about_section)
-                # TODO: developer only
-                with st.expander("See Console Output", icon=":material/terminal:"):
-                    st.code(
-                        st.session_state.output_logs,
-                        height=350,
-                    )
+                else:
+                    with st.container(border=True):
+                        st.markdown(
+                            '<p style="text-align: center;">PDF Report was not created.</p>',
+                            unsafe_allow_html=True,
+                        )
+            if "output_about_section" in st.session_state:
+                with st.expander("About section", expanded=True, icon=":material/article:"):
+                    st.write(st.session_state.output_about_section)
+            # TODO: developer only
+            with st.expander("See Console Output", icon=":material/terminal:"):
+                st.code(
+                    st.session_state.output_logs,
+                    height=350,
+                )
 
 
 def render_main_tab() -> None:
@@ -222,17 +161,7 @@ def render_main_tab() -> None:
     output_container = st.empty()
 
     if st.session_state.running:
-        components.html(
-            """\
-        <script>
-        parent.document.querySelector('div[data-baseweb="modal"]').remove();
-        </script>
-        """,
-            height=0,
-            scrolling=False,
-        )
-        with right:
-            with st.spinner(text="In progress...", show_time=True, width="stretch"):
-                asyncio.run(run_osa_tool(output_container))
+        with right, st.spinner(text="In progress...", show_time=True, width="stretch"):
+            asyncio.run(run_osa_tool(output_container))
 
     render_output_block(output_container)
