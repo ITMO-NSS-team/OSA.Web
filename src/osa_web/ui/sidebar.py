@@ -2,6 +2,7 @@ from importlib.metadata import version
 
 import streamlit as st
 
+from osa_web import __version__
 from osa_web.auth.state import get_display_name, is_guest_mode
 
 
@@ -16,7 +17,7 @@ def render_sidebar_element() -> None:
         )
         if is_guest_mode():
             st.warning(
-                "Guest mode disables the bundled ITMO provider. Use your own OpenAI-compatible credentials.",
+                "Guest mode requires your own provider credentials or a local Ollama server.",
                 icon=":material/key:",
             )
 
@@ -29,37 +30,39 @@ def render_sidebar_element() -> None:
             st.link_button(
                 "About OSA",
                 url="https://github.com/aimclub/OSA",
-                use_container_width=True,
+                width="stretch",
                 icon=":material/info:",
             )
             st.link_button(
                 "About Web",
                 url="https://github.com/ITMO-NSS-team/OSA.Web",
-                use_container_width=True,
+                width="stretch",
                 icon=":material/info:",
             )
             st.container(height=10, border=False)
             st.link_button(
                 "Get Help",
                 url="https://t.me/osa_helpdesk",
-                use_container_width=True,
+                width="stretch",
                 icon=":material/help:",
             )
             st.container(height=10, border=False)
             if is_guest_mode():
                 st.button(
                     "Log in",
+                    key="sidebar-login",
                     on_click=st.login,
                     args=("aimclub",),
-                    use_container_width=True,
+                    width="stretch",
                     type="primary",
                     icon=":material/login:",
                 )
             else:
                 st.button(
                     "Log out",
+                    key="sidebar-logout",
                     on_click=st.logout,
-                    use_container_width=True,
+                    width="stretch",
                     type="primary",
                     icon=":material/logout:",
                 )
@@ -67,21 +70,26 @@ def render_sidebar_element() -> None:
             st.container(height=15, border=False)
 
             with st.container(horizontal_alignment="center", border=True):
-                st.markdown(f"""
-                    :grey[OSA Version: {version("osa_tool")}]  
-                    :grey[Web Version: {st.session_state.configuration["versions"]["osa_web"]}]
-                    """)
+                st.markdown(f"OSA Version: {version('osa_tool')}")
+                st.markdown(f"Web Version: {__version__}")
 
         style = """
             <style>
             button[data-baseweb="tab"] {
             font-size: 24px;
             margin: 0;
-            width: 100%;
+            flex: 1;
+            justify-content: center;
             }
             section[data-testid="stSidebar"] {
             width: 350px !important;
             }
+            .st-key-sidebar-login button,
+            .st-key-sidebar-login button *,
+            .st-key-sidebar-logout button,
+            .st-key-sidebar-logout button * {
+            color: #171717 !important;
+            }
             </style>
             """
-        st.write(style, unsafe_allow_html=True)
+        st.html(style)

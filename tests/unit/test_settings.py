@@ -28,9 +28,23 @@ class SettingsTests(TestCase):
         self.assertEqual(config["paths"]["tmp"], "custom/tmp")
         self.assertEqual(config["fast"]["llm"]["model"], "override-model")
         self.assertIn("quality", config)
+        self.assertIn("agentic", config)
+        self.assertEqual(config["agentic"]["git"]["no-pull-request"], False)
 
     def test_default_config_exists_for_docker_builds(self) -> None:
         self.assertTrue(DEFAULT_CONFIG_PATH.exists())
+
+    def test_legacy_openrouter_provider_is_migrated_without_changing_real_itmo(self) -> None:
+        with TemporaryDirectory() as tmpdir:
+            override_path = Path(tmpdir) / "override.toml"
+            override_path.write_text(
+                '[fast.llm]\napi = "itmo"\nbase-url = "https://openrouter.ai/api/v1"\n'
+                '[agentic.llm]\napi = "itmo"\nbase-url = "https://itmo.example/api/v1"\n',
+                encoding="utf-8",
+            )
+            config = load_config(override_path)
+        self.assertEqual(config["fast"]["llm"]["api"], "openai")
+        self.assertEqual(config["agentic"]["llm"]["api"], "itmo")
 
     def test_missing_config_raises_clear_error(self) -> None:
         with TemporaryDirectory() as tmpdir:

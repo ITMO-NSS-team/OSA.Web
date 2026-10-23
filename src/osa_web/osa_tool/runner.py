@@ -1,11 +1,11 @@
 import asyncio
-import os
 
 import streamlit as st
 
-from osa_web.auth.state import get_display_name
+from osa_web.auth.state import get_display_name, is_guest_mode
 from osa_web.logging_config import logger
 from osa_web.osa_tool.command import build_osa_command
+from osa_web.osa_tool.environment import build_osa_environment
 from osa_web.osa_tool.models import OsaRunRequest, ParsedOsaOutput
 from osa_web.osa_tool.output_parser import parse_output_line
 from osa_web.state import keys
@@ -17,13 +17,11 @@ async def run_osa_tool(output_container) -> None:
     try:
         reset_run_output()
 
-        env = os.environ.copy()
-        env.update({"COLUMNS": "200", "TERM": "xterm-256color", "PYTHONUNBUFFERED": "1"})
-        if keys.CONFIGURATION_API_KEY in st.session_state:
-            env.update({"OPENAI_API_KEY": st.session_state[keys.CONFIGURATION_API_KEY]})
-
-        if st.session_state[keys.GIT_TOKEN]:
-            env["GIT_TOKEN"] = st.session_state[keys.GIT_TOKEN]
+        env = build_osa_environment(
+            guest=is_guest_mode(),
+            api_key=st.session_state.get(keys.CONFIGURATION_API_KEY),
+            git_token=st.session_state.get(keys.GIT_TOKEN),
+        )
 
         attachment = None
         if keys.ATTACHMENT in st.session_state:

@@ -26,15 +26,24 @@ __Configuration Page:__
 - Git, README, documentation, workflow, and LLM settings from the UI.
 - Optional PDF or DOCX attachment upload.
 - Live console output while `osa-tool` runs.
+- An Agentic conversation mode on Home for agent progress, clarification, result review, and revisions.
 - Download buttons for generated PDF reports.
 - Pull request and GitHub About-section feedback when available.
 
 ## Installation
 
+Requires Python 3.11+ and OSA `0.3.3`, which adds the web chat protocol and direct OpenAI GPT-6 compatibility. Publish the OSA changes before installing from PyPI or building the Docker image.
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+Install Streamlit's development skills after activating the environment:
+
+```bash
+streamlit skills -g -y
 ```
 
 For development tooling:
@@ -61,6 +70,10 @@ Configuration precedence:
 2. root `config.toml`, if present
 3. `config/local.toml`, if present
 4. `OSA_WEB_CONFIG`, if set
+
+Use the Home tab's **Work mode** switch to choose **Automated pipeline** or **Agentic conversation**. The Configuration tab follows that choice. Its automated pipeline preset switch selects fast or quality settings and also updates the preset used on Home. The automated pipeline adds scorecard, incremental processing, target files, notebook reports, Ruff, and uv. Agentic conversation has separate Git and LLM settings; its agents choose tasks from the conversation. Existing local overrides are merged with the new defaults, including deployment log and temporary paths.
+
+The default provider is the direct OpenAI API: fast and agentic conversation use `gpt-6-luna`, while quality uses `gpt-6-sol`. Set `OPENAI_API_KEY` in `.env`, or enter a provider key in Configuration as a guest. OSA omits unsupported sampling parameters for these GPT-6 models. The Web configuration keeps the existing deployment log and temporary paths.
 
 ## Secrets
 
@@ -107,6 +120,10 @@ streamlit run streamlit_app.py
 ```
 
 The compatibility entrypoint adds `src/` to `sys.path` and calls `osa_web.app.main()`.
+
+Choose **Agentic conversation** on Home, enter a repository URL and an initial request, and optionally add a PDF, DOCX, or public attachment URL with the shared attachment picker. Answer the agents' questions and approve or request revisions there. A run that can create a fork or pull request requires confirmation before it starts. Conversation history lasts for the browser session. Use **New conversation** to clear it.
+
+Local Streamlit development uses polling for source changes to avoid Linux inotify watch-limit errors. Docker continues to disable file watching.
 
 ## Running With Docker
 

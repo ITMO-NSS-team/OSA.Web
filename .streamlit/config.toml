@@ -5,9 +5,28 @@
 # Default: 200
 maxUploadSize = 25
 
-[theme]
+# Poll for source changes to avoid exhausting Linux's inotify watch limit.
+fileWatcherType = "poll"
 
-primaryColor = "#2196F3"
+[theme]
+base = "light"
+primaryColor = "#171717"
 backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#E3F2FD"
+secondaryBackgroundColor = "#EDEDED"
+textColor = "#171717"
+linkColor = "#171717"
+borderColor = "#A0A0A0"
+codeBackgroundColor = "#E8E8E8"
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "6px"
+buttonRadius = "6px"
+
+[theme.sidebar]
+primaryColor = "#F5F5F5"
+backgroundColor = "#191919"
+secondaryBackgroundColor = "#303030"
+textColor = "#FAFAFA"
+linkColor = "#FAFAFA"
+borderColor = "#4B4B4B"
 

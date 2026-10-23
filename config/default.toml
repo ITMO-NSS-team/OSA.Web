@@ -1,6 +1,6 @@
 [versions]
 
-osa_web = "0.3.0"
+osa_web = "0.4.0"
 
 [paths]
 
@@ -12,6 +12,11 @@ tmp = "runtime/tmp"
 ################################################################
 
 [fast.general]
+scorecard = false
+incremental = false
+target-files = ""
+notebook-report = false
+notebook-report-paths = ""
 translate-dirs = false
 translate-readme = ""
 convert-notebooks = ""
@@ -33,9 +38,9 @@ no-fork = false
 no-pull-request = false
 
 [fast.llm]
-api = "itmo"
-base-url = "https://openrouter.ai/api/v1"
-model = "google/gemini-2.5-flash"
+api = "openai"
+base-url = "https://api.openai.com/v1"
+model = "gpt-6-luna"
 temperature = 0.05
 max-tokens = 4096
 context-window = 200000
@@ -43,6 +48,8 @@ top-p = 0.95
 
 [fast.workflows]
 generate-workflows = false
+include-ruff = false
+use-uv = false
 include-tests = true
 include-black = true
 include-pep8 = true
@@ -61,6 +68,11 @@ include-codecov = false
 ################################################################
 
 [quality.general]
+scorecard = false
+incremental = false
+target-files = ""
+notebook-report = false
+notebook-report-paths = ""
 translate-dirs = false
 translate-readme = "Russian"
 convert-notebooks = ""
@@ -82,9 +94,9 @@ no-fork = false
 no-pull-request = false
 
 [quality.llm]
-api = "itmo"
-base-url = "https://openrouter.ai/api/v1"
-model = "anthropic/claude-haiku-4.5"
+api = "openai"
+base-url = "https://api.openai.com/v1"
+model = "gpt-6-sol"
 temperature = 0.05
 max-tokens = 4096
 context-window = 200000
@@ -92,6 +104,8 @@ top-p = 0.95
 
 [quality.workflows]
 generate-workflows = true
+include-ruff = false
+use-uv = false
 include-tests = true
 include-black = true
 include-pep8 = true
@@ -104,3 +118,17 @@ use-poetry = false
 branches = ""
 codecov-token = false
 include-codecov = false
+
+[agentic.git]
+branch = ""
+no-fork = false
+no-pull-request = false
+
+[agentic.llm]
+api = "openai"
+base-url = "https://api.openai.com/v1"
+model = "gpt-6-luna"
+temperature = 0.05
+max-tokens = 4096
+context-window = 200000
+top-p = 0.95
