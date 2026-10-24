@@ -193,18 +193,22 @@ def _record_event(event: dict) -> None:
         )
 
 
-def _render_artifacts(paths: list[str]) -> None:
+def _render_artifacts(paths: list[str], scope: str = "") -> None:
     output_root = Path(st.session_state[keys.TMPDIR]).resolve()
+    # The same artifact is listed again by every later review, so the key has to
+    # carry the message it belongs to, or Streamlit rejects the duplicate.
+    seen: set[Path] = set()
     for value in paths[:30]:
         path = Path(value).resolve()
-        if not path.is_file() or not path.is_relative_to(output_root):
+        if not path.is_file() or not path.is_relative_to(output_root) or path in seen:
             continue
+        seen.add(path)
         with path.open("rb") as file:
             st.download_button(
                 f"Download {path.name}",
                 data=file,
                 file_name=path.name,
-                key=f"chat-artifact-{path}",
+                key=f"chat-artifact-{scope}-{path}",
                 width="stretch",
             )
 
@@ -219,7 +223,7 @@ def _render_tasks(tasks: list[dict]) -> None:
 
 
 def _render_messages() -> None:
-    for message in st.session_state[keys.CHAT_MESSAGES]:
+    for index, message in enumerate(st.session_state[keys.CHAT_MESSAGES]):
         with st.chat_message(message["role"]):
             kind = message.get("type")
             if kind == "completed":
@@ -228,14 +232,14 @@ def _render_messages() -> None:
                 _render_tasks(event.get("tasks") or [])
                 if event.get("pull_request_url"):
                     st.link_button("Open pull request", event["pull_request_url"])
-                _render_artifacts(event.get("artifacts") or [])
+                _render_artifacts(event.get("artifacts") or [], scope=str(index))
             elif kind == "review":
                 event = message["event"]
                 st.markdown("Review the latest agent results before approving.")
                 _render_tasks(event.get("tasks") or [])
                 for item in event.get("events") or []:
                     st.markdown(f"- {item['kind']}: `{item['target']}`")
-                _render_artifacts(event.get("artifacts") or [])
+                _render_artifacts(event.get("artifacts") or [], scope=str(index))
             elif kind == "stopped":
                 st.warning(message["event"].get("message", "Run stopped."))
             elif kind == "error":
@@ -338,6 +342,9 @@ def _conversation_panel() -> None:
             if process and process.running and not st.session_state[keys.CHAT_TERMINAL]
             else "complete",
             type="compact",
+            # This fragment reruns every second, which rebuilds the status block and
+            # discards any manual expansion; keep the agent steps open instead.
+            expanded=True,
         ):
             for item in progress[-20:]:
                 st.caption(item)

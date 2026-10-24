@@ -16,6 +16,19 @@ from typing import Any
 def _terminate(process: subprocess.Popen[str]) -> None:
     if process.poll() is not None:
         return
+    if os.name == "nt":
+        # Windows has no process groups to signal, and os.killpg/SIGKILL do not
+        # exist there; taskkill /T walks the child tree instead.
+        subprocess.run(
+            ["taskkill", "/F", "/T", "/PID", str(process.pid)],
+            capture_output=True,
+            check=False,
+        )
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            pass
+        return
     try:
         os.killpg(process.pid, signal.SIGTERM)
     except ProcessLookupError:

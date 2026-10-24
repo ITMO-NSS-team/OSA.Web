@@ -20,6 +20,13 @@ GUEST_ENV_KEYS = {
     "SSL_CERT_DIR",
     "REQUESTS_CA_BUNDLE",
     "CURL_CA_BUNDLE",
+    # Windows needs these: without SYSTEMROOT, Winsock cannot initialise and any
+    # child that imports asyncio dies with WinError 10106 before logging starts;
+    # USERPROFILE stands in for HOME, which Windows does not set.
+    "SYSTEMROOT",
+    "USERPROFILE",
+    "TEMP",
+    "TMP",
 }
 
 
