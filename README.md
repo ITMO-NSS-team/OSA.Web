@@ -197,6 +197,10 @@ If development dependencies are installed, this also works:
 pytest
 ```
 
+GitHub Actions runs Ruff and the unit tests on pull requests targeting `main`
+and on pushes to `main`, using Python 3.11 and 3.12. CI installs the pinned
+OSA source revision that provides the required `osa-tool` 0.3.3 package.
+
 ## Development Notes
 
 - Keep Streamlit widget code inside `src/osa_web/ui/`.

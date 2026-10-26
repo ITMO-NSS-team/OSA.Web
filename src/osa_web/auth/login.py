@@ -8,7 +8,6 @@ def render_login_screen() -> None:
     """Render application login screen."""
     _, center, _ = st.columns(3)
     with center:
-
         _, center, _ = st.columns([0.1, 0.8, 0.1])
 
         with center:
