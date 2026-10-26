@@ -3,7 +3,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 import streamlit as st
 
-from osa_web.settings import ensure_runtime_paths, get_runtime_path, load_config
+from osa_web.settings import ensure_runtime_paths, get_runtime_path
 
 
 @st.cache_resource
@@ -17,9 +17,7 @@ def setup_logger(log_file_path):
         if isinstance(handler, TimedRotatingFileHandler) and handler.baseFilename == log_file_path:
             return logger
 
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
     handler = TimedRotatingFileHandler(
         log_file_path,
@@ -34,6 +32,5 @@ def setup_logger(log_file_path):
     return logger
 
 
-_config = load_config()
-ensure_runtime_paths(_config)
-logger = setup_logger(get_runtime_path(_config, "log"))
+ensure_runtime_paths()
+logger = setup_logger(get_runtime_path("log"))

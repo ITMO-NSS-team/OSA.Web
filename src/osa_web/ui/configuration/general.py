@@ -136,21 +136,18 @@ def render_osa_settings_block() -> None:
                     such as `Code of Conduct` and `Contributing guidelines`
                     `Default: False`""",
         )
+        license_options = (None, "bsd-3", "mit", "ap2")
+        license_value = current_general["ensure-license"] or None
         st.selectbox(
             label="Ensure License",
             key="configuration-general-ensure-license",
             on_change=configuration_callback,
             args=["general", "ensure-license", "configuration-general-ensure-license"],
-            options=(
-                None,
-                "bsd-3",
-                "mit",
-                "ap2",
-            ),
-            index=1,
+            options=license_options,
+            index=license_options.index(license_value) if license_value in license_options else 0,
             help="""
                 Enable LICENSE file compilation
-                `Default: BSD-3`
+                `Default: off`
                 """,
         )
         st.text_input(

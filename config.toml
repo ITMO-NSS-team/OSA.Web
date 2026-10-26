@@ -1,26 +1,8 @@
-[versions]
-
-osa_web = "0.4.0"
-
-[paths]
-
-log = "/var/essdata/logs/osa_web.logs"
-tmp = "/var/essdata/tmp"
-
-# log = "/home/ilya/OSA.Web/logs/osa_web.logs"
-# tmp = "/home/ilya/OSA.Web/tmp"
-
 ################################################################
 ############################# FAST #############################
 ################################################################
 
-
-# General CLI-related defaults
 [fast.general]
-# mode = "basic"
-# web_mode = true
-# output = ""
-# attachment = ""
 scorecard = false
 incremental = false
 target-files = ""
@@ -29,7 +11,6 @@ notebook-report-paths = ""
 translate-dirs = false
 translate-readme = ""
 convert-notebooks = ""
-# delete_dir = true
 ensure-license = ""
 community-docs = false
 docstring = false
@@ -42,32 +23,22 @@ about = true
 validate-paper = false
 validate-doc = false
 
-# Git Repository Settings
 [fast.git]
-# repository = "https://github.com/aimclub/OSA"
 branch = ""
 no-fork = false
 no-pull-request = false
 
-# Language Model API Settings
 [fast.llm]
 api = "openai"
-#rate_limit = 10
 base-url = "https://api.openai.com/v1"
-# encoder = "cl100k_base"
-# host_name = "https://api.openai.com/v1"
-# localhost = "http://localhost:11434/"
 model = "gpt-6-luna"
-# path = "generate"
 temperature = 0.05
 max-tokens = 4096
 context-window = 200000
 top-p = 0.95
 
-# GitHub Actions Workflow Settings
 [fast.workflows]
 generate-workflows = false
-# workflows-output-dir = ".github/workflows"
 include-ruff = false
 use-uv = false
 include-tests = true
@@ -77,7 +48,7 @@ include-autopep8 = false
 include-fix-pep8 = false
 include-pypi = false
 python-versions = ["3.8", "3.9", "3.10"]
-pep8-tool = "flake8"                     # "flake8" or "pylint"
+pep8-tool = "flake8"
 use-poetry = false
 branches = ""
 codecov-token = false
@@ -87,12 +58,7 @@ include-codecov = false
 ########################### QUALITY ############################
 ################################################################
 
-# General CLI-related defaults
 [quality.general]
-# mode = "basic"
-# web_mode = true
-# output = ""
-# attachment = ""
 scorecard = false
 incremental = false
 target-files = ""
@@ -101,7 +67,6 @@ notebook-report-paths = ""
 translate-dirs = false
 translate-readme = "Russian"
 convert-notebooks = ""
-# delete_dir = true
 ensure-license = ""
 community-docs = true
 docstring = true
@@ -114,32 +79,22 @@ about = true
 validate-paper = false
 validate-doc = false
 
-# Git Repository Settings
 [quality.git]
-# repository = "https://github.com/aimclub/OSA"
 branch = ""
 no-fork = false
 no-pull-request = false
 
-# Language Model API Settings
 [quality.llm]
 api = "openai"
-#rate_limit = 10
 base-url = "https://api.openai.com/v1"
-# encoder = "cl100k_base"
-# host_name = "https://api.openai.com/v1"
-# localhost = "http://localhost:11434/"
 model = "gpt-6-sol"
-# path = "generate"
 temperature = 0.05
 max-tokens = 4096
 context-window = 200000
 top-p = 0.95
 
-# GitHub Actions Workflow Settings
 [quality.workflows]
 generate-workflows = true
-# workflows-output-dir = ".github/workflows"
 include-ruff = false
 use-uv = false
 include-tests = true
@@ -149,15 +104,11 @@ include-autopep8 = false
 include-fix-pep8 = false
 include-pypi = false
 python-versions = ["3.8", "3.9", "3.10"]
-pep8-tool = "flake8"                     # "flake8" or "pylint"
+pep8-tool = "flake8"
 use-poetry = false
 branches = ""
 codecov-token = false
 include-codecov = false
-
-################################################################
-########################### AGENTIC ############################
-################################################################
 
 [agentic.git]
 branch = ""

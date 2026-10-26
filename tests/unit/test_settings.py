@@ -1,22 +1,24 @@
 import os
+import tomllib
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 from unittest.mock import patch
 
-from osa_web import settings
-from osa_web.settings import DEFAULT_CONFIG_PATH, load_config
+from osa_web import __version__, settings
+from osa_web.settings import CONFIG_PATH, get_runtime_path, load_config
 
 
 class SettingsTests(TestCase):
+    def test_version_comes_from_pyproject(self) -> None:
+        with (settings.PROJECT_ROOT / "pyproject.toml").open("rb") as file:
+            self.assertEqual(__version__, tomllib.load(file)["project"]["version"])
+
     def test_explicit_config_overrides_defaults(self) -> None:
         with TemporaryDirectory() as tmpdir:
             override_path = Path(tmpdir) / "override.toml"
             override_path.write_text(
                 """
-                [paths]
-                tmp = "custom/tmp"
-
                 [fast.llm]
                 model = "override-model"
                 """,
@@ -25,14 +27,26 @@ class SettingsTests(TestCase):
 
             config = load_config(override_path)
 
-        self.assertEqual(config["paths"]["tmp"], "custom/tmp")
         self.assertEqual(config["fast"]["llm"]["model"], "override-model")
         self.assertIn("quality", config)
         self.assertIn("agentic", config)
         self.assertEqual(config["agentic"]["git"]["no-pull-request"], False)
 
-    def test_default_config_exists_for_docker_builds(self) -> None:
-        self.assertTrue(DEFAULT_CONFIG_PATH.exists())
+    def test_config_exists_for_docker_builds(self) -> None:
+        self.assertTrue(CONFIG_PATH.exists())
+
+    def test_runtime_paths_use_environment_with_relative_defaults(self) -> None:
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(get_runtime_path("tmp"), settings.PROJECT_ROOT / "runtime/tmp")
+            self.assertEqual(
+                get_runtime_path("log"), settings.PROJECT_ROOT / "runtime/logs/osa_web.logs"
+            )
+        with patch.dict(
+            os.environ,
+            {"OSA_WEB_TMP_DIR": "/var/essdata/tmp", "OSA_WEB_LOG_PATH": "server/logs/web.log"},
+        ):
+            self.assertEqual(get_runtime_path("tmp"), Path("/var/essdata/tmp"))
+            self.assertEqual(get_runtime_path("log"), settings.PROJECT_ROOT / "server/logs/web.log")
 
     def test_legacy_openrouter_provider_is_migrated_without_changing_real_itmo(self) -> None:
         with TemporaryDirectory() as tmpdir:
@@ -50,10 +64,8 @@ class SettingsTests(TestCase):
         with TemporaryDirectory() as tmpdir:
             missing_path = Path(tmpdir) / "missing.toml"
             with (
-                patch.object(settings, "DEFAULT_CONFIG_PATH", missing_path),
-                patch.object(settings, "LEGACY_CONFIG_PATH", missing_path),
-                patch.object(settings, "LOCAL_CONFIG_PATH", missing_path),
+                patch.object(settings, "CONFIG_PATH", missing_path),
                 patch.dict(os.environ, {}, clear=True),
+                self.assertRaisesRegex(RuntimeError, "config.toml"),
             ):
-                with self.assertRaisesRegex(RuntimeError, "config/default.toml"):
-                    load_config()
+                load_config()

@@ -15,16 +15,7 @@ def _select_pipeline_preset() -> None:
     reset_configuration_widgets()
 
 
-def render_configuration_tab() -> None:
-    if st.session_state.get(keys.WORK_MODE) == keys.WORK_MODE_AGENTIC:
-        st.caption("Agentic conversation: configure Git publishing and the language model.")
-        left, right = st.columns(2)
-        with left:
-            render_git_settings_block()
-        with right:
-            render_llm_settings_block()
-        return
-
+def render_pipeline_preset() -> None:
     selected_preset = st.session_state.get(keys.MODE_SELECT, "quality")
     if st.session_state.get(keys.CONFIGURATION_PRESET) != selected_preset:
         st.session_state[keys.CONFIGURATION_PRESET] = selected_preset
@@ -38,6 +29,19 @@ def render_configuration_tab() -> None:
         persist_state="session",
         help="Choose which automated pipeline preset to edit and run. Default: quality.",
     )
+
+
+def render_configuration_tab() -> None:
+    if st.session_state.get(keys.WORK_MODE) == keys.WORK_MODE_AGENTIC:
+        st.caption("Agentic conversation: configure Git publishing and the language model.")
+        left, right = st.columns(2)
+        with left:
+            render_git_settings_block()
+        with right:
+            render_llm_settings_block()
+        return
+
+    selected_preset = st.session_state.get(keys.MODE_SELECT, "quality")
     st.caption(f"Settings for the {selected_preset} preset.")
     left, center, right = st.columns([1, 1, 1])
     with left:

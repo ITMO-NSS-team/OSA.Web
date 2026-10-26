@@ -200,6 +200,7 @@ def render_workflows_settings_block() -> None:
                     "configuration-workflows-pep8-tool",
                 ],
                 options=("flake8", "pylint"),
+                index=("flake8", "pylint").index(current_workflows["pep8-tool"]),
                 help="""
                 Tool to use for PEP 8 checking
                 `Default: flake8`

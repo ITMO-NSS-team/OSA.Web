@@ -63,6 +63,35 @@ class ChatProcessTests(TestCase):
         process.cancel()
         self.assertFalse(process.running)
 
+    def test_failed_process_sends_last_diagnostics_with_exit_event(self) -> None:
+        script = "import sys; [print(f'line {i}', file=sys.stderr) for i in range(15)]; sys.exit(2)"
+        process = ChatProcess([sys.executable, "-u", "-c", script], {})
+        try:
+            event = collect_until(process, "process_exit")[-1]
+            self.assertEqual(event["exit_code"], 2)
+            self.assertEqual(event["diagnostics"], [f"line {i}" for i in range(5, 15)])
+        finally:
+            process.cancel()
+
+    def test_console_includes_protocol_error_and_stderr_after_failure(self) -> None:
+        script = """
+import json, sys
+event = {'type': 'error', 'message': 'Error code: 401 - User not found.', 'recoverable': False}
+print(json.dumps(event), flush=True)
+print('provider traceback', file=sys.stderr, flush=True)
+sys.exit(1)
+"""
+        process = ChatProcess([sys.executable, "-u", "-c", script], {})
+        try:
+            events = collect_until(process, "process_exit")
+            self.assertEqual([event["type"] for event in events], ["error", "process_exit"])
+            console = process.console_text
+            self.assertIn("[stdout]", console)
+            self.assertIn("401", console)
+            self.assertIn("[stderr] provider traceback", console)
+        finally:
+            process.cancel()
+
     def test_cancel_stops_child_process(self) -> None:
         script = """
 import json, subprocess, sys, time

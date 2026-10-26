@@ -5,6 +5,7 @@ import streamlit as st
 from osa_web.auth.state import get_display_name, is_guest_mode
 from osa_web.logging_config import logger
 from osa_web.osa_tool.command import build_osa_command
+from osa_web.osa_tool.endpoint import check_endpoint
 from osa_web.osa_tool.environment import build_osa_environment
 from osa_web.osa_tool.models import OsaRunRequest, ParsedOsaOutput
 from osa_web.osa_tool.output_parser import parse_output_line
@@ -36,6 +37,11 @@ async def run_osa_tool(output_container) -> None:
                 configuration=st.session_state[keys.CONFIGURATION],
                 attachment=attachment,
             )
+        )
+
+        await asyncio.to_thread(
+            check_endpoint,
+            st.session_state[keys.CONFIGURATION][st.session_state[keys.MODE_SELECT]]["llm"],
         )
 
         process = await asyncio.create_subprocess_exec(
@@ -88,7 +94,7 @@ async def run_osa_tool(output_container) -> None:
         st.session_state[keys.OUTPUT_EXIT_CODE] = await process.wait()
         if st.session_state[keys.OUTPUT_EXIT_CODE] == 0:
             st.session_state[keys.OUTPUT_MESSAGE] = (
-                f'Everything is alright! {f"**Pull Request created**: {parsed.pr_link}" if parsed.pr_link else ""}'
+                f"Everything is alright! {f'**Pull Request created**: {parsed.pr_link}' if parsed.pr_link else ''}"
             )
         else:
             stderr_output = await process.stderr.read()
@@ -100,8 +106,10 @@ async def run_osa_tool(output_container) -> None:
                 last_line,
                 error_message,
             )
-    except Exception as e:
-        st.error(f"Error executing OSA tool: {e!s}")
+    except Exception as e:  # noqa: BLE001 - Surface any launch failure in the UI.
+        st.session_state[keys.OUTPUT_EXIT_CODE] = 1
+        st.session_state[keys.OUTPUT_MESSAGE] = f"Error executing OSA tool: {e!s}"
+        st.session_state.setdefault(keys.OUTPUT_LOGS, "")
         logger.error(f"OSA tool execution failed: {e!s}", exc_info=True)
     finally:
         st.session_state[keys.RUNNING] = False

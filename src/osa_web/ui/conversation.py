@@ -12,11 +12,13 @@ from osa_web.auth.state import get_display_name, is_guest_mode
 from osa_web.logging_config import logger
 from osa_web.osa_tool.chat_process import ChatProcess
 from osa_web.osa_tool.command import build_chat_command
+from osa_web.osa_tool.endpoint import check_endpoint
 from osa_web.osa_tool.environment import build_osa_environment
 from osa_web.osa_tool.models import OsaChatRequest
 from osa_web.settings import get_runtime_path
 from osa_web.state import keys
 from osa_web.ui.attachment import render_attachment_block
+from osa_web.ui.publishing_confirmation import render_publishing_confirmation
 
 
 def _reset_conversation() -> None:
@@ -29,6 +31,8 @@ def _reset_conversation() -> None:
     st.session_state[keys.CHAT_QUESTION] = None
     st.session_state[keys.CHAT_PENDING] = None
     st.session_state[keys.CHAT_TERMINAL] = False
+    st.session_state[keys.CHAT_SHOW_CONSOLE] = False
+    st.session_state[keys.CHAT_RUN_LLM] = None
     st.session_state.pop(keys.CHAT_ATTACHMENT, None)
     st.session_state.pop("chat_attachment_selection_pills", None)
     st.session_state.pop(f"{keys.CHAT_ATTACHMENT}-dialog-source", None)
@@ -57,10 +61,11 @@ def _publishing_enabled() -> bool:
 def _start_run() -> None:
     pending = st.session_state[keys.CHAT_PENDING]
     config = st.session_state[keys.CONFIGURATION]
+    check_endpoint(config["agentic"]["llm"])
     command = build_chat_command(
         OsaChatRequest(
             output_dir=pending["output_dir"],
-            log_dir=str(get_runtime_path(config, "log").parent),
+            log_dir=str(get_runtime_path("log").parent),
             author=get_display_name(),
             configuration=config,
         )
@@ -85,9 +90,41 @@ def _start_run() -> None:
         process.cancel()
         raise
     st.session_state[keys.CHAT_PROCESS] = process
+    st.session_state[keys.CHAT_RUN_LLM] = config["agentic"]["llm"].copy()
     st.session_state[keys.CHAT_MESSAGES].append({"role": "user", "content": pending["request"]})
     st.session_state[keys.CHAT_PENDING] = None
     st.session_state[keys.CHAT_TERMINAL] = False
+
+
+def _record_start_failure(exc: Exception) -> None:
+    logger.exception("Could not start OSA chat")
+    st.session_state[keys.CHAT_MESSAGES].append(
+        {
+            "role": "assistant",
+            "type": "error",
+            "event": {"message": f"Could not start OSA chat: {exc}"},
+        }
+    )
+    st.session_state[keys.CHAT_PENDING] = None
+
+
+def _discard_pending_run() -> None:
+    st.session_state[keys.CHAT_PENDING] = None
+
+
+@st.dialog("Run OSA Tool", on_dismiss=_discard_pending_run)
+def confirm_agentic_run() -> None:
+    pending = st.session_state[keys.CHAT_PENDING]
+    cancelled, confirmed = render_publishing_confirmation(pending["repository"])
+    if cancelled:
+        _discard_pending_run()
+        st.rerun()
+    if confirmed:
+        try:
+            _start_run()
+        except (OSError, RuntimeError, ValueError) as exc:
+            _record_start_failure(exc)
+        st.rerun()
 
 
 def _stage_run(request: str, repository: str) -> None:
@@ -129,8 +166,7 @@ def _stage_run(request: str, repository: str) -> None:
         try:
             _start_run()
         except (OSError, RuntimeError, ValueError) as exc:
-            logger.exception("Could not start OSA chat")
-            st.error(f"Could not start OSA chat: {exc}")
+            _record_start_failure(exc)
 
 
 def _record_event(event: dict) -> None:
@@ -176,19 +212,31 @@ def _record_event(event: dict) -> None:
         else:
             st.session_state[keys.CHAT_TERMINAL] = True
             st.session_state[keys.CHAT_QUESTION] = None
+            st.session_state[keys.CHAT_SHOW_CONSOLE] = True
             st.session_state[keys.CHAT_MESSAGES].append(
                 {"role": "assistant", "type": "error", "event": event}
             )
         return
-    if kind == "process_exit" and not st.session_state[keys.CHAT_TERMINAL]:
+    if kind == "process_exit" and st.session_state[keys.CHAT_TERMINAL]:
+        if event.get("exit_code"):
+            for message in reversed(st.session_state[keys.CHAT_MESSAGES]):
+                if message.get("type") == "error":
+                    message["event"]["diagnostics"] = event.get("diagnostics") or []
+                    break
+        return
+    if kind == "process_exit":
         exit_code = event.get("exit_code")
         st.session_state[keys.CHAT_TERMINAL] = True
         st.session_state[keys.CHAT_QUESTION] = None
+        st.session_state[keys.CHAT_SHOW_CONSOLE] = True
         st.session_state[keys.CHAT_MESSAGES].append(
             {
                 "role": "assistant",
                 "type": "error",
-                "event": {"message": f"OSA stopped before completing (exit code {exit_code})."},
+                "event": {
+                    "message": f"OSA stopped before completing (exit code {exit_code}).",
+                    "diagnostics": event.get("diagnostics") or [],
+                },
             }
         )
 
@@ -244,6 +292,10 @@ def _render_messages() -> None:
                 st.warning(message["event"].get("message", "Run stopped."))
             elif kind == "error":
                 st.error(message["event"].get("message", "OSA failed."))
+                diagnostics = message["event"].get("diagnostics") or []
+                if diagnostics:
+                    st.caption("Recent OSA diagnostics")
+                    st.code("\n".join(diagnostics), language="text")
             else:
                 st.markdown(message["content"])
 
@@ -308,77 +360,105 @@ def _conversation_panel() -> None:
             _record_event(event)
 
     pending = st.session_state[keys.CHAT_PENDING]
-    if pending is not None:
-        st.warning(f"This run may create a fork or pull request for {pending['repository']}.")
-        with st.container(horizontal=True):
+    messages = st.session_state[keys.CHAT_MESSAGES]
+    terminal = st.session_state[keys.CHAT_TERMINAL]
+    has_session = process is not None or pending is not None or terminal or bool(messages)
+    outcome = next(
+        (
+            message.get("type")
+            for message in reversed(messages)
+            if message.get("type") in {"completed", "stopped", "error"}
+        ),
+        None,
+    )
+
+    if has_session:
+        controls_left, controls_right = st.columns([0.8, 0.2], gap="medium")
+        with controls_left:
+            if process is not None and process.running and not terminal:
+                if st.button(
+                    "Cancel run",
+                    key="chat-cancel-run",
+                    icon=":material/stop_circle:",
+                    help="Stop OSA and its child processes. Default: let the run continue.",
+                ):
+                    process.cancel()
+                    _record_event(
+                        {"type": "stopped", "reason": "cancelled", "message": "Run cancelled."}
+                    )
+                    st.rerun(scope="fragment")
+            elif outcome == "completed":
+                st.success("Run completed successfully.", icon=":material/check_circle:")
+        with controls_right:
             if st.button(
-                "Confirm publishing run",
-                type="primary",
-                key="chat-confirm",
-                help="Start the run with the configured Git publishing options.",
+                "New run",
+                key="chat-new-run",
+                icon=":material/add_circle_outline:",
+                width="stretch",
+                help="End and clear this run, including a running process.",
             ):
-                try:
-                    _start_run()
-                except (OSError, RuntimeError, ValueError) as exc:
-                    logger.exception("Could not start OSA chat")
-                    st.error(f"Could not start OSA chat: {exc}")
-                st.rerun(scope="fragment")
-            if st.button(
-                "Cancel",
-                key="chat-pending-cancel",
-                help="Discard the pending run before any work starts.",
-            ):
-                st.session_state[keys.CHAT_PENDING] = None
+                _reset_conversation()
                 st.rerun()
 
-    _render_messages()
-    progress = st.session_state[keys.CHAT_PROGRESS]
-    if progress:
-        with st.status(
-            "Agents working"
-            if process and process.running and not st.session_state[keys.CHAT_TERMINAL]
-            else "Agent steps",
-            state="running"
-            if process and process.running and not st.session_state[keys.CHAT_TERMINAL]
-            else "complete",
-            type="compact",
-            # This fragment reruns every second, which rebuilds the status block and
-            # discards any manual expansion; keep the agent steps open instead.
-            expanded=True,
-        ):
-            for item in progress[-20:]:
-                st.caption(item)
+    chat_column, steps_column = st.columns([0.8, 0.2], gap="medium")
+    with chat_column:
+        _render_messages()
+        question = st.session_state[keys.CHAT_QUESTION]
+        if question and process:
+            _render_question(question, process)
+        elif process is None and pending is None and not terminal:
+            st.caption("Request: describe the repository work for the agents.")
+            submission = st.chat_input(
+                "Describe what OSA should do",
+                key="agentic-request",
+            )
+            if submission:
+                _stage_run(submission, st.session_state.get("agentic-repository", ""))
+                st.rerun()
 
-    question = st.session_state[keys.CHAT_QUESTION]
-    if question and process:
-        _render_question(question, process)
-    elif process is None and pending is None and not st.session_state[keys.CHAT_TERMINAL]:
-        st.caption("Request: describe the repository work for the agents.")
-        submission = st.chat_input(
-            "Describe what OSA should do",
-            key="agentic-request",
+    with steps_column:
+        progress = st.session_state[keys.CHAT_PROGRESS]
+        if process is not None or progress:
+            working = process is not None and process.running and not terminal
+            with st.status(
+                "Agentic steps",
+                state="running"
+                if working
+                else "error"
+                if outcome in {"error", "stopped"}
+                else "complete",
+                type="compact",
+                # This fragment reruns every second, which rebuilds the status block and
+                # discards any manual expansion; keep the agent steps open instead.
+                expanded=True,
+            ):
+                if progress:
+                    for item in progress[-20:]:
+                        st.caption(item)
+                elif working:
+                    st.caption("Waiting for agent activity...")
+
+    if process is not None and st.toggle(
+        "See Console Output",
+        key=keys.CHAT_SHOW_CONSOLE,
+        help="Show recent OSA protocol output and stderr for this conversation.",
+    ):
+        llm = st.session_state[keys.CHAT_RUN_LLM] or {}
+        provider = f"Provider: {llm.get('api', 'unknown')} · Model: {llm.get('model', 'unknown')}"
+        if llm.get("api") != "itmo":
+            base_url = urlparse(llm.get("base-url") or "")
+            provider += f" · Base URL: {base_url._replace(query='', fragment='').geturl()}"
+        st.caption(provider)
+        st.code(
+            process.console_text or "Waiting for OSA output...",
+            language="text",
+            height=350,
         )
-        if submission:
-            _stage_run(submission, st.session_state.get("agentic-repository", ""))
-            st.rerun()
 
 
 def render_conversation_tab() -> None:
     process = st.session_state[keys.CHAT_PROCESS]
     active = process is not None or st.session_state[keys.CHAT_PENDING] is not None
-    has_session = (
-        active or st.session_state[keys.CHAT_TERMINAL] or bool(st.session_state[keys.CHAT_MESSAGES])
-    )
-    with st.container(horizontal=True, vertical_alignment="center"):
-        if has_session:
-            st.button(
-                "New conversation",
-                key="chat-new-conversation",
-                icon=":material/delete_outline:",
-                type="secondary",
-                on_click=_reset_conversation,
-                help="End and clear this conversation, including a running process. Default: keep this conversation.",
-            )
     st.container(height=5, border=False)
     st.markdown(
         '<h3 style="text-align: center;">To start an agentic conversation, please enter a GitHub repository URL and describe what you want OSA to do:</h3>',
@@ -395,17 +475,6 @@ def render_conversation_tab() -> None:
             help="GitHub repository URL, such as https://github.com/aimclub/OSA. Required; default: empty.",
         )
         render_attachment_block(keys.CHAT_ATTACHMENT, disabled=active, full_width_buttons=True)
-    if (
-        process is not None
-        and process.running
-        and not st.session_state[keys.CHAT_TERMINAL]
-        and st.button(
-            "Cancel run",
-            icon=":material/stop_circle:",
-            help="Stop OSA and its child processes. Default: let the run continue.",
-        )
-    ):
-        process.cancel()
-        _record_event({"type": "stopped", "reason": "cancelled", "message": "Run cancelled."})
-        st.rerun()
+    if st.session_state[keys.CHAT_PENDING] is not None:
+        confirm_agentic_run()
     _conversation_panel()

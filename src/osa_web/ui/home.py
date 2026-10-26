@@ -6,28 +6,17 @@ from osa_web.auth.state import is_guest_mode
 from osa_web.osa_tool.runner import run_osa_tool
 from osa_web.ui.attachment import render_attachment_block
 from osa_web.ui.configuration.schema import reset_configuration_widgets
+from osa_web.ui.publishing_confirmation import render_publishing_confirmation
 
 
 @st.dialog("Run OSA Tool")
 def confirm_public_run() -> None:
-    st.markdown(
-        "<h2>Are you sure, you want to create public Pull Request? </h2>",
-        unsafe_allow_html=True,
-    )
-    st.container(height=5, border=False)
-
-    st.markdown(
-        "To avoid creating a pull request, select **No pull request** in Configuration."
-    )
-
-    left, right = st.columns(2)
-    with left:
-        if st.button("Cancel", width="stretch", type="primary"):
-            st.rerun()
-    with right:
-        if st.button("Yes", width="stretch"):
-            st.session_state.running = True
-            st.rerun()
+    cancelled, confirmed = render_publishing_confirmation(st.session_state.repo_url.strip())
+    if cancelled:
+        st.rerun()
+    if confirmed:
+        st.session_state.running = True
+        st.rerun()
 
 
 def render_input_block() -> None:
@@ -72,7 +61,8 @@ def render_input_block() -> None:
 
 
 def _set_osa_running():
-    if not st.session_state.configuration[st.session_state.mode_select]["git"]["no-pull-request"]:
+    git = st.session_state.configuration[st.session_state.mode_select]["git"]
+    if not git["no-fork"] or not git["no-pull-request"]:
         confirm_public_run()
     else:
         st.session_state.running = True

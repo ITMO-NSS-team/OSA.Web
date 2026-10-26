@@ -7,10 +7,53 @@ import streamlit as st
 from osa_web.auth.state import is_guest_mode
 from osa_web.state import keys
 from osa_web.ui.configuration.schema import (
+    BASE_URL_PRESETS,
+    CUSTOM_ENDPOINT,
     configuration_callback,
     current_section,
+    endpoint_choice,
     selected_configuration_mode,
 )
+
+
+def _select_api() -> None:
+    configuration_callback("llm", "api", "configuration-llm-api")
+    st.session_state.pop("configuration-llm-endpoint", None)
+    st.session_state.pop("configuration-base-url", None)
+
+
+def _select_endpoint() -> None:
+    choice = st.session_state["configuration-llm-endpoint"]
+    if choice in BASE_URL_PRESETS:
+        current_section("llm")["base-url"] = BASE_URL_PRESETS[choice]
+    st.session_state.pop("configuration-base-url", None)
+
+
+def _render_base_url(current_llm: dict) -> None:
+    if current_llm["api"] == "openai":
+        selected = endpoint_choice(current_llm)
+        choice = st.selectbox(
+            "Base URL",
+            (*BASE_URL_PRESETS, CUSTOM_ENDPOINT),
+            index=(*BASE_URL_PRESETS, CUSTOM_ENDPOINT).index(selected),
+            key="configuration-llm-endpoint",
+            on_change=_select_endpoint,
+            help="Choose OpenAI or OpenRouter, or select Custom to enter another endpoint.",
+        )
+        if choice != CUSTOM_ENDPOINT:
+            st.caption(BASE_URL_PRESETS[choice])
+            if choice == "OpenRouter":
+                st.caption("Use an OpenRouter API key and a provider/model ID.")
+            return
+
+    st.text_input(
+        "Custom Base URL" if current_llm["api"] == "openai" else "Base URL",
+        key="configuration-base-url",
+        on_change=configuration_callback,
+        args=["llm", "base-url", "configuration-base-url"],
+        value=current_llm["base-url"],
+        help="Provider service URL. Default: https://api.openai.com/v1.",
+    )
 
 
 @st.fragment
@@ -40,8 +83,7 @@ def render_llm_settings_block() -> None:
             st.selectbox(
                 label="API",
                 key="configuration-llm-api",
-                on_change=configuration_callback,
-                args=["llm", "api", "configuration-llm-api"],
+                on_change=_select_api,
                 index=llm_api_options.index(current_llm["api"]),
                 options=llm_api_options,
                 help="""
@@ -59,14 +101,7 @@ def render_llm_settings_block() -> None:
                     **Please, refer to [Security Tips.](https://blog.streamlit.io/8-tips-for-securely-using-api-keys/)**
                     """,
             )
-            st.text_input(
-                label="Base URL",
-                key="configuration-base-url",
-                on_change=configuration_callback,
-                args=["llm", "base-url", "configuration-base-url"],
-                value=current_llm["base-url"],
-                help="Provider service URL. Default: https://api.openai.com/v1.",
-            )
+            _render_base_url(current_llm)
         else:
             if current_llm["api"] == "llama":
                 current_llm["api"] = "ollama"
@@ -74,8 +109,7 @@ def render_llm_settings_block() -> None:
             st.selectbox(
                 label="API",
                 key="configuration-llm-api",
-                on_change=configuration_callback,
-                args=["llm", "api", "configuration-llm-api"],
+                on_change=_select_api,
                 index=(
                     llm_api_options.index(current_llm["api"])
                     if "api" in current_llm and current_llm["api"] in llm_api_options
@@ -98,14 +132,7 @@ def render_llm_settings_block() -> None:
                         **Please, refer to [Security Tips.](https://blog.streamlit.io/8-tips-for-securely-using-api-keys/)**
                         """,
                 )
-                st.text_input(
-                    label="Base URL",
-                    key="configuration-base-url",
-                    on_change=configuration_callback,
-                    args=["llm", "base-url", "configuration-base-url"],
-                    value=current_llm["base-url"],
-                    help="Provider service URL. Default: https://api.openai.com/v1.",
-                )
+                _render_base_url(current_llm)
         st.text_input(
             label="Model",
             key="configuration-llm-model",

@@ -53,3 +53,55 @@ class ConversationTests(TestCase):
             )
         finally:
             shutil.rmtree(state[keys.CHAT_PENDING]["output_dir"])
+
+    def test_process_exit_preserves_diagnostics_for_error_message(self) -> None:
+        state = {
+            keys.CHAT_TERMINAL: False,
+            keys.CHAT_QUESTION: None,
+            keys.CHAT_MESSAGES: [],
+            keys.CHAT_SHOW_CONSOLE: False,
+        }
+        with patch.object(conversation.st, "session_state", state):
+            conversation._record_event(
+                {"type": "process_exit", "exit_code": 1, "diagnostics": ["invalid field"]}
+            )
+        self.assertEqual(state[keys.CHAT_MESSAGES][0]["event"]["diagnostics"], ["invalid field"])
+        self.assertTrue(state[keys.CHAT_SHOW_CONSOLE])
+
+    def test_protocol_error_keeps_stderr_on_process_exit(self) -> None:
+        state = {
+            keys.CHAT_TERMINAL: False,
+            keys.CHAT_QUESTION: None,
+            keys.CHAT_MESSAGES: [],
+            keys.CHAT_SHOW_CONSOLE: False,
+        }
+        with patch.object(conversation.st, "session_state", state):
+            conversation._record_event(
+                {
+                    "type": "error",
+                    "message": "Error code: 401 - User not found.",
+                    "recoverable": False,
+                }
+            )
+            conversation._record_event(
+                {"type": "process_exit", "exit_code": 1, "diagnostics": ["provider traceback"]}
+            )
+        self.assertEqual(len(state[keys.CHAT_MESSAGES]), 1)
+        self.assertEqual(
+            state[keys.CHAT_MESSAGES][0]["event"]["diagnostics"],
+            ["provider traceback"],
+        )
+        self.assertTrue(state[keys.CHAT_SHOW_CONSOLE])
+
+    def test_start_failure_remains_visible_after_rerun(self) -> None:
+        state = {
+            keys.CHAT_PENDING: {"repository": "https://github.com/example/repo"},
+            keys.CHAT_MESSAGES: [],
+        }
+        with (
+            patch.object(conversation.st, "session_state", state),
+            patch.object(conversation.logger, "exception"),
+        ):
+            conversation._record_start_failure(RuntimeError("Cannot reach LLM Base URL"))
+        self.assertIsNone(state[keys.CHAT_PENDING])
+        self.assertIn("Cannot reach LLM Base URL", state[keys.CHAT_MESSAGES][0]["event"]["message"])
