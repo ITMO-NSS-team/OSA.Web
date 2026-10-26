@@ -61,6 +61,8 @@ def _render_replay(run: PastRun) -> None:
     if run.work_mode == keys.WORK_MODE_AGENTIC:
         chat_column, steps_column = st.columns([0.8, 0.2], gap="medium")
         with chat_column:
+            if run.request_reconstructed:
+                st.caption("Opening request reconstructed from the recorded result.")
             with st.chat_message("user"):
                 st.markdown(run.request or "")
             if finished:
@@ -136,7 +138,10 @@ def render_past_runs_tab(work_mode: str) -> None:
             )
         else:
             st.text_area(
-                "Request", value=run.request or "", disabled=True, key=f"past-run-request-{run.id}"
+                "Reconstructed request" if run.request_reconstructed else "Request",
+                value=run.request or "",
+                disabled=True,
+                key=f"past-run-request-{run.id}",
             )
         st.caption(f"Recorded {run.completed_at} · {run.outcome.capitalize()}")
         st.link_button("View repository", run.repository_url)

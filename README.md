@@ -139,7 +139,7 @@ streamlit run streamlit_app.py
 
 The compatibility entrypoint adds `src/` to `sys.path` and calls `osa_web.app.main()`.
 
-Choose **Agentic conversation** on Home, enter a repository URL and an initial request, and optionally add a PDF, DOCX, or public attachment URL with the shared attachment picker. Answer the agents' questions and approve or request revisions there. In either work mode, a run that can create a fork or pull request requires confirmation before it starts. Agentic steps appear beside the chat, and a completed run shows a success marker in place of **Cancel run**. Conversation history lasts for the browser session. Use **New run** to clear it.
+Choose **Agentic conversation** on Home, enter a repository URL and an initial request, and optionally add a PDF, DOCX, or public attachment URL with the shared attachment picker. Answer the agents' questions and approve or request revisions there. In either work mode, a run that can create a fork or pull request requires confirmation before it starts. Agentic steps appear beside the chat. While a run is active, an elapsed timer with a spinner appears beside **Cancel run**; both disappear when the run finishes, and a successful run shows **Run completed successfully**. Conversation history lasts for the browser session. Use **New run** to clear it.
 
 Use **See Console Output** below the chat and agentic steps to inspect recent OSA events and stderr. It opens automatically after a fatal error, including provider errors such as HTTP 401. The view remains available until you select **New run**.
 
@@ -194,7 +194,10 @@ value with the actual run details:
 
 For an agentic run, set `work_mode` to `Agentic conversation`, replace
 `preset` with `request` containing the initial user request, and use the
-agent's final summary and key task results. Valid outcomes are `completed`,
+agent's final summary and key task results. If the exact opening message was
+not captured, use a short request consistent with the recorded tasks and set
+`"request_reconstructed": true`; the replay labels it as reconstructed.
+Valid outcomes are `completed`,
 `failed`, and `stopped`; automated presets are `fast` and `quality`. The
 optional `pull_request_url` must be a public pull request for the same
 repository. Use a distinct ID containing only letters, numbers, hyphens, and

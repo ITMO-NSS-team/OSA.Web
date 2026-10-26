@@ -87,6 +87,15 @@ class PastRunDataTests(TestCase):
             parse_past_runs([PIPELINE, PIPELINE])
         with self.assertRaisesRegex(ValueError, "missing fields"):
             parse_past_runs([{key: value for key, value in AGENTIC.items() if key != "request"}])
+        with self.assertRaisesRegex(ValueError, "request_reconstructed must be a boolean"):
+            parse_past_runs([{**AGENTIC, "request_reconstructed": "yes"}])
+        with self.assertRaisesRegex(ValueError, "unexpected fields"):
+            parse_past_runs([{**PIPELINE, "request_reconstructed": True}])
+
+    def test_accepts_labeled_reconstructed_request(self) -> None:
+        run = parse_past_runs([{**AGENTIC, "request_reconstructed": True}])[0]
+
+        self.assertTrue(run.request_reconstructed)
 
     def test_replay_progress_completes_in_five_seconds(self) -> None:
         self.assertEqual(replay_frame(10, 10, 2, 4), (0.0, 0, 0))
@@ -120,6 +129,26 @@ class PastRunAppTests(TestCase):
         self.assertEqual(len(app.tabs), 3)
         self.assertEqual(app.segmented_control(key="work_mode").value, "Automated pipeline")
         self.assertTrue(any("No replay-ready runs" in item.value for item in app.info))
+
+    def test_reconstructed_agentic_request_is_labeled(self) -> None:
+        record = replace(
+            parse_past_runs([{**AGENTIC, "request_reconstructed": True}])[0],
+            replay_lines=("[stdout] completed",),
+        )
+        with patch("osa_web.ui.past_runs.load_past_runs", return_value=[record]):
+            app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
+            next(
+                button for button in app.button if button.label == "Continue as guest"
+            ).click().run()
+            app.segmented_control(key="work_mode").set_value("Agentic conversation").run()
+            self._open_past_runs(app)
+            self.assertEqual(
+                app.text_area(key="past-run-request-agentic-one").label,
+                "Reconstructed request",
+            )
+            app.button(key="past-run-start").click().run()
+        self.assertFalse(app.exception)
+        self.assertTrue(any("Opening request reconstructed" in item.value for item in app.caption))
 
     def test_guest_can_filter_numbered_results_and_open_details(self) -> None:
         records = parse_past_runs(

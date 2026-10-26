@@ -187,6 +187,7 @@ class AppTests(TestCase):
         app.run()
         self.assertIsNotNone(app.button(key="chat-cancel-run"))
         self.assertIsNotNone(app.button(key="chat-new-run"))
+        self.assertTrue(any(item.label.startswith("In progress... ") for item in app.status))
         self.assertTrue(any(item.label == "See Console Output" for item in app.expander))
         self.assertTrue(
             any(item.label == "Download console output" for item in app.download_button)
@@ -198,5 +199,6 @@ class AppTests(TestCase):
         app.run()
         self.assertFalse(app.exception)
         self.assertFalse(any(button.label == "Cancel run" for button in app.button))
+        self.assertFalse(any(item.label.startswith("In progress... ") for item in app.status))
         self.assertTrue(any(item.value == "Run completed successfully." for item in app.success))
         self.assertTrue(any(item.label == "Agentic steps" for item in app.status))

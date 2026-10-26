@@ -1,4 +1,5 @@
 import shutil
+from datetime import UTC, datetime, timedelta
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -7,6 +8,14 @@ from osa_web.ui import conversation
 
 
 class ConversationTests(TestCase):
+    def test_elapsed_run_time(self) -> None:
+        started = datetime(2026, 10, 26, 10, 0, tzinfo=UTC)
+
+        self.assertEqual(
+            conversation._elapsed_time(started, started + timedelta(seconds=65)), "01:05"
+        )
+        self.assertEqual(conversation._elapsed_time(None, started), "00:00")
+
     def test_repository_url_requires_a_github_repository(self) -> None:
         self.assertTrue(conversation._is_github_repository_url("https://github.com/example/repo"))
         for value in (

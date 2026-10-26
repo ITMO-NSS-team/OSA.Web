@@ -43,6 +43,7 @@ class PastRun:
     pull_request_url: str | None = None
     preset: str | None = None
     request: str | None = None
+    request_reconstructed: bool = False
     replay_lines: tuple[str, ...] = ()
 
     @property
@@ -99,8 +100,9 @@ def parse_past_runs(data: object) -> list[PastRun]:
             if mode not in {keys.WORK_MODE_PIPELINE, keys.WORK_MODE_AGENTIC}:
                 raise ValueError("work_mode must be Automated pipeline or Agentic conversation")
             specific = {"preset"} if mode == keys.WORK_MODE_PIPELINE else {"request"}
+            mode_optional = {"request_reconstructed"} if mode == keys.WORK_MODE_AGENTIC else set()
             missing = (REQUIRED_FIELDS | specific) - raw.keys()
-            extra = raw.keys() - (REQUIRED_FIELDS | OPTIONAL_FIELDS | specific)
+            extra = raw.keys() - (REQUIRED_FIELDS | OPTIONAL_FIELDS | specific | mode_optional)
             if missing or extra:
                 raise ValueError(
                     f"missing fields: {sorted(missing)}; unexpected fields: {sorted(extra)}"
@@ -134,12 +136,16 @@ def parse_past_runs(data: object) -> list[PastRun]:
                     raise ValueError("pull_request_url must belong to the repository")
 
             preset = request = None
+            request_reconstructed = False
             if mode == keys.WORK_MODE_PIPELINE:
                 preset = _nonempty_text(raw, "preset")
                 if preset not in {"fast", "quality"}:
                     raise ValueError("preset must be fast or quality")
             else:
                 request = _nonempty_text(raw, "request")
+                request_reconstructed = raw.get("request_reconstructed", False)
+                if not isinstance(request_reconstructed, bool):
+                    raise ValueError("request_reconstructed must be a boolean")
 
             runs.append(
                 PastRun(
@@ -153,6 +159,7 @@ def parse_past_runs(data: object) -> list[PastRun]:
                     pull_request_url=pull_request_url,
                     preset=preset,
                     request=request,
+                    request_reconstructed=request_reconstructed,
                 )
             )
         except (ValueError, TypeError) as exc:

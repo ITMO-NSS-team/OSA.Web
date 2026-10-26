@@ -61,6 +61,14 @@ def _publishing_enabled() -> bool:
     return not git["no-fork"] or not git["no-pull-request"]
 
 
+def _elapsed_time(started_at: datetime | None, now: datetime | None = None) -> str:
+    if started_at is None:
+        return "00:00"
+    seconds = max(0, int(((now or datetime.now(UTC)) - started_at).total_seconds()))
+    minutes, seconds = divmod(seconds, 60)
+    return f"{minutes:02}:{seconds:02}"
+
+
 def _start_run() -> None:
     pending = st.session_state[keys.CHAT_PENDING]
     config = st.session_state[keys.CONFIGURATION]
@@ -380,17 +388,27 @@ def _conversation_panel() -> None:
         controls_left, controls_right = st.columns([0.8, 0.2], gap="medium")
         with controls_left:
             if process is not None and process.running and not terminal:
-                if st.button(
-                    "Cancel run",
-                    key="chat-cancel-run",
-                    icon=":material/stop_circle:",
-                    help="Stop OSA and its child processes. Default: let the run continue.",
-                ):
-                    process.cancel()
-                    _record_event(
-                        {"type": "stopped", "reason": "cancelled", "message": "Run cancelled."}
+                cancel_column, progress_column = st.columns(
+                    [0.25, 0.75], gap="small", vertical_alignment="center"
+                )
+                with cancel_column:
+                    if st.button(
+                        "Cancel run",
+                        key="chat-cancel-run",
+                        icon=":material/stop_circle:",
+                        help="Stop OSA and its child processes. Default: let the run continue.",
+                    ):
+                        process.cancel()
+                        _record_event(
+                            {"type": "stopped", "reason": "cancelled", "message": "Run cancelled."}
+                        )
+                        st.rerun(scope="fragment")
+                with progress_column:
+                    st.status(
+                        f"In progress... {_elapsed_time(st.session_state.get(keys.CHAT_STARTED_AT))}",
+                        state="running",
+                        type="compact",
                     )
-                    st.rerun(scope="fragment")
             elif outcome == "completed":
                 st.success("Run completed successfully.", icon=":material/check_circle:")
         with controls_right:
