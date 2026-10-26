@@ -13,6 +13,24 @@ PROJECT_VERSION = tomllib.loads((ENTRYPOINT.parent / "pyproject.toml").read_text
 
 
 class AppTests(TestCase):
+    def test_pipeline_error_lines_show_failure_and_console_download(self) -> None:
+        app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
+        next(button for button in app.button if button.label == "Continue as guest").click().run()
+        app.session_state["repo_url"] = "https://github.com/aimclub/OSA"
+        app.session_state["output_logs"] = "ERROR - Error code: 401 - invalid_api_key\n"
+        app.session_state["output_exit_code"] = 0
+        app.session_state["output_has_errors"] = True
+        app.session_state["output_message"] = "OSA reported an LLM authentication error (HTTP 401)."
+        app.run()
+
+        self.assertFalse(app.exception)
+        self.assertTrue(any("HTTP 401" in item.value for item in app.error))
+        self.assertFalse(any("Everything is alright" in item.value for item in app.success))
+        self.assertTrue(any(item.label == "See Console Output" for item in app.expander))
+        self.assertTrue(
+            any(item.label == "Download console output" for item in app.download_button)
+        )
+
     def test_pipeline_preset_round_trip_keeps_its_own_fields(self) -> None:
         app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
         next(button for button in app.button if button.label == "Continue as guest").click().run()
@@ -129,7 +147,7 @@ class AppTests(TestCase):
     def test_completed_agentic_run_replaces_cancel_with_success_marker(self) -> None:
         class FakeProcess:
             running = True
-            console_text = ""
+            console_text = "[stdout] started"
 
             def __init__(self) -> None:
                 self.events: list[dict] = []
@@ -146,11 +164,16 @@ class AppTests(TestCase):
         app.segmented_control(key="work_mode").set_value("Agentic conversation").run()
         process = FakeProcess()
         app.session_state["chat_process"] = process
+        app.session_state["agentic-repository"] = "https://github.com/aimclub/OSA"
         app.session_state["chat_messages"] = [{"role": "user", "content": "Improve README"}]
         app.session_state["chat_progress"] = ["Planner: working"]
         app.run()
         self.assertIsNotNone(app.button(key="chat-cancel-run"))
         self.assertIsNotNone(app.button(key="chat-new-run"))
+        self.assertTrue(any(item.label == "See Console Output" for item in app.expander))
+        self.assertTrue(
+            any(item.label == "Download console output" for item in app.download_button)
+        )
 
         process.events.append(
             {"type": "completed", "summary": "README improved", "tasks": [], "artifacts": []}

@@ -10,6 +10,7 @@ ABOUT_PATTERN = re.compile(
     r".*- Topics:.*|.*Please review and add them to your repository.*)"
 )
 PR_PATTERN = re.compile(r".*pull request created successfully: (\S*)")
+ERROR_PATTERN = re.compile(r"\bERROR\s+(?:\[[^]]+\]\s*-\s*)?(.*)")
 
 
 def parse_output_line(line: str, parsed: ParsedOsaOutput | None = None) -> ParsedOsaOutput:
@@ -26,4 +27,25 @@ def parse_output_line(line: str, parsed: ParsedOsaOutput | None = None) -> Parse
     if match := PR_PATTERN.search(line):
         parsed.pr_link = match.group(1)
 
+    if match := ERROR_PATTERN.search(line):
+        parsed.error_lines.append(match.group(1).strip()[:1000])
+
     return parsed
+
+
+def result_message(exit_code: int, parsed: ParsedOsaOutput, last_line: str | None) -> str:
+    """Describe the result without treating a zero exit code as proof of success."""
+    if parsed.error_lines:
+        if any(
+            "Error code: 401" in line or "invalid_api_key" in line for line in parsed.error_lines
+        ):
+            return (
+                "OSA reported an LLM authentication error (HTTP 401). "
+                "Check the configured API key and see console output."
+            )
+        return "OSA reported errors during the run. See console output for details."
+    if exit_code:
+        return f"**Error running OSA tool**: `{last_line or f'exit code {exit_code}'}`"
+    if parsed.pr_link:
+        return f"Everything is alright! **Pull Request created**: {parsed.pr_link}"
+    return "Everything is alright!"

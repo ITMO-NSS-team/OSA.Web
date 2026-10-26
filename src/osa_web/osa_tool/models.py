@@ -28,6 +28,7 @@ class ParsedOsaOutput:
     report_filenames: list[str] = field(default_factory=list)
     about_section: str = ""
     pr_link: str | None = None
+    error_lines: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

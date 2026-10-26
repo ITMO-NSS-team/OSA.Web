@@ -9,6 +9,7 @@ import streamlit as st
 
 from osa_web.past_runs import PastRun, load_past_runs
 from osa_web.state import keys
+from osa_web.ui.console_output import render_console_output
 
 REPLAY_SECONDS = 5.0
 REPLAY_STATE = "past-run-replay"
@@ -34,8 +35,12 @@ def _render_final_result(run: PastRun) -> None:
 
 
 def _render_console(run: PastRun, visible_lines: int) -> None:
-    with st.expander("See Console Output", expanded=True, icon=":material/terminal:"):
-        st.code("\n".join(run.replay_lines[:visible_lines][-60:]), language="text", height=350)
+    render_console_output(
+        "\n".join(run.replay_lines[:visible_lines][-60:]),
+        run.repository_url,
+        expanded=True,
+        downloadable=False,
+    )
 
 
 @st.fragment(run_every="0.5s")

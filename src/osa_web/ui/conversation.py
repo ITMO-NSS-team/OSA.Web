@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import tempfile
+from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -18,6 +19,7 @@ from osa_web.osa_tool.models import OsaChatRequest
 from osa_web.settings import get_runtime_path
 from osa_web.state import keys
 from osa_web.ui.attachment import render_attachment_block
+from osa_web.ui.console_output import render_console_output
 from osa_web.ui.publishing_confirmation import render_publishing_confirmation
 
 
@@ -33,6 +35,7 @@ def _reset_conversation() -> None:
     st.session_state[keys.CHAT_TERMINAL] = False
     st.session_state[keys.CHAT_SHOW_CONSOLE] = False
     st.session_state[keys.CHAT_RUN_LLM] = None
+    st.session_state.pop(keys.CHAT_STARTED_AT, None)
     st.session_state.pop(keys.CHAT_ATTACHMENT, None)
     st.session_state.pop("chat_attachment_selection_pills", None)
     st.session_state.pop(f"{keys.CHAT_ATTACHMENT}-dialog-source", None)
@@ -90,6 +93,7 @@ def _start_run() -> None:
         process.cancel()
         raise
     st.session_state[keys.CHAT_PROCESS] = process
+    st.session_state[keys.CHAT_STARTED_AT] = datetime.now(UTC)
     st.session_state[keys.CHAT_RUN_LLM] = config["agentic"]["llm"].copy()
     st.session_state[keys.CHAT_MESSAGES].append({"role": "user", "content": pending["request"]})
     st.session_state[keys.CHAT_PENDING] = None
@@ -438,29 +442,19 @@ def _conversation_panel() -> None:
                 elif working:
                     st.caption("Waiting for agent activity...")
 
-    if process is not None and st.toggle(
-        "See Console Output",
-        key=keys.CHAT_SHOW_CONSOLE,
-        help="Show recent OSA protocol output and stderr for this conversation.",
-    ):
+    if process is not None:
         llm = st.session_state[keys.CHAT_RUN_LLM] or {}
         provider = f"Provider: {llm.get('api', 'unknown')} · Model: {llm.get('model', 'unknown')}"
         if llm.get("api") != "itmo":
             base_url = urlparse(llm.get("base-url") or "")
             provider += f" · Base URL: {base_url._replace(query='', fragment='').geturl()}"
-        st.caption(provider)
-        st.code(
-            process.console_text or "Waiting for OSA output...",
-            language="text",
-            height=350,
+        render_console_output(
+            process.console_text,
+            st.session_state.get("agentic-repository", ""),
+            started_at=st.session_state.get(keys.CHAT_STARTED_AT),
+            caption=provider,
+            expanded=st.session_state[keys.CHAT_SHOW_CONSOLE],
         )
-        if process.console_text:
-            st.download_button(
-                "Download console output",
-                data=process.console_text,
-                file_name="osa-console-output.txt",
-                mime="text/plain",
-            )
 
 
 def render_conversation_tab() -> None:

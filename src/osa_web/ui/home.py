@@ -6,6 +6,7 @@ from osa_web.auth.state import is_guest_mode
 from osa_web.osa_tool.runner import run_osa_tool
 from osa_web.ui.attachment import render_attachment_block
 from osa_web.ui.configuration.schema import reset_configuration_widgets
+from osa_web.ui.console_output import render_console_output
 from osa_web.ui.publishing_confirmation import render_publishing_confirmation
 
 
@@ -105,7 +106,9 @@ def render_output_block(output_container) -> None:
                 return
             left, right = st.columns([0.6, 0.4], vertical_alignment="center")
             with left:
-                if st.session_state.output_exit_code == 0:
+                if st.session_state.output_exit_code == 0 and not st.session_state.get(
+                    "output_has_errors", False
+                ):
                     st.success(
                         st.session_state.output_message,
                         icon=":material/check_circle:",
@@ -134,18 +137,13 @@ def render_output_block(output_container) -> None:
             if "output_about_section" in st.session_state:
                 with st.expander("About section", expanded=True, icon=":material/article:"):
                     st.write(st.session_state.output_about_section)
-            # TODO: developer only
-            with st.expander("See Console Output", icon=":material/terminal:"):
-                st.code(
-                    st.session_state.output_logs,
-                    height=350,
-                )
-                st.download_button(
-                    "Download console output",
-                    data=st.session_state.output_logs,
-                    file_name="osa-console-output.txt",
-                    mime="text/plain",
-                )
+            render_console_output(
+                st.session_state.output_logs,
+                st.session_state.repo_url,
+                started_at=st.session_state.get("run_started_at"),
+                expanded=st.session_state.output_exit_code != 0
+                or st.session_state.get("output_has_errors", False),
+            )
 
 
 def render_main_tab() -> None:

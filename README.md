@@ -160,10 +160,11 @@ Each demo needs two files:
    Keep 1–300 nonempty lines and at most 256 KB. Lines and steps are spread
    evenly over five seconds; original timing is not required.
 
-After each automated run, use **Download console output** inside **See Console
-Output**. After each agentic run, use the same button below its console view;
-that view holds recent output, so save it before starting a new run. Rename the
-downloaded file to `<id>.txt` in `src/osa_web/data/replays/`, then trim it to
+After each automated or agentic run, use **Download console output** inside
+**See Console Output**. Downloads are named `<owner>-<repository>-<UTC start
+time>.txt`, for example `aimclub-osa-20261026-025500Z.txt`. The agentic view
+holds recent output, so save it before starting a new run. Use the filename
+stem as the JSON `id` and save the file in `src/osa_web/data/replays/`; trim it to
 the relevant run. Record the automated preset or initial agentic request, the
 final summary, and key steps in the JSON object. A server log can also supply
 the excerpt. Review it before committing: remove credentials, private data,
