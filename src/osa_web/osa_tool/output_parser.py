@@ -50,6 +50,16 @@ def result_message(exit_code: int, parsed: ParsedOsaOutput, last_line: str | Non
                 "OSA reported an LLM authentication error (HTTP 401). "
                 "Check the configured API key and see console output."
             )
+        requirements_error = "Fatal error: Could not generate requirements."
+        if any(requirements_error in line for line in parsed.error_lines) and all(
+            requirements_error in line
+            or ("pipreqs" in line and "returned non-zero exit status" in line)
+            for line in parsed.error_lines
+        ):
+            return (
+                "OSA finished, but requirements generation failed because pipreqs exited "
+                "with an error. Other operations continued. See console output."
+            )
         return "OSA reported errors during the run. See console output for details."
     if exit_code:
         return f"**Error running OSA tool**: `{last_line or f'exit code {exit_code}'}`"

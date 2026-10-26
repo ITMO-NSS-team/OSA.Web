@@ -4,6 +4,21 @@ from osa_web.osa_tool.output_parser import parse_output_line, result_message
 
 
 class OutputParserTests(TestCase):
+    def test_failed_requirements_remain_visible_after_success_banner(self) -> None:
+        parsed = parse_output_line(
+            "ERROR [06:33:47] - Fatal error: Could not generate requirements."
+        )
+        parse_output_line(
+            "ERROR [06:33:47] - Command '['pipreqs', '--force']' returned non-zero exit status 1.",
+            parsed,
+        )
+        parse_output_line("INFO - README.md generated", parsed)
+        parse_output_line("All operations completed successfully", parsed)
+
+        self.assertEqual(len(parsed.error_lines), 2)
+        self.assertIn("requirements generation failed", result_message(0, parsed, None))
+        self.assertNotIn("Everything is alright", result_message(0, parsed, None))
+
     def test_pepy_401_is_nonfatal_after_successful_run(self) -> None:
         parsed = parse_output_line(
             "[05:39:07] ERROR [05:39:07] - [PyPiInspector] "
