@@ -454,6 +454,13 @@ def _conversation_panel() -> None:
             language="text",
             height=350,
         )
+        if process.console_text:
+            st.download_button(
+                "Download console output",
+                data=process.console_text,
+                file_name="osa-console-output.txt",
+                mime="text/plain",
+            )
 
 
 def render_conversation_tab() -> None:

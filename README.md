@@ -123,7 +123,7 @@ Do not commit `.env` or real API keys.
 │   ├── ui/                   # Streamlit screens and widgets
 │   ├── osa_tool/             # CLI command, runner, and output parser
 │   ├── state/                # session-state helpers
-│   ├── data/past_runs.json   # curated public run results
+│   ├── data/                # curated run catalogue and replay excerpts
 │   └── assets/               # packaged static assets
 ├── tests/
 │   └── unit/                 # pure unit tests
@@ -145,20 +145,33 @@ Use **See Console Output** below the chat and agentic steps to inspect recent OS
 
 ### Past runs
 
-The **Past runs** tab shows public examples for the selected **Work mode** to
-guests and signed-in users. Its numbered items open to show a repository link,
-outcome, summary, key steps, and a pull request link when available. The tab is
-read-only; new runs are not saved automatically.
+The **Past runs** tab lets guests and signed-in users select a repository and
+press **Run demo**. It replays a saved console excerpt and key steps over five
+seconds, then shows the recorded result and public pull request link. This is
+read-only: it does not call OSA, an LLM, or GitHub, and new runs are not saved
+automatically. The list is numbered separately for each **Work mode**.
 
-To add a real run, append a record to `src/osa_web/data/past_runs.json`. The
-file starts as `[]` until results are available. Use the final UI result and
-the run log to write a short, reviewed summary and steps. A log file by itself
-does not supply the structured details for both work modes. Do not add logs,
-attachments, PDFs, credentials, private content, or local file paths to the
-public catalogue.
+Each demo needs two files:
 
-For an automated run, use this template and replace every example value with
-the actual run details:
+1. One metadata object in `src/osa_web/data/past_runs.json`, including the
+   repository URL, actual run input, outcome, summary, and key steps.
+2. A reviewed UTF-8 console excerpt at
+   `src/osa_web/data/replays/<id>.txt`, where `<id>` matches the metadata ID.
+   Keep 1–300 nonempty lines and at most 256 KB. Lines and steps are spread
+   evenly over five seconds; original timing is not required.
+
+After each automated run, use **Download console output** inside **See Console
+Output**. After each agentic run, use the same button below its console view;
+that view holds recent output, so save it before starting a new run. Rename the
+downloaded file to `<id>.txt` in `src/osa_web/data/replays/`, then trim it to
+the relevant run. Record the automated preset or initial agentic request, the
+final summary, and key steps in the JSON object. A server log can also supply
+the excerpt. Review it before committing: remove credentials, private data,
+local paths, and irrelevant diagnostics. Do not add attachments or PDFs. A JSON
+entry without its matching replay file stays out of the playable list.
+
+For an automated run, use this metadata template and replace every example
+value with the actual run details:
 
 ```json
 {
@@ -179,8 +192,16 @@ For an agentic run, set `work_mode` to `Agentic conversation`, replace
 agent's final summary and key task results. Valid outcomes are `completed`,
 `failed`, and `stopped`; automated presets are `fast` and `quality`. The
 optional `pull_request_url` must be a public pull request for the same
-repository. Use a distinct `id` for each record. The tab numbers entries
-separately within each work mode in file order.
+repository. Use a distinct ID containing only letters, numbers, hyphens, and
+underscores; save its excerpt as `<id>.txt`. Entries with replay files appear
+in catalogue order. Replace any `OWNER/REPO` placeholder records before a
+public demonstration.
+
+Validate the catalogue and replay files locally with:
+
+```bash
+PYTHONPATH=src venv/bin/python -c "from osa_web.past_runs import load_past_runs; runs = load_past_runs(); print(f'{sum(bool(run.replay_lines) for run in runs)} replay-ready runs')"
+```
 
 Local Streamlit development uses polling for source changes to avoid Linux inotify watch-limit errors. Docker continues to disable file watching.
 

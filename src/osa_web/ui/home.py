@@ -140,6 +140,12 @@ def render_output_block(output_container) -> None:
                     st.session_state.output_logs,
                     height=350,
                 )
+                st.download_button(
+                    "Download console output",
+                    data=st.session_state.output_logs,
+                    file_name="osa-console-output.txt",
+                    mime="text/plain",
+                )
 
 
 def render_main_tab() -> None:

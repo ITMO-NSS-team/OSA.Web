@@ -24,7 +24,7 @@ dev = ["pytest>=8", "ruff>=0.8"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-osa_web = ["assets/*", "data/*.json"]
+osa_web = ["assets/*", "data/*.json", "data/replays/*.txt"]
 
 [tool.ruff]
 line-length = 100

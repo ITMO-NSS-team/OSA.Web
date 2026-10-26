@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from importlib.resources import files
 from pathlib import Path
@@ -26,6 +26,9 @@ OPTIONAL_FIELDS = {"pull_request_url"}
 GITHUB_OWNER = re.compile(r"[A-Za-z0-9-]+\Z")
 GITHUB_REPOSITORY = re.compile(r"[A-Za-z0-9._-]+\Z")
 DATE_PATTERN = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
+RUN_ID_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z")
+MAX_REPLAY_BYTES = 256_000
+MAX_REPLAY_LINES = 300
 
 
 @dataclass(frozen=True)
@@ -40,6 +43,7 @@ class PastRun:
     pull_request_url: str | None = None
     preset: str | None = None
     request: str | None = None
+    replay_lines: tuple[str, ...] = ()
 
     @property
     def repository_name(self) -> str:
@@ -103,6 +107,8 @@ def parse_past_runs(data: object) -> list[PastRun]:
                 )
 
             run_id = _nonempty_text(raw, "id")
+            if not RUN_ID_PATTERN.fullmatch(run_id):
+                raise ValueError("id must contain only letters, numbers, hyphens, and underscores")
             if run_id in seen_ids:
                 raise ValueError(f"duplicate id: {run_id}")
             seen_ids.add(run_id)
@@ -155,5 +161,20 @@ def parse_past_runs(data: object) -> list[PastRun]:
 
 
 def load_past_runs(path: Path | None = None) -> list[PastRun]:
-    source = path or files("osa_web").joinpath("data", "past_runs.json")
-    return parse_past_runs(json.loads(source.read_text(encoding="utf-8")))
+    data_dir = path.parent if path is not None else files("osa_web").joinpath("data")
+    source = path or data_dir.joinpath("past_runs.json")
+    runs = parse_past_runs(json.loads(source.read_text(encoding="utf-8")))
+    result = []
+    for run in runs:
+        replay_file = data_dir.joinpath("replays", f"{run.id}.txt")
+        if not replay_file.is_file():
+            result.append(run)
+            continue
+        content = replay_file.read_bytes()
+        if len(content) > MAX_REPLAY_BYTES:
+            raise ValueError(f"Replay for {run.id} exceeds {MAX_REPLAY_BYTES} bytes")
+        lines = tuple(line for line in content.decode("utf-8").splitlines() if line)
+        if not lines or len(lines) > MAX_REPLAY_LINES:
+            raise ValueError(f"Replay for {run.id} must contain 1-{MAX_REPLAY_LINES} lines")
+        result.append(replace(run, replay_lines=lines))
+    return result
