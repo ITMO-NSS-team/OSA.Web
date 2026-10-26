@@ -2,22 +2,34 @@
 
 <p align="center">
 
-<img src="src/osa_web/assets/osa_web_logo.png" width="600">
+<img src="src/osa_web/assets/osa_web_logo.png" alt="OSA.Web logo" width="600">
 </p>
-
-<p align="center">
 
 ## Overview
 
 OSA.Web is a Streamlit interface for running [`osa-tool`](https://github.com/aimclub/OSA) against GitHub repositories. It lets a user type in a repository, tune OSA options, attach supporting documents, run the CLI, and download generated reports from the browser.
 
-__Home Page:__
+### Automated pipeline
 
-![Home Page](docs/home-page.png)
+**Home:** Select the fast or quality preset, enter a repository URL, and start a run.
 
-__Configuration Page:__
+![Automated pipeline Home page](docs/automated-home.png)
 
-![Configuration Page](docs/configuration-page.png)
+**Configuration:** Choose the preset and adjust Git, workflow, general, and LLM settings.
+
+![Automated pipeline Configuration page](docs/automated-configuration.png)
+
+### Agentic conversation
+
+**Home:** Chat with the agents, review their work, and follow agentic steps beside the conversation. A completed run shows a success marker and a **New run** button.
+
+![Agentic conversation Home page showing a completed run](docs/agentic-home.png)
+
+**Configuration:** Set Git publishing and LLM options for agentic runs.
+
+![Agentic conversation Configuration page](docs/agentic-configuration.png)
+
+The screenshots show example settings and a completed run; the selected values may differ from the defaults.
 
 ## Features
 
@@ -25,7 +37,7 @@ __Configuration Page:__
 - Fast and quality presets for OSA runs.
 - Git, README, documentation, workflow, and LLM settings from the UI.
 - Optional PDF or DOCX attachment upload.
-- Live console output while `osa-tool` runs.
+- Live console output for automated runs and agentic conversations.
 - An Agentic conversation mode on Home for agent progress, clarification, result review, and revisions.
 - Download buttons for generated PDF reports.
 - Pull request and GitHub About-section feedback when available.
@@ -54,26 +66,30 @@ pip install -e ".[dev]"
 
 ## Configuration
 
-Tracked defaults live in `config/default.toml`.
-
-For local machine settings, copy the example file and edit it:
-
-```bash
-cp config/local.example.toml config/local.toml
-```
-
-`config/local.toml` is ignored by git. The app also still reads the legacy root `config.toml` for backward compatibility, so existing deployments keep working during the migration.
+Tracked settings live in the single root `config.toml`. For machine-specific
+LLM or workflow settings, set `OSA_WEB_CONFIG` to a TOML override file. Its
+values are merged over `config.toml`.
 
 Configuration precedence:
 
-1. `config/default.toml`
-2. root `config.toml`, if present
-3. `config/local.toml`, if present
-4. `OSA_WEB_CONFIG`, if set
+1. `config.toml`
+2. `OSA_WEB_CONFIG`, if set
 
-Use the Home tab's **Work mode** switch to choose **Automated pipeline** or **Agentic conversation**. The Configuration tab follows that choice. Its automated pipeline preset switch selects fast or quality settings and also updates the preset used on Home. The automated pipeline adds scorecard, incremental processing, target files, notebook reports, Ruff, and uv. Agentic conversation has separate Git and LLM settings; its agents choose tasks from the conversation. Existing local overrides are merged with the new defaults, including deployment log and temporary paths.
+Log and temporary paths are configured separately with `OSA_WEB_LOG_PATH` and
+`OSA_WEB_TMP_DIR`. Their defaults are `runtime/logs/osa_web.logs` and
+`runtime/tmp`; relative paths resolve from the project root. For example, a
+server can set `OSA_WEB_LOG_PATH=/var/essdata/logs/osa_web.logs` and
+`OSA_WEB_TMP_DIR=/var/essdata/tmp` in its environment.
 
-The default provider is the direct OpenAI API: fast and agentic conversation use `gpt-6-luna`, while quality uses `gpt-6-sol`. Set `OPENAI_API_KEY` in `.env`, or enter a provider key in Configuration as a guest. OSA omits unsupported sampling parameters for these GPT-6 models. The Web configuration keeps the existing deployment log and temporary paths.
+Use the Home tab's **Work mode** switch to choose **Automated pipeline** or **Agentic conversation**. The Configuration tab follows that choice. Its automated pipeline preset switch selects fast or quality settings and also updates the preset used on Home. The automated pipeline adds scorecard, incremental processing, target files, notebook reports, Ruff, and uv. Agentic conversation has separate Git and LLM settings; its agents choose tasks from the conversation.
+
+The same **Work mode** switch is available at the top of Configuration, with the
+**Automated pipeline preset** switch beside it. For the
+OpenAI-compatible API, **Base URL** offers OpenAI, OpenRouter, and Custom.
+Custom keeps a text field for another endpoint. OpenRouter requires its own API
+key and a model ID in `provider/model` form.
+
+The default provider is the direct OpenAI API: fast and agentic conversation use `gpt-6-luna`, while quality uses `gpt-6-sol`. Set `OPENAI_API_KEY` in `.env`, or enter a provider key in Configuration as a guest. OSA omits unsupported sampling parameters for these GPT-6 models. Before starting a run, Web checks that the configured LLM Base URL responds within three seconds. Authentication and `HEAD` method rejections pass this connection check; server errors and connection failures show the URL before OSA starts.
 
 ## Secrets
 
@@ -87,6 +103,8 @@ Supported variables:
 
 - `GIT_TOKEN`: optional GitHub token for private repositories and pull request creation.
 - `OSA_WEB_CONFIG`: optional path to a TOML config override.
+- `OSA_WEB_LOG_PATH`: optional log file path.
+- `OSA_WEB_TMP_DIR`: optional temporary directory path.
 
 Do not commit `.env` or real API keys.
 
@@ -94,9 +112,7 @@ Do not commit `.env` or real API keys.
 
 ```text
 .
-├── config/
-│   ├── default.toml          # tracked defaults
-│   └── local.example.toml    # template for local overrides
+├── config.toml               # tracked settings
 ├── Dockerfile                # container image definition
 ├── .dockerignore             # Docker build context exclusions
 ├── src/osa_web/
@@ -121,7 +137,9 @@ streamlit run streamlit_app.py
 
 The compatibility entrypoint adds `src/` to `sys.path` and calls `osa_web.app.main()`.
 
-Choose **Agentic conversation** on Home, enter a repository URL and an initial request, and optionally add a PDF, DOCX, or public attachment URL with the shared attachment picker. Answer the agents' questions and approve or request revisions there. A run that can create a fork or pull request requires confirmation before it starts. Conversation history lasts for the browser session. Use **New conversation** to clear it.
+Choose **Agentic conversation** on Home, enter a repository URL and an initial request, and optionally add a PDF, DOCX, or public attachment URL with the shared attachment picker. Answer the agents' questions and approve or request revisions there. In either work mode, a run that can create a fork or pull request requires confirmation before it starts. Agentic steps appear beside the chat, and a completed run shows a success marker in place of **Cancel run**. Conversation history lasts for the browser session. Use **New run** to clear it.
+
+Use **See Console Output** below the chat and agentic steps to inspect recent OSA events and stderr. It opens automatically after a fatal error, including provider errors such as HTTP 401. The view remains available until you select **New run**.
 
 Local Streamlit development uses polling for source changes to avoid Linux inotify watch-limit errors. Docker continues to disable file watching.
 
@@ -143,15 +161,15 @@ Then open <http://localhost:8501>.
 
 If you do not need credentials or do not have a local `.env` file, omit `--env-file .env`.
 
-The Docker build intentionally excludes the legacy root `config.toml`, because that file is commonly used for machine-specific absolute paths. The container uses `config/default.toml` by default.
-
-To provide container-specific settings, mount a local override:
+The container uses the tracked `config.toml`. To provide container-specific
+settings, mount an override and point `OSA_WEB_CONFIG` at it:
 
 ```bash
 docker run --rm \
   -p 8501:8501 \
   --env-file .env \
-  -v "$PWD/config/local.toml:/app/config/local.toml:ro" \
+  -e OSA_WEB_CONFIG=/app/override.toml \
+  -v "$PWD/override.toml:/app/override.toml:ro" \
   osa-web
 ```
 
@@ -167,7 +185,7 @@ docker run --rm \
 
 ## Testing
 
-The current test suite focuses on pure logic extracted from the Streamlit UI:
+The test suite covers Streamlit UI behavior and the underlying run and configuration logic:
 
 ```bash
 PYTHONPATH=src python -m unittest discover tests
