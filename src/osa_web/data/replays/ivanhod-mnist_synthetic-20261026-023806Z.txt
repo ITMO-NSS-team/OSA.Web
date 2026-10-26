@@ -1,0 +1,27 @@
+05:38:11 INFO Successfully fetched GitHub metadata for repository: 'IvanHod/MNIST_synthetic'
+05:38:13 INFO Cloning completed
+05:38:14 INFO Starting analysis for repository IvanHod/MNIST_synthetic
+05:38:25 INFO PDF report successfully created in [run output]
+05:38:25 INFO Starting the generation of requirements for: https://github.com/IvanHod/MNIST_synthetic
+05:38:30 INFO Requirements generated successfully with notebook scanning
+05:38:35 INFO Requirements successfully refined with LLM (JSON parsed).
+05:38:35 INFO ========== README GENERATION START ==========
+05:39:06 INFO [SectionGenerator] Section 'documentation' done (deterministic, 0 chars).
+05:39:06 INFO [SectionGenerator] Section 'examples' done (deterministic, 111 chars).
+05:39:06 INFO [SectionGenerator] Section 'license' done (deterministic, 0 chars).
+05:39:06 INFO [SectionGenerator] Section 'contributing' done (deterministic, 168 chars).
+05:39:07 ERROR [PyPiInspector] Pepy request failed for mnist_synthetic (status 401)
+05:39:07 INFO [SectionGenerator] Section 'installation' done (deterministic, 187 chars).
+05:39:07 INFO [SectionGenerator] Section 'header' done (deterministic, 234 chars).
+05:39:07 INFO [SectionGenerator] Section 'citation' done (deterministic, 568 chars).
+05:39:10 INFO [SectionGenerator] Section 'testing' done (llm, 199 chars).
+05:39:10 INFO [SectionGenerator] Section 'overview' done (llm, 416 chars).
+05:39:37 INFO [SectionGenerator] Section 'testing' done (llm, 82 chars).
+05:39:45 INFO [SectionGenerator] Section 'overview' done (llm, 365 chars).
+05:40:04 INFO [SectionGenerator] Section 'testing' done (llm, 162 chars).
+05:40:17 INFO README.md generated in [run output]
+05:40:43 INFO Started generating About section content.
+05:40:43 INFO Finished generating About section content.
+05:40:43 INFO Starting creating summary for OSA work
+05:40:51 INFO PDF report successfully created in [run output]
+All operations completed successfully in total time: 00:02:41

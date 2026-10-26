@@ -1,0 +1,28 @@
+06:33:16 INFO Successfully fetched GitHub metadata for repository: 'sb-ai-lab/MADD'
+06:33:35 INFO Cloning completed
+06:33:36 INFO Starting analysis for repository sb-ai-lab/MADD
+06:33:46 INFO PDF report successfully created in [run output]
+06:33:46 INFO Starting the generation of requirements for: https://github.com/sb-ai-lab/MADD
+06:33:47 ERROR Fatal error: Could not generate requirements.
+06:33:47 ERROR pipreqs returned non-zero exit status 1.
+06:33:47 INFO ========== README GENERATION START ==========
+06:34:17 INFO [SectionGenerator] Section 'documentation' done (deterministic, 0 chars).
+06:34:17 INFO [SectionGenerator] Section 'license' done (deterministic, 0 chars).
+06:34:18 INFO [SectionGenerator] Section 'examples' done (deterministic, 111 chars).
+06:34:18 INFO [SectionGenerator] Section 'contributing' done (deterministic, 159 chars).
+06:34:18 INFO [SectionGenerator] Section 'installation' done (deterministic, 365 chars).
+06:34:18 INFO [SectionGenerator] Section 'header' done (deterministic, 522 chars).
+06:34:19 INFO [SectionGenerator] Section 'citation' done (deterministic, 512 chars).
+06:34:21 INFO [SectionGenerator] Section 'architecture' done (llm, 730 chars).
+06:34:22 INFO [SectionGenerator] Section 'overview' done (llm, 381 chars).
+06:34:26 INFO [SectionGenerator] Section 'getting_started' done (llm, 556 chars).
+06:34:52 INFO [SectionGenerator] Section 'architecture' done (llm, 504 chars).
+06:34:56 INFO [SectionGenerator] Section 'getting_started' done (llm, 535 chars).
+06:35:15 INFO [SectionGenerator] Section 'getting_started' done (llm, 348 chars).
+06:35:16 INFO [SectionGenerator] Section 'architecture' done (llm, 789 chars).
+06:35:29 INFO README.md generated in [run output]
+06:35:45 INFO Started generating About section content.
+06:35:45 INFO Finished generating About section content.
+06:35:45 INFO Starting creating summary for OSA work
+06:35:51 INFO PDF report successfully created in [run output]
+All operations completed successfully in total time: 00:02:35

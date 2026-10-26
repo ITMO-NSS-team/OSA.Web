@@ -1,0 +1,24 @@
+06:15:58 INFO Successfully fetched GitHub metadata for repository: 'kirillzx/Benchmarking'
+06:16:01 INFO Cloning completed
+06:16:02 INFO Starting analysis for repository kirillzx/Benchmarking
+06:16:13 INFO PDF report successfully created in [run output]
+06:16:13 INFO Starting the generation of requirements for: https://github.com/kirillzx/Benchmarking
+06:16:26 INFO Requirements generated successfully with notebook scanning
+06:16:26 INFO ========== README GENERATION START ==========
+06:16:41 INFO [SectionGenerator] Section 'examples' done (deterministic, 0 chars).
+06:16:41 INFO [SectionGenerator] Section 'license' done (deterministic, 0 chars).
+06:16:41 INFO [SectionGenerator] Section 'documentation' done (deterministic, 0 chars).
+06:16:41 INFO [SectionGenerator] Section 'installation' done (deterministic, 354 chars).
+06:16:41 INFO [SectionGenerator] Section 'header' done (deterministic, 518 chars).
+06:16:41 INFO [SectionGenerator] Section 'contributing' done (deterministic, 166 chars).
+06:16:42 INFO [SectionGenerator] Section 'citation' done (deterministic, 555 chars).
+06:16:47 INFO [SectionGenerator] Section 'overview' done (llm, 446 chars).
+06:16:49 INFO [SectionGenerator] Section 'core_features' done (llm, 595 chars).
+06:17:09 INFO [SectionGenerator] Section 'overview' done (llm, 400 chars).
+06:17:12 INFO [SectionGenerator] Section 'core_features' done (llm, 330 chars).
+06:18:00 INFO README.md generated in [run output]
+06:18:25 INFO Started generating About section content.
+06:18:25 INFO Finished generating About section content.
+06:18:25 INFO Starting creating summary for OSA work
+06:18:31 INFO PDF report successfully created in [run output]
+All operations completed successfully in total time: 00:02:33

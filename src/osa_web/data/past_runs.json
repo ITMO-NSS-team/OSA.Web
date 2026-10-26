@@ -14,5 +14,166 @@
     ],
     "request": "improve the repository",
     "pull_request_url": null
+  },
+  {
+    "id": "debreti-nirsii-fpgai-20261026-022306Z",
+    "repository_url": "https://github.com/debreti/nirsii-fpgai",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned debreti/nirsii-fpgai and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with overview and getting-started sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "mawwlle-oil-labs-20261026-022742Z",
+    "repository_url": "https://github.com/Mawwlle/oil-labs",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned Mawwlle/oil-labs and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with overview and getting-started sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "gkirik-py_project-20261026-023155Z",
+    "repository_url": "https://github.com/GKirik/Py_Project",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned GKirik/Py_Project and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with core-features and overview sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "ivanhod-mnist_synthetic-20261026-023806Z",
+    "repository_url": "https://github.com/IvanHod/MNIST_synthetic",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports; optional Pepy download counts were unavailable.",
+    "steps": [
+      "Cloned IvanHod/MNIST_synthetic and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with testing and overview sections and prepared About-section suggestions.",
+      "Optional Pepy package download counts were unavailable (HTTP 401).",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "ilt-itmo-laserprocessing-20261026-025733Z",
+    "repository_url": "https://github.com/ILT-ITMO/LaserProcessing",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned ILT-ITMO/LaserProcessing and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with architecture, testing, overview, and getting-started sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "itmo-nss-team-benchmarking_exp-20261026-030137Z",
+    "repository_url": "https://github.com/ITMO-NSS-team/Benchmarking_exp",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned ITMO-NSS-team/Benchmarking_exp and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with overview sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "kirillzx-benchmarking-20261026-031554Z",
+    "repository_url": "https://github.com/kirillzx/Benchmarking",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned kirillzx/Benchmarking and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with core-features and overview sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "b-on-g-ainews-20261026-033103Z",
+    "repository_url": "https://github.com/b-on-g/ainews",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned b-on-g/ainews and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with architecture, core-features, and overview sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "sb-ai-lab-madd-20261026-033312Z",
+    "repository_url": "https://github.com/sb-ai-lab/MADD",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "failed",
+    "summary": "Requirements generation failed; README, About-section suggestions, and both PDF reports were produced.",
+    "steps": [
+      "Cloned sb-ai-lab/MADD and generated an analysis PDF.",
+      "Requirements generation failed after pipreqs exited with status 1.",
+      "Generated a README with architecture, overview, and getting-started sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "dtsarev-itmo-data-qimsi-20261026-033731Z",
+    "repository_url": "https://github.com/DTsarev-ITMO/Data-QIMSI",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned DTsarev-ITMO/Data-QIMSI and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with overview and getting-started sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
   }
 ]

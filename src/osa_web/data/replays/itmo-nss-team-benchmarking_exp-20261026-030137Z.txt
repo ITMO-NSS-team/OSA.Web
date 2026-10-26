@@ -1,0 +1,22 @@
+06:01:41 INFO Successfully fetched GitHub metadata for repository: 'ITMO-NSS-team/Benchmarking_exp'
+06:01:46 INFO Cloning completed
+06:01:47 INFO Starting analysis for repository ITMO-NSS-team/Benchmarking_exp
+06:01:53 INFO PDF report successfully created in [run output]
+06:01:53 INFO Starting the generation of requirements for: https://github.com/ITMO-NSS-team/Benchmarking_exp
+06:02:07 INFO Requirements generated successfully with notebook scanning
+06:02:07 INFO ========== README GENERATION START ==========
+06:02:27 INFO [SectionGenerator] Section 'license' done (deterministic, 0 chars).
+06:02:27 INFO [SectionGenerator] Section 'documentation' done (deterministic, 0 chars).
+06:02:27 INFO [SectionGenerator] Section 'examples' done (deterministic, 0 chars).
+06:02:27 INFO [SectionGenerator] Section 'installation' done (deterministic, 375 chars).
+06:02:27 INFO [SectionGenerator] Section 'header' done (deterministic, 522 chars).
+06:02:27 INFO [SectionGenerator] Section 'contributing' done (deterministic, 175 chars).
+06:02:28 INFO [SectionGenerator] Section 'citation' done (deterministic, 604 chars).
+06:02:33 INFO [SectionGenerator] Section 'overview' done (llm, 411 chars).
+06:03:02 INFO [SectionGenerator] Section 'overview' done (llm, 396 chars).
+06:04:00 INFO README.md generated in [run output]
+06:04:23 INFO Started generating About section content.
+06:04:23 INFO Finished generating About section content.
+06:04:24 INFO Starting creating summary for OSA work
+06:04:30 INFO PDF report successfully created in [run output]
+All operations completed successfully in total time: 00:02:49

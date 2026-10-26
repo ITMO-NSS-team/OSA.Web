@@ -1,0 +1,26 @@
+06:31:07 INFO Successfully fetched GitHub metadata for repository: 'b-on-g/ainews'
+06:31:09 INFO Cloning completed
+06:31:10 INFO Starting analysis for repository b-on-g/ainews
+06:31:19 INFO PDF report successfully created in [run output]
+06:31:19 INFO Starting the generation of requirements for: https://github.com/b-on-g/ainews
+06:31:20 INFO Requirements generated successfully with notebook scanning
+06:31:20 INFO ========== README GENERATION START ==========
+06:31:41 INFO [SectionGenerator] Section 'documentation' done (deterministic, 108 chars).
+06:31:41 INFO [SectionGenerator] Section 'examples' done (deterministic, 0 chars).
+06:31:41 INFO [SectionGenerator] Section 'license' done (deterministic, 124 chars).
+06:31:41 INFO [SectionGenerator] Section 'installation' done (deterministic, 328 chars).
+06:31:41 INFO [SectionGenerator] Section 'header' done (deterministic, 256 chars).
+06:31:41 INFO [SectionGenerator] Section 'contributing' done (deterministic, 158 chars).
+06:31:43 INFO [SectionGenerator] Section 'citation' done (deterministic, 509 chars).
+06:31:45 INFO [SectionGenerator] Section 'architecture' done (llm, 550 chars).
+06:31:46 INFO [SectionGenerator] Section 'core_features' done (llm, 441 chars).
+06:31:46 INFO [SectionGenerator] Section 'overview' done (llm, 340 chars).
+06:32:02 INFO [SectionGenerator] Section 'overview' done (llm, 322 chars).
+06:32:17 INFO [SectionGenerator] Section 'architecture' done (llm, 226 chars).
+06:32:21 INFO [SectionGenerator] Section 'core_features' done (llm, 457 chars).
+06:32:32 INFO README.md generated in [run output]
+06:32:48 INFO Started generating About section content.
+06:32:48 INFO Finished generating About section content.
+06:32:48 INFO Starting creating summary for OSA work
+06:32:54 INFO PDF report successfully created in [run output]
+All operations completed successfully in total time: 00:01:47

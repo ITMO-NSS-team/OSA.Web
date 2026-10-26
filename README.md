@@ -199,8 +199,9 @@ agent's final summary and key task results. Valid outcomes are `completed`,
 optional `pull_request_url` must be a public pull request for the same
 repository. Use a distinct ID containing only letters, numbers, hyphens, and
 underscores; save its excerpt as `<id>.txt`. Entries with replay files appear
-in catalogue order. Replace any `OWNER/REPO` placeholder records before a
-public demonstration.
+in catalogue order. If one operation failed while later operations continued,
+record the outcome as `failed` and describe both the failure and the work that
+completed.
 
 Validate the catalogue and replay files locally with:
 
