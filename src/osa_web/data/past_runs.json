@@ -1,5 +1,21 @@
 [
   {
+    "id": "ai-chem-dimag-20261026-040453Z",
+    "repository_url": "https://github.com/ai-chem/DiMag",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Added contribution, conduct, security, and metadata documents plus pull request and issue templates.",
+    "steps": [
+      "Planned and completed a documentation-generation task.",
+      "Generated CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, CODEMETA, and pull request and issue templates.",
+      "The reviewer approved the result and the finalizer completed."
+    ],
+    "request": "Add contributor guidance, community documents, and issue templates.",
+    "request_reconstructed": true,
+    "pull_request_url": null
+  },
+  {
     "id": "drmpn-readme-generation-benchmark-20261026-035559",
     "repository_url": "https://github.com/DRMPN/readme-generation-benchmark",
     "work_mode": "Agentic conversation",
@@ -28,22 +44,6 @@
       "The reviewer approved the result and the finalizer completed."
     ],
     "request": "Improve the README so new users can understand and use this project.",
-    "request_reconstructed": true,
-    "pull_request_url": null
-  },
-  {
-    "id": "ai-chem-dimag-20261026-040453Z",
-    "repository_url": "https://github.com/ai-chem/DiMag",
-    "work_mode": "Agentic conversation",
-    "completed_at": "2026-10-26",
-    "outcome": "completed",
-    "summary": "Added contribution, conduct, security, and metadata documents plus pull request and issue templates.",
-    "steps": [
-      "Planned and completed a documentation-generation task.",
-      "Generated CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, CODEMETA, and pull request and issue templates.",
-      "The reviewer approved the result and the finalizer completed."
-    ],
-    "request": "Add contributor guidance, community documents, and issue templates.",
     "request_reconstructed": true,
     "pull_request_url": null
   },
