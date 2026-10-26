@@ -13,6 +13,23 @@ PROJECT_VERSION = tomllib.loads((ENTRYPOINT.parent / "pyproject.toml").read_text
 
 
 class AppTests(TestCase):
+    def test_pipeline_pepy_warning_shows_completed_warning(self) -> None:
+        app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
+        next(button for button in app.button if button.label == "Continue as guest").click().run()
+        app.session_state["repo_url"] = "https://github.com/aimclub/OSA"
+        app.session_state["output_logs"] = "ERROR - [PyPiInspector] Pepy request failed\n"
+        app.session_state["output_exit_code"] = 0
+        app.session_state["output_has_errors"] = False
+        app.session_state["output_has_warnings"] = True
+        app.session_state["output_message"] = (
+            "OSA completed, but package download counts were unavailable."
+        )
+        app.run()
+
+        self.assertFalse(app.exception)
+        self.assertTrue(any("package download counts" in item.value for item in app.warning))
+        self.assertFalse(any("package download counts" in item.value for item in app.error))
+
     def test_pipeline_error_lines_show_failure_and_console_download(self) -> None:
         app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
         next(button for button in app.button if button.label == "Continue as guest").click().run()

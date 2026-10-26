@@ -105,6 +105,7 @@ async def run_osa_tool(output_container) -> None:
             for line in stderr_output.splitlines():
                 parse_output_line(line, parsed)
         st.session_state[keys.OUTPUT_HAS_ERRORS] = bool(parsed.error_lines)
+        st.session_state[keys.OUTPUT_HAS_WARNINGS] = bool(parsed.nonfatal_errors)
         st.session_state[keys.OUTPUT_MESSAGE] = result_message(
             st.session_state[keys.OUTPUT_EXIT_CODE], parsed, last_line
         )
@@ -118,6 +119,7 @@ async def run_osa_tool(output_container) -> None:
     except Exception as e:  # noqa: BLE001 - Surface any launch failure in the UI.
         st.session_state[keys.OUTPUT_EXIT_CODE] = 1
         st.session_state[keys.OUTPUT_HAS_ERRORS] = True
+        st.session_state[keys.OUTPUT_HAS_WARNINGS] = False
         st.session_state[keys.OUTPUT_MESSAGE] = f"Error executing OSA tool: {e!s}"
         st.session_state.setdefault(keys.OUTPUT_LOGS, "")
         logger.error(f"OSA tool execution failed: {e!s}", exc_info=True)

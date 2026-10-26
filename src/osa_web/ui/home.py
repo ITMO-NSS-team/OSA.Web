@@ -106,15 +106,20 @@ def render_output_block(output_container) -> None:
                 return
             left, right = st.columns([0.6, 0.4], vertical_alignment="center")
             with left:
-                if st.session_state.output_exit_code == 0 and not st.session_state.get(
+                if st.session_state.output_exit_code != 0 or st.session_state.get(
                     "output_has_errors", False
                 ):
+                    st.error(st.session_state.output_message, icon=":material/error:")
+                elif st.session_state.get("output_has_warnings", False):
+                    st.warning(
+                        st.session_state.output_message,
+                        icon=":material/warning:",
+                    )
+                else:
                     st.success(
                         st.session_state.output_message,
                         icon=":material/check_circle:",
                     )
-                else:
-                    st.error(st.session_state.output_message, icon=":material/error:")
             with right:
                 if len(st.session_state.output_report_paths) > 0:
                     for i in range(len(st.session_state.output_report_paths)):
@@ -142,7 +147,8 @@ def render_output_block(output_container) -> None:
                 st.session_state.repo_url,
                 started_at=st.session_state.get("run_started_at"),
                 expanded=st.session_state.output_exit_code != 0
-                or st.session_state.get("output_has_errors", False),
+                or st.session_state.get("output_has_errors", False)
+                or st.session_state.get("output_has_warnings", False),
             )
 
 

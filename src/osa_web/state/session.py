@@ -48,6 +48,7 @@ def reset_run_output() -> None:
         keys.OUTPUT_ABOUT_SECTION,
         keys.OUTPUT_EXIT_CODE,
         keys.OUTPUT_HAS_ERRORS,
+        keys.OUTPUT_HAS_WARNINGS,
         keys.OUTPUT_MESSAGE,
         keys.OUTPUT_LOGS,
     ):

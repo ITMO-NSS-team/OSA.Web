@@ -4,6 +4,28 @@ from osa_web.osa_tool.output_parser import parse_output_line, result_message
 
 
 class OutputParserTests(TestCase):
+    def test_pepy_401_is_nonfatal_after_successful_run(self) -> None:
+        parsed = parse_output_line(
+            "[05:39:07] ERROR [05:39:07] - [PyPiInspector] "
+            "Pepy request failed for mnist_synthetic (status 401)"
+        )
+        parse_output_line("PDF report successfully created in /tmp/run/work_summary.pdf", parsed)
+        parse_output_line("All operations completed successfully", parsed)
+
+        self.assertEqual(parsed.error_lines, [])
+        self.assertEqual(len(parsed.nonfatal_errors), 1)
+        self.assertEqual(len(parsed.report_paths), 1)
+        self.assertIn(
+            "package download counts were unavailable (Pepy HTTP 401)",
+            result_message(0, parsed, "All operations completed successfully"),
+        )
+
+    def test_pepy_warning_does_not_hide_actual_failure(self) -> None:
+        parsed = parse_output_line("ERROR - [PyPiInspector] Pepy request failed (status 401)")
+        parse_output_line("ERROR - Error code: 401 - invalid_api_key", parsed)
+
+        self.assertIn("LLM authentication error", result_message(0, parsed, None))
+
     def test_error_log_overrides_successful_exit_code(self) -> None:
         parsed = parse_output_line(
             "[05:09:18] ERROR [05:09:18] - Error code: 401 - invalid_api_key"

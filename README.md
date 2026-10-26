@@ -143,6 +143,10 @@ Choose **Agentic conversation** on Home, enter a repository URL and an initial r
 
 Use **See Console Output** below the chat and agentic steps to inspect recent OSA events and stderr. It opens automatically after a fatal error, including provider errors such as HTTP 401. The view remains available until you select **New run**.
 
+For automated runs, the result badge distinguishes task errors from optional
+Pepy package download-count lookup failures. A failed Pepy lookup leaves the
+run completed with a warning and its reports available for download.
+
 ### Past runs
 
 The **Past runs** tab lets guests and signed-in users select a repository and

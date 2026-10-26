@@ -29,6 +29,7 @@ class ParsedOsaOutput:
     about_section: str = ""
     pr_link: str | None = None
     error_lines: list[str] = field(default_factory=list)
+    nonfatal_errors: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
