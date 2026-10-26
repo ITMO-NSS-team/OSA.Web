@@ -72,7 +72,7 @@ class AppTests(TestCase):
         app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
         next(button for button in app.button if button.label == "Continue as guest").click().run()
         self.assertFalse(app.exception)
-        self.assertEqual(len(app.tabs), 2)
+        self.assertEqual(len(app.tabs), 3)
         self.assertEqual(__version__, PROJECT_VERSION)
         self.assertTrue(
             any(f"Web Version: {PROJECT_VERSION}" in item.value for item in app.markdown)

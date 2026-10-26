@@ -15,6 +15,7 @@ from osa_web.ui.configuration.page import render_configuration_tab, render_pipel
 from osa_web.ui.configuration.schema import reset_configuration_widgets
 from osa_web.ui.conversation import render_conversation_tab
 from osa_web.ui.home import render_main_tab
+from osa_web.ui.past_runs import render_past_runs_tab
 from osa_web.ui.sidebar import render_sidebar_element
 
 
@@ -88,10 +89,11 @@ def main() -> None:
         unsafe_allow_html=True,
     )
 
-    tab1, tab2 = st.tabs(
+    tab1, tab2, tab3 = st.tabs(
         [
             ":material/home: Home",
             ":material/settings: Configuration",
+            ":material/history: Past runs",
         ],
         key="osa-tabs",
         on_change="rerun",
@@ -113,6 +115,11 @@ def main() -> None:
                 if work_mode == keys.WORK_MODE_PIPELINE:
                     render_pipeline_preset()
             render_configuration_tab()
+
+    if tab3.open:
+        with tab3:
+            work_mode = render_work_mode_switch()
+            render_past_runs_tab(work_mode)
 
 
 if __name__ == "__main__":

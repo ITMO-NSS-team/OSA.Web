@@ -41,6 +41,7 @@ The screenshots show example settings and a completed run; the selected values m
 - An Agentic conversation mode on Home for agent progress, clarification, result review, and revisions.
 - Download buttons for generated PDF reports.
 - Pull request and GitHub About-section feedback when available.
+- Public, curated past run summaries for both work modes.
 
 ## Installation
 
@@ -122,6 +123,7 @@ Do not commit `.env` or real API keys.
 │   ├── ui/                   # Streamlit screens and widgets
 │   ├── osa_tool/             # CLI command, runner, and output parser
 │   ├── state/                # session-state helpers
+│   ├── data/past_runs.json   # curated public run results
 │   └── assets/               # packaged static assets
 ├── tests/
 │   └── unit/                 # pure unit tests
@@ -140,6 +142,45 @@ The compatibility entrypoint adds `src/` to `sys.path` and calls `osa_web.app.ma
 Choose **Agentic conversation** on Home, enter a repository URL and an initial request, and optionally add a PDF, DOCX, or public attachment URL with the shared attachment picker. Answer the agents' questions and approve or request revisions there. In either work mode, a run that can create a fork or pull request requires confirmation before it starts. Agentic steps appear beside the chat, and a completed run shows a success marker in place of **Cancel run**. Conversation history lasts for the browser session. Use **New run** to clear it.
 
 Use **See Console Output** below the chat and agentic steps to inspect recent OSA events and stderr. It opens automatically after a fatal error, including provider errors such as HTTP 401. The view remains available until you select **New run**.
+
+### Past runs
+
+The **Past runs** tab shows public examples for the selected **Work mode** to
+guests and signed-in users. Its numbered items open to show a repository link,
+outcome, summary, key steps, and a pull request link when available. The tab is
+read-only; new runs are not saved automatically.
+
+To add a real run, append a record to `src/osa_web/data/past_runs.json`. The
+file starts as `[]` until results are available. Use the final UI result and
+the run log to write a short, reviewed summary and steps. A log file by itself
+does not supply the structured details for both work modes. Do not add logs,
+attachments, PDFs, credentials, private content, or local file paths to the
+public catalogue.
+
+For an automated run, use this template and replace every example value with
+the actual run details:
+
+```json
+{
+  "id": "unique-run-id",
+  "repository_url": "https://github.com/owner/repository",
+  "work_mode": "Automated pipeline",
+  "completed_at": "2026-10-26",
+  "outcome": "completed",
+  "summary": "Short description of the actual result.",
+  "steps": ["First significant step", "Second significant step"],
+  "preset": "quality",
+  "pull_request_url": null
+}
+```
+
+For an agentic run, set `work_mode` to `Agentic conversation`, replace
+`preset` with `request` containing the initial user request, and use the
+agent's final summary and key task results. Valid outcomes are `completed`,
+`failed`, and `stopped`; automated presets are `fast` and `quality`. The
+optional `pull_request_url` must be a public pull request for the same
+repository. Use a distinct `id` for each record. The tab numbers entries
+separately within each work mode in file order.
 
 Local Streamlit development uses polling for source changes to avoid Linux inotify watch-limit errors. Docker continues to disable file watching.
 
