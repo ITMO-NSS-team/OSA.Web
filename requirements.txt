@@ -1,5 +1,5 @@
 paramiko==3.5.1
 python-dotenv==1.0.1
 streamlit==1.66.1
-osa-tool==0.3.3
+osa-tool==0.3.4
 Authlib==1.6.0
