@@ -43,8 +43,15 @@ def _terminate(process: subprocess.Popen[str]) -> None:
         process.wait(timeout=3)
 
 
-def _read_events(stream, events: queue.Queue[dict[str, Any]]) -> None:
+def _read_events(
+    stream,
+    events: queue.Queue[dict[str, Any]],
+    console_output: deque[str],
+    console_lock: threading.Lock,
+) -> None:
     for line in stream:
+        with console_lock:
+            console_output.append(f"[stdout] {line.rstrip()[:4000]}")
         try:
             event = json.loads(line)
             if not isinstance(event, dict) or not isinstance(event.get("type"), str):
@@ -58,9 +65,14 @@ def _read_events(stream, events: queue.Queue[dict[str, Any]]) -> None:
         events.put(event)
 
 
-def _read_diagnostics(stream, lines: deque[str]) -> None:
+def _read_diagnostics(
+    stream, lines: deque[str], console_output: deque[str], console_lock: threading.Lock
+) -> None:
     for line in stream:
-        lines.append(line.rstrip())
+        diagnostic = line.rstrip()
+        lines.append(diagnostic)
+        with console_lock:
+            console_output.append(f"[stderr] {diagnostic[:4000]}")
 
 
 def _watch(
@@ -68,6 +80,7 @@ def _watch(
     events: queue.Queue[dict[str, Any]],
     stdout_thread: threading.Thread,
     stderr_thread: threading.Thread,
+    diagnostics: deque[str],
 ) -> None:
     exit_code = process.wait()
     stdout_thread.join(timeout=2)
@@ -75,7 +88,13 @@ def _watch(
     for stream in (process.stdin, process.stdout, process.stderr):
         if stream is not None:
             stream.close()
-    events.put({"type": "process_exit", "exit_code": exit_code})
+    events.put(
+        {
+            "type": "process_exit",
+            "exit_code": exit_code,
+            "diagnostics": list(diagnostics)[-10:] if exit_code else [],
+        }
+    )
 
 
 class ChatProcess:
@@ -92,19 +111,25 @@ class ChatProcess:
         )
         self.events: queue.Queue[dict[str, Any]] = queue.Queue()
         self.diagnostics: deque[str] = deque(maxlen=30)
+        self.console_output: deque[str] = deque(maxlen=200)
+        self._console_lock = threading.Lock()
         self._write_lock = threading.Lock()
         self._finalizer = weakref.finalize(self, _terminate, self.process)
         stdout_thread = threading.Thread(
-            target=_read_events, args=(self.process.stdout, self.events), daemon=True
+            target=_read_events,
+            args=(self.process.stdout, self.events, self.console_output, self._console_lock),
+            daemon=True,
         )
         stderr_thread = threading.Thread(
-            target=_read_diagnostics, args=(self.process.stderr, self.diagnostics), daemon=True
+            target=_read_diagnostics,
+            args=(self.process.stderr, self.diagnostics, self.console_output, self._console_lock),
+            daemon=True,
         )
         stdout_thread.start()
         stderr_thread.start()
         self._watcher = threading.Thread(
             target=_watch,
-            args=(self.process, self.events, stdout_thread, stderr_thread),
+            args=(self.process, self.events, stdout_thread, stderr_thread, self.diagnostics),
             daemon=True,
         )
         self._watcher.start()
@@ -123,6 +148,11 @@ class ChatProcess:
                 events.append(self.events.get_nowait())
             except queue.Empty:
                 return events
+
+    @property
+    def console_text(self) -> str:
+        with self._console_lock:
+            return "\n".join(self.console_output)
 
     def cancel(self) -> None:
         self._finalizer()

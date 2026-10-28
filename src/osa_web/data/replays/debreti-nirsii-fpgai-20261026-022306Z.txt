@@ -1,0 +1,24 @@
+05:23:10 INFO Successfully fetched GitHub metadata for repository: 'debreti/nirsii-fpgai'
+05:23:11 INFO Starting analysis for repository debreti/nirsii-fpgai
+05:23:23 INFO PDF report successfully created in [run output]
+05:23:23 INFO Starting the generation of requirements for: https://github.com/debreti/nirsii-fpgai
+05:23:27 INFO Requirements generated successfully with notebook scanning
+05:23:29 INFO Requirements successfully refined with LLM (JSON parsed).
+05:23:29 INFO ========== README GENERATION START ==========
+05:24:02 INFO [SectionGenerator] Section 'license' done (deterministic, 124 chars).
+05:24:02 INFO [SectionGenerator] Section 'examples' done (deterministic, 0 chars).
+05:24:02 INFO [SectionGenerator] Section 'documentation' done (deterministic, 179 chars).
+05:24:03 INFO [SectionGenerator] Section 'installation' done (deterministic, 353 chars).
+05:24:03 INFO [SectionGenerator] Section 'contributing' done (deterministic, 165 chars).
+05:24:03 INFO [SectionGenerator] Section 'header' done (deterministic, 269 chars).
+05:24:03 INFO [SectionGenerator] Section 'citation' done (deterministic, 550 chars).
+05:24:05 INFO [SectionGenerator] Section 'overview' done (llm, 345 chars).
+05:24:06 INFO [SectionGenerator] Section 'getting_started' done (llm, 128 chars).
+05:24:32 INFO [SectionGenerator] Section 'getting_started' done (llm, 217 chars).
+05:24:43 INFO [SectionGenerator] Section 'getting_started' done (llm, 104 chars).
+05:24:53 INFO README.md generated in [run output]
+05:25:16 INFO Started generating About section content.
+05:25:16 INFO Finished generating About section content.
+05:25:17 INFO Starting creating summary for OSA work
+05:25:24 INFO PDF report successfully created in [run output]
+All operations completed successfully in total time: 00:02:14

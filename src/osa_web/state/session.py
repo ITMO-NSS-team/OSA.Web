@@ -12,16 +12,14 @@ from osa_web.state import keys
 
 
 def initialize_session(config: dict[str, Any]) -> None:
-    ensure_runtime_paths(config)
+    ensure_runtime_paths()
 
     if keys.RUNNING not in st.session_state:
         st.session_state[keys.RUNNING] = False
     if keys.CONFIGURATION not in st.session_state:
         st.session_state[keys.CONFIGURATION] = copy.deepcopy(config)
     if keys.TMPDIR not in st.session_state:
-        st.session_state[keys.TMPDIR] = tempfile.mkdtemp(
-            dir=get_runtime_path(config, "tmp")
-        )
+        st.session_state[keys.TMPDIR] = tempfile.mkdtemp(dir=get_runtime_path("tmp"))
     if keys.OUTPUT_REPORT_PATHS not in st.session_state:
         st.session_state[keys.OUTPUT_REPORT_PATHS] = []
     if keys.OUTPUT_REPORT_FILENAMES not in st.session_state:
@@ -34,6 +32,8 @@ def initialize_session(config: dict[str, Any]) -> None:
     st.session_state.setdefault(keys.CHAT_QUESTION, None)
     st.session_state.setdefault(keys.CHAT_PENDING, None)
     st.session_state.setdefault(keys.CHAT_TERMINAL, False)
+    st.session_state.setdefault(keys.CHAT_SHOW_CONSOLE, False)
+    st.session_state.setdefault(keys.CHAT_RUN_LLM, None)
 
 
 def current_mode_config() -> dict[str, Any]:
@@ -47,6 +47,8 @@ def reset_run_output() -> None:
     for key in (
         keys.OUTPUT_ABOUT_SECTION,
         keys.OUTPUT_EXIT_CODE,
+        keys.OUTPUT_HAS_ERRORS,
+        keys.OUTPUT_HAS_WARNINGS,
         keys.OUTPUT_MESSAGE,
         keys.OUTPUT_LOGS,
     ):

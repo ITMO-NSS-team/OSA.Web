@@ -1,0 +1,323 @@
+[
+  {
+    "id": "ai-chem-dimag-20261026-040453Z",
+    "repository_url": "https://github.com/ai-chem/DiMag",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Added contribution, conduct, security, and metadata documents plus pull request and issue templates.",
+    "steps": [
+      "Planned and completed a documentation-generation task.",
+      "Generated CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, CODEMETA, and pull request and issue templates.",
+      "The reviewer approved the result and the finalizer completed."
+    ],
+    "request": "Add contributor guidance, community documents, and issue templates.",
+    "request_reconstructed": true,
+    "pull_request_url": null
+  },
+  {
+    "id": "drmpn-readme-generation-benchmark-20261026-035559",
+    "repository_url": "https://github.com/DRMPN/readme-generation-benchmark",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Added contribution, conduct, security, and CODEMETA documentation, pull request and issue templates, and CI workflows for Black, unit tests, and PEP 8.",
+    "steps": [
+      "Analyzed the repository and planned documentation and workflow generation.",
+      "Generated CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md, codemeta.json, and pull request and issue templates.",
+      "Generated Black, unit test, and PEP 8 GitHub Actions workflows.",
+      "Executor completed both tasks successfully; the reviewer approved the result."
+    ],
+    "request": "improve the repository",
+    "pull_request_url": null
+  },
+  {
+    "id": "ekarerina-ulyanova-modified_tracking_budget-20261026-040134Z",
+    "repository_url": "https://github.com/Ekarerina-Ulyanova/modified_tracking_budget",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated and refined README.md.",
+    "steps": [
+      "Analyzed the repository and planned README generation.",
+      "Generated and refined README.md.",
+      "The reviewer approved the result and the finalizer completed."
+    ],
+    "request": "Improve the README so new users can understand and use this project.",
+    "request_reconstructed": true,
+    "pull_request_url": null
+  },
+  {
+    "id": "kyaukyuai-gpt-all-star-20261026-040541Z",
+    "repository_url": "https://github.com/kyaukyuai/gpt-all-star",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Added contribution and community documentation, security guidance, metadata, and templates.",
+    "steps": [
+      "Planned and completed a documentation-generation task.",
+      "Generated contributing, conduct, security, and CODEMETA files plus pull request and issue templates.",
+      "The reviewer approved the result and the finalizer completed."
+    ],
+    "request": "Make it easier for people to contribute by adding guidelines and templates.",
+    "request_reconstructed": true,
+    "pull_request_url": null
+  },
+  {
+    "id": "tonymantoan-local_graphiti-20261026-040632Z",
+    "repository_url": "https://github.com/tonymantoan/local_graphiti",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Added contribution, conduct, and security guidance, metadata, and pull request and issue templates.",
+    "steps": [
+      "Planned and completed a documentation-generation task.",
+      "Generated contributing, conduct, security, and metadata files plus pull request and issue templates.",
+      "The reviewer approved the result and the finalizer completed."
+    ],
+    "request": "Add a security policy and templates for contributions and bug reports.",
+    "request_reconstructed": true,
+    "pull_request_url": null
+  },
+  {
+    "id": "roman223-gan_mfs-20261026-040710Z",
+    "repository_url": "https://github.com/Roman223/GAN_MFS",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Added a workflow configuration for tests; existing Black and PEP 8 settings were left as they were.",
+    "steps": [
+      "Planned and completed a workflow-generation task.",
+      "Generated a test workflow; Black and PEP 8 options were skipped.",
+      "The reviewer approved the result and the finalizer completed."
+    ],
+    "request": "Set up a workflow that runs the existing tests.",
+    "request_reconstructed": true,
+    "pull_request_url": null
+  },
+  {
+    "id": "alinzh-search_api_aviasales-20261026-040812Z",
+    "repository_url": "https://github.com/alinzh/search_api_aviasales",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Added contributor and community documentation, templates, and a generated and refined README.",
+    "steps": [
+      "Generated contribution, conduct, security, metadata, and issue and pull request templates.",
+      "The reviewer requested changes; a later plan generated and refined README.md.",
+      "The reviewer approved the revised result and the finalizer completed."
+    ],
+    "request": "Improve the README and add contributor guidance and issue templates.",
+    "request_reconstructed": true,
+    "pull_request_url": null
+  },
+  {
+    "id": "aimclub-coresearchgraph-20261026-041252Z",
+    "repository_url": "https://github.com/aimclub/CoResearchGraph",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Added community and contribution documentation, templates, and a generated and refined README.",
+    "steps": [
+      "Completed documentation and README-generation tasks.",
+      "Generated contribution, conduct, security, and metadata files plus pull request and issue templates.",
+      "Generated and refined README.md; the reviewer approved the result."
+    ],
+    "request": "Improve the README and add contributor and community documentation.",
+    "request_reconstructed": true,
+    "pull_request_url": null
+  },
+  {
+    "id": "lgoliatt-paper_dissolved_oxygen_kosovo_open-20261026-041621Z",
+    "repository_url": "https://github.com/LGoliatt/paper_dissolved_oxygen_kosovo_open",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Added contribution and community documents, templates, and a test workflow.",
+    "steps": [
+      "Completed documentation and workflow-generation tasks.",
+      "Generated contribution, conduct, security, and metadata files plus pull request and issue templates.",
+      "Generated a test workflow; existing Black and PEP 8 options were skipped."
+    ],
+    "request": "Add community documentation and a workflow that runs tests.",
+    "request_reconstructed": true,
+    "pull_request_url": null
+  },
+  {
+    "id": "sb-ai-lab-lads-20261026-041839Z",
+    "repository_url": "https://github.com/sb-ai-lab/LADS",
+    "work_mode": "Agentic conversation",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Added community documentation and templates, refined the README, and generated CI workflows for Black, tests, and PEP 8.",
+    "steps": [
+      "Completed documentation, README, and workflow-generation tasks.",
+      "Generated contribution and community files, metadata, and pull request and issue templates.",
+      "Generated and refined README.md, then generated CI workflows."
+    ],
+    "request": "Improve the documentation and add CI checks for formatting and tests.",
+    "request_reconstructed": true,
+    "pull_request_url": null
+  },
+  {
+    "id": "debreti-nirsii-fpgai-20261026-022306Z",
+    "repository_url": "https://github.com/debreti/nirsii-fpgai",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned debreti/nirsii-fpgai and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with overview and getting-started sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "mawwlle-oil-labs-20261026-022742Z",
+    "repository_url": "https://github.com/Mawwlle/oil-labs",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned Mawwlle/oil-labs and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with overview and getting-started sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "gkirik-py_project-20261026-023155Z",
+    "repository_url": "https://github.com/GKirik/Py_Project",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned GKirik/Py_Project and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with core-features and overview sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "ivanhod-mnist_synthetic-20261026-023806Z",
+    "repository_url": "https://github.com/IvanHod/MNIST_synthetic",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports; optional Pepy download counts were unavailable.",
+    "steps": [
+      "Cloned IvanHod/MNIST_synthetic and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with testing and overview sections and prepared About-section suggestions.",
+      "Optional Pepy package download counts were unavailable (HTTP 401).",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "ilt-itmo-laserprocessing-20261026-025733Z",
+    "repository_url": "https://github.com/ILT-ITMO/LaserProcessing",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned ILT-ITMO/LaserProcessing and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with architecture, testing, overview, and getting-started sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "itmo-nss-team-benchmarking_exp-20261026-030137Z",
+    "repository_url": "https://github.com/ITMO-NSS-team/Benchmarking_exp",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned ITMO-NSS-team/Benchmarking_exp and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with overview sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "kirillzx-benchmarking-20261026-031554Z",
+    "repository_url": "https://github.com/kirillzx/Benchmarking",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned kirillzx/Benchmarking and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with core-features and overview sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "b-on-g-ainews-20261026-033103Z",
+    "repository_url": "https://github.com/b-on-g/ainews",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned b-on-g/ainews and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with architecture, core-features, and overview sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "sb-ai-lab-madd-20261026-033312Z",
+    "repository_url": "https://github.com/sb-ai-lab/MADD",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "failed",
+    "summary": "Requirements generation failed; README, About-section suggestions, and both PDF reports were produced.",
+    "steps": [
+      "Cloned sb-ai-lab/MADD and generated an analysis PDF.",
+      "Requirements generation failed after pipreqs exited with status 1.",
+      "Generated a README with architecture, overview, and getting-started sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  },
+  {
+    "id": "dtsarev-itmo-data-qimsi-20261026-033731Z",
+    "repository_url": "https://github.com/DTsarev-ITMO/Data-QIMSI",
+    "work_mode": "Automated pipeline",
+    "completed_at": "2026-10-26",
+    "outcome": "completed",
+    "summary": "Generated requirements, README, About-section suggestions, and two PDF reports.",
+    "steps": [
+      "Cloned DTsarev-ITMO/Data-QIMSI and generated an analysis PDF.",
+      "Generated requirements with notebook scanning.",
+      "Generated a README with overview and getting-started sections and prepared About-section suggestions.",
+      "Generated a work-summary PDF; publishing was disabled for this run."
+    ],
+    "preset": "fast",
+    "pull_request_url": null
+  }
+]

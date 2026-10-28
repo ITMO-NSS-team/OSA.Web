@@ -1,21 +1,25 @@
 import asyncio
+from datetime import UTC, datetime
 
 import streamlit as st
 
 from osa_web.auth.state import get_display_name, is_guest_mode
 from osa_web.logging_config import logger
 from osa_web.osa_tool.command import build_osa_command
+from osa_web.osa_tool.endpoint import check_endpoint
 from osa_web.osa_tool.environment import build_osa_environment
 from osa_web.osa_tool.models import OsaRunRequest, ParsedOsaOutput
-from osa_web.osa_tool.output_parser import parse_output_line
+from osa_web.osa_tool.output_parser import parse_output_line, result_message
 from osa_web.state import keys
 from osa_web.state.session import reset_run_output
+from osa_web.ui.console_output import render_console_output
 
 
 async def run_osa_tool(output_container) -> None:
     """Run the osa-tools application."""
     try:
         reset_run_output()
+        st.session_state[keys.RUN_STARTED_AT] = datetime.now(UTC)
 
         env = build_osa_environment(
             guest=is_guest_mode(),
@@ -38,12 +42,18 @@ async def run_osa_tool(output_container) -> None:
             )
         )
 
+        await asyncio.to_thread(
+            check_endpoint,
+            st.session_state[keys.CONFIGURATION][st.session_state[keys.MODE_SELECT]]["llm"],
+        )
+
         process = await asyncio.create_subprocess_exec(
             *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             env=env,
         )
+        stderr_task = asyncio.create_task(process.stderr.read())
 
         cmd_log_msg = f"Running osa-tool with parameters: {cmd}"
 
@@ -80,28 +90,38 @@ async def run_osa_tool(output_container) -> None:
                 logger.debug(line)
 
                 st.session_state[keys.OUTPUT_LOGS] += line + "\n"
-                output_container.expander("See Console Output", icon=":material/terminal:").code(
-                    st.session_state[keys.OUTPUT_LOGS],
-                    height=350,
-                )
+                with output_container:
+                    render_console_output(
+                        st.session_state[keys.OUTPUT_LOGS],
+                        st.session_state[keys.REPO_URL],
+                        started_at=st.session_state[keys.RUN_STARTED_AT],
+                        downloadable=False,
+                    )
 
         st.session_state[keys.OUTPUT_EXIT_CODE] = await process.wait()
-        if st.session_state[keys.OUTPUT_EXIT_CODE] == 0:
-            st.session_state[keys.OUTPUT_MESSAGE] = (
-                f'Everything is alright! {f"**Pull Request created**: {parsed.pr_link}" if parsed.pr_link else ""}'
-            )
-        else:
-            stderr_output = await process.stderr.read()
-            error_message = stderr_output.decode().strip()
-            st.session_state[keys.OUTPUT_MESSAGE] = f"**Error running OSA tool**: `{last_line}`"
+        stderr_output = (await stderr_task).decode(errors="replace").strip()
+        if stderr_output:
+            st.session_state[keys.OUTPUT_LOGS] += f"[stderr]\n{stderr_output}\n"
+            for line in stderr_output.splitlines():
+                parse_output_line(line, parsed)
+        st.session_state[keys.OUTPUT_HAS_ERRORS] = bool(parsed.error_lines)
+        st.session_state[keys.OUTPUT_HAS_WARNINGS] = bool(parsed.nonfatal_errors)
+        st.session_state[keys.OUTPUT_MESSAGE] = result_message(
+            st.session_state[keys.OUTPUT_EXIT_CODE], parsed, last_line
+        )
+        if st.session_state[keys.OUTPUT_EXIT_CODE] or parsed.error_lines:
             logger.error(
-                "OSA tool execution failed with code %s: %s\n%s",
+                "OSA tool reported failure (exit code %s, %s error lines). Last output: %s",
                 st.session_state[keys.OUTPUT_EXIT_CODE],
+                len(parsed.error_lines),
                 last_line,
-                error_message,
             )
-    except Exception as e:
-        st.error(f"Error executing OSA tool: {e!s}")
+    except Exception as e:  # noqa: BLE001 - Surface any launch failure in the UI.
+        st.session_state[keys.OUTPUT_EXIT_CODE] = 1
+        st.session_state[keys.OUTPUT_HAS_ERRORS] = True
+        st.session_state[keys.OUTPUT_HAS_WARNINGS] = False
+        st.session_state[keys.OUTPUT_MESSAGE] = f"Error executing OSA tool: {e!s}"
+        st.session_state.setdefault(keys.OUTPUT_LOGS, "")
         logger.error(f"OSA tool execution failed: {e!s}", exc_info=True)
     finally:
         st.session_state[keys.RUNNING] = False

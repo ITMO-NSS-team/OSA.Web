@@ -6,28 +6,18 @@ from osa_web.auth.state import is_guest_mode
 from osa_web.osa_tool.runner import run_osa_tool
 from osa_web.ui.attachment import render_attachment_block
 from osa_web.ui.configuration.schema import reset_configuration_widgets
+from osa_web.ui.console_output import render_console_output
+from osa_web.ui.publishing_confirmation import render_publishing_confirmation
 
 
 @st.dialog("Run OSA Tool")
 def confirm_public_run() -> None:
-    st.markdown(
-        "<h2>Are you sure, you want to create public Pull Request? </h2>",
-        unsafe_allow_html=True,
-    )
-    st.container(height=5, border=False)
-
-    st.markdown(
-        "To avoid creating a pull request, select **No pull request** in Configuration."
-    )
-
-    left, right = st.columns(2)
-    with left:
-        if st.button("Cancel", width="stretch", type="primary"):
-            st.rerun()
-    with right:
-        if st.button("Yes", width="stretch"):
-            st.session_state.running = True
-            st.rerun()
+    cancelled, confirmed = render_publishing_confirmation(st.session_state.repo_url.strip())
+    if cancelled:
+        st.rerun()
+    if confirmed:
+        st.session_state.running = True
+        st.rerun()
 
 
 def render_input_block() -> None:
@@ -72,7 +62,8 @@ def render_input_block() -> None:
 
 
 def _set_osa_running():
-    if not st.session_state.configuration[st.session_state.mode_select]["git"]["no-pull-request"]:
+    git = st.session_state.configuration[st.session_state.mode_select]["git"]
+    if not git["no-fork"] or not git["no-pull-request"]:
         confirm_public_run()
     else:
         st.session_state.running = True
@@ -115,13 +106,20 @@ def render_output_block(output_container) -> None:
                 return
             left, right = st.columns([0.6, 0.4], vertical_alignment="center")
             with left:
-                if st.session_state.output_exit_code == 0:
+                if st.session_state.output_exit_code != 0 or st.session_state.get(
+                    "output_has_errors", False
+                ):
+                    st.error(st.session_state.output_message, icon=":material/error:")
+                elif st.session_state.get("output_has_warnings", False):
+                    st.warning(
+                        st.session_state.output_message,
+                        icon=":material/warning:",
+                    )
+                else:
                     st.success(
                         st.session_state.output_message,
                         icon=":material/check_circle:",
                     )
-                else:
-                    st.error(st.session_state.output_message, icon=":material/error:")
             with right:
                 if len(st.session_state.output_report_paths) > 0:
                     for i in range(len(st.session_state.output_report_paths)):
@@ -144,12 +142,14 @@ def render_output_block(output_container) -> None:
             if "output_about_section" in st.session_state:
                 with st.expander("About section", expanded=True, icon=":material/article:"):
                     st.write(st.session_state.output_about_section)
-            # TODO: developer only
-            with st.expander("See Console Output", icon=":material/terminal:"):
-                st.code(
-                    st.session_state.output_logs,
-                    height=350,
-                )
+            render_console_output(
+                st.session_state.output_logs,
+                st.session_state.repo_url,
+                started_at=st.session_state.get("run_started_at"),
+                expanded=st.session_state.output_exit_code != 0
+                or st.session_state.get("output_has_errors", False)
+                or st.session_state.get("output_has_warnings", False),
+            )
 
 
 def render_main_tab() -> None:

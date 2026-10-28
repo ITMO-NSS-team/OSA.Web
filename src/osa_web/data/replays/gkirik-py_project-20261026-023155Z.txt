@@ -1,0 +1,25 @@
+05:32:00 INFO Successfully fetched GitHub metadata for repository: 'GKirik/Py_Project'
+05:32:02 INFO Cloning completed
+05:32:03 INFO Starting analysis for repository GKirik/Py_Project
+05:32:12 INFO PDF report successfully created in [run output]
+05:32:12 INFO Starting the generation of requirements for: https://github.com/GKirik/Py_Project
+05:32:16 INFO Requirements generated successfully with notebook scanning
+05:32:18 INFO Requirements successfully refined with LLM (JSON parsed).
+05:32:18 INFO ========== README GENERATION START ==========
+05:32:39 INFO [SectionGenerator] Section 'license' done (deterministic, 0 chars).
+05:32:39 INFO [SectionGenerator] Section 'examples' done (deterministic, 0 chars).
+05:32:39 INFO [SectionGenerator] Section 'documentation' done (deterministic, 0 chars).
+05:32:39 INFO [SectionGenerator] Section 'header' done (deterministic, 132 chars).
+05:32:39 INFO [SectionGenerator] Section 'installation' done (deterministic, 344 chars).
+05:32:40 INFO [SectionGenerator] Section 'contributing' done (deterministic, 162 chars).
+05:32:41 INFO [SectionGenerator] Section 'citation' done (deterministic, 533 chars).
+05:32:43 INFO [SectionGenerator] Section 'core_features' done (llm, 463 chars).
+05:32:44 INFO [SectionGenerator] Section 'overview' done (llm, 357 chars).
+05:32:58 INFO [SectionGenerator] Section 'overview' done (llm, 422 chars).
+05:33:16 INFO [SectionGenerator] Section 'overview' done (llm, 343 chars).
+05:33:28 INFO README.md generated in [run output]
+05:33:55 INFO Started generating About section content.
+05:33:55 INFO Finished generating About section content.
+05:33:55 INFO Starting creating summary for OSA work
+05:34:02 INFO PDF report successfully created in [run output]
+All operations completed successfully in total time: 00:02:03

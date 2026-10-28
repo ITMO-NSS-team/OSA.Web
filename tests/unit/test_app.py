@@ -13,11 +13,101 @@ PROJECT_VERSION = tomllib.loads((ENTRYPOINT.parent / "pyproject.toml").read_text
 
 
 class AppTests(TestCase):
+    def test_pipeline_pepy_warning_shows_completed_warning(self) -> None:
+        app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
+        next(button for button in app.button if button.label == "Continue as guest").click().run()
+        app.session_state["repo_url"] = "https://github.com/aimclub/OSA"
+        app.session_state["output_logs"] = "ERROR - [PyPiInspector] Pepy request failed\n"
+        app.session_state["output_exit_code"] = 0
+        app.session_state["output_has_errors"] = False
+        app.session_state["output_has_warnings"] = True
+        app.session_state["output_message"] = (
+            "OSA completed, but package download counts were unavailable."
+        )
+        app.run()
+
+        self.assertFalse(app.exception)
+        self.assertTrue(any("package download counts" in item.value for item in app.warning))
+        self.assertFalse(any("package download counts" in item.value for item in app.error))
+
+    def test_pipeline_error_lines_show_failure_and_console_download(self) -> None:
+        app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
+        next(button for button in app.button if button.label == "Continue as guest").click().run()
+        app.session_state["repo_url"] = "https://github.com/aimclub/OSA"
+        app.session_state["output_logs"] = "ERROR - Error code: 401 - invalid_api_key\n"
+        app.session_state["output_exit_code"] = 0
+        app.session_state["output_has_errors"] = True
+        app.session_state["output_message"] = "OSA reported an LLM authentication error (HTTP 401)."
+        app.run()
+
+        self.assertFalse(app.exception)
+        self.assertTrue(any("HTTP 401" in item.value for item in app.error))
+        self.assertFalse(any("Everything is alright" in item.value for item in app.success))
+        self.assertTrue(any(item.label == "See Console Output" for item in app.expander))
+        self.assertTrue(
+            any(item.label == "Download console output" for item in app.download_button)
+        )
+
+    def test_pipeline_preset_round_trip_keeps_its_own_fields(self) -> None:
+        app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
+        next(button for button in app.button if button.label == "Continue as guest").click().run()
+        app.session_state["osa-tabs"] = ":material/settings: Configuration"
+        app.run()
+
+        self.assertEqual(app.checkbox(key="configuration-general-docstring").value, True)
+        app.segmented_control(key="configuration-preset").set_value("fast").run()
+        self.assertFalse(app.exception)
+        self.assertEqual(app.checkbox(key="configuration-general-docstring").value, False)
+        app.text_input(key="configuration-general-translate-readme").set_value("German").run()
+        app.segmented_control(key="configuration-preset").set_value("quality").run()
+        self.assertFalse(app.exception)
+        self.assertEqual(app.checkbox(key="configuration-general-docstring").value, True)
+        self.assertEqual(
+            app.text_input(key="configuration-general-translate-readme").value, "Russian"
+        )
+        app.segmented_control(key="configuration-preset").set_value("fast").run()
+        self.assertFalse(app.exception)
+        self.assertEqual(
+            app.text_input(key="configuration-general-translate-readme").value, "German"
+        )
+        self.assertEqual(app.segmented_control(key="work_mode").value, "Automated pipeline")
+
+    def test_configuration_switches_work_mode_and_endpoint_per_mode(self) -> None:
+        app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
+        next(button for button in app.button if button.label == "Continue as guest").click().run()
+        app.session_state["osa-tabs"] = ":material/settings: Configuration"
+        app.run()
+
+        self.assertEqual(app.segmented_control(key="work_mode").value, "Automated pipeline")
+        self.assertEqual(app.selectbox(key="configuration-llm-endpoint").value, "OpenAI")
+        app.selectbox(key="configuration-llm-endpoint").set_value("OpenRouter").run()
+        self.assertEqual(
+            app.session_state["configuration"]["quality"]["llm"]["base-url"],
+            "https://openrouter.ai/api/v1",
+        )
+        self.assertEqual(app.session_state["configuration"]["quality"]["llm"]["api"], "openai")
+
+        app.segmented_control(key="work_mode").set_value("Agentic conversation").run()
+        self.assertEqual(app.text_input(key="configuration-llm-model").value, "gpt-6-luna")
+        self.assertEqual(app.selectbox(key="configuration-llm-endpoint").value, "OpenAI")
+        app.selectbox(key="configuration-llm-endpoint").set_value("Custom").run()
+        app.text_input(key="configuration-base-url").set_value("https://custom.example/v1").run()
+        self.assertEqual(
+            app.session_state["configuration"]["agentic"]["llm"]["base-url"],
+            "https://custom.example/v1",
+        )
+
+        app.segmented_control(key="work_mode").set_value("Automated pipeline").run()
+        self.assertEqual(app.selectbox(key="configuration-llm-endpoint").value, "OpenRouter")
+        app.session_state["osa-tabs"] = ":material/home: Home"
+        app.run()
+        self.assertEqual(app.segmented_control(key="work_mode").value, "Automated pipeline")
+
     def test_guest_switches_home_workflows_and_their_settings(self) -> None:
         app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
         next(button for button in app.button if button.label == "Continue as guest").click().run()
         self.assertFalse(app.exception)
-        self.assertEqual(len(app.tabs), 2)
+        self.assertEqual(len(app.tabs), 3)
         self.assertEqual(__version__, PROJECT_VERSION)
         self.assertTrue(
             any(f"Web Version: {PROJECT_VERSION}" in item.value for item in app.markdown)
@@ -47,7 +137,7 @@ class AppTests(TestCase):
         app.run()
         app.segmented_control(key="work_mode").set_value("Agentic conversation").run()
         self.assertEqual(len(app.chat_input), 1)
-        self.assertFalse(any(button.label == "New conversation" for button in app.button))
+        self.assertFalse(any(button.label == "New run" for button in app.button))
         self.assertIsNotNone(app.button(key="chat_attachment-choose-url"))
         self.assertIsNotNone(app.button(key="chat_attachment-choose-file"))
         app.button(key="chat_attachment-choose-url").click().run()
@@ -67,6 +157,48 @@ class AppTests(TestCase):
         app.session_state["osa-tabs"] = ":material/home: Home"
         app.session_state["chat_messages"] = [{"role": "user", "content": "Test request"}]
         app.run()
-        app.button(key="chat-new-conversation").click().run()
+        app.button(key="chat-new-run").click().run()
         self.assertEqual(app.session_state["chat_messages"], [])
-        self.assertFalse(any(button.label == "New conversation" for button in app.button))
+        self.assertFalse(any(button.label == "New run" for button in app.button))
+
+    def test_completed_agentic_run_replaces_cancel_with_success_marker(self) -> None:
+        class FakeProcess:
+            running = True
+            console_text = "[stdout] started"
+
+            def __init__(self) -> None:
+                self.events: list[dict] = []
+
+            def drain(self) -> list[dict]:
+                events, self.events = self.events, []
+                return events
+
+            def cancel(self) -> None:
+                self.running = False
+
+        app = AppTest.from_file(str(ENTRYPOINT), default_timeout=10).run()
+        next(button for button in app.button if button.label == "Continue as guest").click().run()
+        app.segmented_control(key="work_mode").set_value("Agentic conversation").run()
+        process = FakeProcess()
+        app.session_state["chat_process"] = process
+        app.session_state["agentic-repository"] = "https://github.com/aimclub/OSA"
+        app.session_state["chat_messages"] = [{"role": "user", "content": "Improve README"}]
+        app.session_state["chat_progress"] = ["Planner: working"]
+        app.run()
+        self.assertIsNotNone(app.button(key="chat-cancel-run"))
+        self.assertIsNotNone(app.button(key="chat-new-run"))
+        self.assertTrue(any(item.label.startswith("In progress... ") for item in app.status))
+        self.assertTrue(any(item.label == "See Console Output" for item in app.expander))
+        self.assertTrue(
+            any(item.label == "Download console output" for item in app.download_button)
+        )
+
+        process.events.append(
+            {"type": "completed", "summary": "README improved", "tasks": [], "artifacts": []}
+        )
+        app.run()
+        self.assertFalse(app.exception)
+        self.assertFalse(any(button.label == "Cancel run" for button in app.button))
+        self.assertFalse(any(item.label.startswith("In progress... ") for item in app.status))
+        self.assertTrue(any(item.value == "Run completed successfully." for item in app.success))
+        self.assertTrue(any(item.label == "Agentic steps" for item in app.status))

@@ -28,4 +28,3 @@ def get_display_name() -> str:
     if getattr(st.user, "is_logged_in", False):
         return st.user.get("name", "Username")
     return "Username"
-

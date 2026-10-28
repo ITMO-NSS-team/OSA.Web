@@ -1,0 +1,30 @@
+05:57:37 INFO Successfully fetched GitHub metadata for repository: 'ILT-ITMO/LaserProcessing'
+05:57:42 INFO Cloning completed
+05:57:43 INFO Starting analysis for repository ILT-ITMO/LaserProcessing
+05:57:57 INFO PDF report successfully created in [run output]
+05:57:57 INFO Starting the generation of requirements for: https://github.com/ILT-ITMO/LaserProcessing
+05:58:06 INFO Requirements generated successfully with notebook scanning
+05:58:08 INFO Requirements successfully refined with LLM (JSON parsed).
+05:58:08 INFO ========== README GENERATION START ==========
+05:58:40 INFO [SectionGenerator] Section 'examples' done (deterministic, 0 chars).
+05:58:40 INFO [SectionGenerator] Section 'license' done (deterministic, 124 chars).
+05:58:40 INFO [SectionGenerator] Section 'documentation' done (deterministic, 0 chars).
+05:58:40 INFO [SectionGenerator] Section 'installation' done (deterministic, 366 chars).
+05:58:40 INFO [SectionGenerator] Section 'header' done (deterministic, 864 chars).
+05:58:40 INFO [SectionGenerator] Section 'contributing' done (deterministic, 288 chars).
+05:58:42 INFO [SectionGenerator] Section 'citation' done (deterministic, 573 chars).
+05:58:43 INFO [SectionGenerator] Section 'overview' done (llm, 457 chars).
+05:58:45 INFO [SectionGenerator] Section 'testing' done (llm, 270 chars).
+05:58:47 INFO [SectionGenerator] Section 'architecture' done (llm, 840 chars).
+05:58:47 INFO [SectionGenerator] Section 'getting_started' done (llm, 236 chars).
+05:59:21 INFO [SectionGenerator] Section 'getting_started' done (llm, 290 chars).
+05:59:23 INFO [SectionGenerator] Section 'architecture' done (llm, 497 chars).
+06:00:03 INFO [SectionGenerator] Section 'testing' done (llm, 137 chars).
+06:00:05 INFO [SectionGenerator] Section 'getting_started' done (llm, 139 chars).
+06:00:06 INFO [SectionGenerator] Section 'architecture' done (llm, 604 chars).
+06:00:45 INFO README.md generated in [run output]
+06:01:05 INFO Started generating About section content.
+06:01:05 INFO Finished generating About section content.
+06:01:05 INFO Starting creating summary for OSA work
+06:01:18 INFO PDF report successfully created in [run output]
+All operations completed successfully in total time: 00:03:41

@@ -1,0 +1,25 @@
+05:27:46 INFO Successfully fetched GitHub metadata for repository: 'Mawwlle/oil-labs'
+05:27:50 INFO Cloning completed
+05:27:51 INFO Starting analysis for repository Mawwlle/oil-labs
+05:28:07 INFO PDF report successfully created in [run output]
+05:28:07 INFO Starting the generation of requirements for: https://github.com/Mawwlle/oil-labs
+05:28:18 INFO Requirements generated successfully with notebook scanning
+05:28:23 INFO Requirements successfully refined with LLM (JSON parsed).
+05:28:23 INFO ========== README GENERATION START ==========
+05:28:49 INFO [SectionGenerator] Section 'examples' done (deterministic, 0 chars).
+05:28:49 INFO [SectionGenerator] Section 'license' done (deterministic, 126 chars).
+05:28:50 INFO [SectionGenerator] Section 'documentation' done (deterministic, 0 chars).
+05:28:50 INFO [SectionGenerator] Section 'contributing' done (deterministic, 273 chars).
+05:28:50 INFO [SectionGenerator] Section 'installation' done (deterministic, 379 chars).
+05:28:50 INFO [SectionGenerator] Section 'header' done (deterministic, 645 chars).
+05:28:51 INFO [SectionGenerator] Section 'citation' done (deterministic, 526 chars).
+05:28:54 INFO [SectionGenerator] Section 'overview' done (llm, 268 chars).
+05:29:04 INFO [SectionGenerator] Section 'getting_started' done (llm, 298 chars).
+05:29:34 INFO [SectionGenerator] Section 'getting_started' done (llm, 332 chars).
+05:29:52 INFO [SectionGenerator] Section 'getting_started' done (llm, 106 chars).
+05:30:07 INFO README.md generated in [run output]
+05:30:26 INFO Started generating About section content.
+05:30:26 INFO Finished generating About section content.
+05:30:26 INFO Starting creating summary for OSA work
+05:30:33 INFO PDF report successfully created in [run output]
+All operations completed successfully in total time: 00:02:47
